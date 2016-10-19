@@ -90,12 +90,26 @@ RCT_EXPORT_MODULE()
     contentMode = PHImageContentModeAspectFit;
   }
   
-  __block BOOL opportunistic = (targetSize.width > 500 || targetSize.height > 500);
-  if(opportunistic) {
-     imageOptions.deliveryMode = PHImageRequestOptionsDeliveryModeOpportunistic;
-  }else {
-    imageOptions.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
-  }
+    
+  NSURLComponents *urlComponents = [NSURLComponents componentsWithURL:imageURL
+                                                resolvingAgainstBaseURL:NO];
+  NSArray *queryItems = urlComponents.queryItems;
+  NSString *deliveryModeQuery = [self valueForKey:@"deliveryMode"
+                          fromQueryItems:queryItems];
+    
+  __block PHImageRequestOptionsDeliveryMode deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+    if(deliveryModeQuery != nil) {
+        if([deliveryModeQuery isEqualToString:@"opportunistic"]) {
+            deliveryMode = PHImageRequestOptionsDeliveryModeOpportunistic;
+        }
+        else if([deliveryModeQuery isEqualToString:@"highQuality"]) {
+            deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+        }
+        else if([deliveryModeQuery isEqualToString:@"fast"]) {
+            deliveryMode = PHImageRequestOptionsDeliveryModeFastFormat;
+        }
+    }
+    imageOptions.deliveryMode = deliveryMode;
 
   PHImageRequestID requestID =
   [[PHCachingImageManagerInstance sharedCachingManager] requestImageForAsset:asset
@@ -104,7 +118,7 @@ RCT_EXPORT_MODULE()
                                                 options:imageOptions
                                           resultHandler:^(UIImage *result, NSDictionary<NSString *, id> *info) {
     if (result) {
-      if(opportunistic && [info[@"PHImageResultIsDegradedKey"] boolValue] == YES) {
+      if(deliveryMode == PHImageRequestOptionsDeliveryModeOpportunistic && [info[@"PHImageResultIsDegradedKey"] boolValue] == YES) {
         partialLoadHandler(result);
       }else {
         completionHandler(nil, result);
@@ -117,6 +131,16 @@ RCT_EXPORT_MODULE()
   return ^{
     [[PHCachingImageManagerInstance sharedCachingManager] cancelImageRequest:requestID];
   };
+}
+
+- (NSString *)valueForKey:(NSString *)key
+           fromQueryItems:(NSArray *)queryItems
+{
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"name=%@", key];
+    NSURLQueryItem *queryItem = [[queryItems
+                                  filteredArrayUsingPredicate:predicate]
+                                 firstObject];
+    return queryItem.value;
 }
 
 @end

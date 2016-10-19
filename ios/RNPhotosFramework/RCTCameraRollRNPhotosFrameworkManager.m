@@ -35,10 +35,8 @@ RCT_EXPORT_MODULE()
   NSMutableArray *uriArray = [NSMutableArray arrayWithCapacity:assetsArray.count];
   for(int i = 0;i < assetsArray.count;i++) {
     PHAsset *asset =[assetsArray objectAtIndex:i];
-    NSString *uri = [NSString stringWithFormat:@"pk://%@", [asset localIdentifier]];
-
     [uriArray addObject:@{
-                          @"uri" : uri,
+                          @"uri" : [asset localIdentifier],
                           @"width" : @([asset pixelWidth]),
                           @"height" : @([asset pixelHeight])
                           }];

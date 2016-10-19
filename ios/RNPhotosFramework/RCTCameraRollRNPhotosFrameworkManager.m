@@ -14,56 +14,9 @@
 #import "RCTImageLoader.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
+#import "RCTConvert+RNPhotosFramework.h"
 @import Photos;
 
-@implementation RCTConvert (PHAssetMediaType)
-
-RCT_ENUM_CONVERTER(PHAssetMediaType, (@{
-                                         
-                                         // New values
-                                         @"photo": @(PHAssetMediaTypeImage),
-                                         @"video": @(PHAssetMediaTypeVideo),
-                                         @"audio": @(PHAssetMediaTypeAudio),
-                                         @"unknown": @(PHAssetMediaTypeUnknown)
-                                         
-                                         }), PHAssetMediaTypeImage, integerValue)
-RCT_ENUM_CONVERTER(PHAssetMediaSubtype, (@{
-                                        @"none": @(PHAssetMediaSubtypeNone),
-                                        @"photoPanorama": @(PHAssetMediaSubtypePhotoPanorama),
-                                        @"photoHDR": @(PHAssetMediaSubtypePhotoHDR),
-                                        @"photoScreenshot": @(PHAssetMediaSubtypePhotoScreenshot),
-                                        @"photoLive": @(PHAssetMediaSubtypePhotoLive),
-                                        @"videoStreamed": @(PHAssetMediaSubtypeVideoStreamed),
-                                        @"videoHighFrameRate": @(PHAssetMediaSubtypeVideoHighFrameRate),
-                                        @"videoTimeLapse": @(PHAssetMediaSubtypeVideoTimelapse),
-                                        
-                                        }), PHAssetMediaSubtypeNone, integerValue)
-
-+ (NSArray<NSNumber *> *)PHAssetMediaTypes:(NSArray<NSString *> *)arrayWithMediaTypeStrings
-{
-    if(arrayWithMediaTypeStrings.count == 0){
-        return nil;
-    }
-    NSMutableArray *arrayWithMediaTypeEnums = [NSMutableArray arrayWithCapacity:arrayWithMediaTypeStrings.count];
-    for(int i = 0; i < arrayWithMediaTypeStrings.count;i++) {
-       PHAssetMediaType mediaType = [RCTConvert PHAssetMediaType:[arrayWithMediaTypeStrings objectAtIndex:i]];
-        [arrayWithMediaTypeEnums addObject:@(mediaType)];
-    }
-    return arrayWithMediaTypeEnums;
-}
-
-+(NSMutableArray * ) PHAssetMediaSubtypes:(NSArray<NSString *> *)arrayWithSubMediaTypeStrings {
-    if(arrayWithSubMediaTypeStrings.count == 0){
-        return nil;
-    }
-    NSMutableArray *arrayWithSubMediaTypes = [NSMutableArray array];
-    for(int i = 0; i < arrayWithSubMediaTypeStrings.count;i++) {
-        PHAssetMediaSubtype mediaSubTyp = [RCTConvert PHAssetMediaSubtype:[arrayWithSubMediaTypeStrings objectAtIndex:i]];
-        [arrayWithSubMediaTypes addObject:[NSNumber numberWithInt:mediaSubTyp]];
-    }
-    return arrayWithSubMediaTypes;
-}
-@end
 
 
 
@@ -82,17 +35,8 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
     NSUInteger endIndex = [RCTConvert NSInteger:params[@"endIndex"]];
     CGSize prepareForSizeDisplay = [RCTConvert CGSize:params[@"prepareForSizeDisplay"]];
     CGFloat prepareScale = [RCTConvert CGFloat:params[@"prepareScale"]];
-    BOOL sortAscending = [RCTConvert BOOL:params[@"sortAscending"]];
-    NSString *sortDescriptorKey = [RCTConvert NSString:params[@"sortDescriptorKey"]];
-    if(sortDescriptorKey == nil) {
-        sortDescriptorKey = @"creationDate";
-    }
-    
 
-    PHFetchOptions *options = [[PHFetchOptions alloc] init];
-    options.predicate = [self getPredicate:params];
-
-    options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
+    PHFetchOptions *options = [self getFetchOptionsFromParams:params];
     PHFetchResult *assetsFetchResult = [PHAsset fetchAssetsWithOptions:options];
     
     NSArray *assets = [self getAssetsForFetchResult:assetsFetchResult startIndex:startIndex endIndex:endIndex];
@@ -107,6 +51,24 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
     }
     
     resolve([self assetsArrayToUriArray:assets]);
+}
+
+-(PHFetchOptions *)getFetchOptionsFromParams:(NSDictionary *)params {
+
+    PHFetchOptions *options = [[PHFetchOptions alloc] init];
+    options.includeAssetSourceTypes = [RCTConvert PHAssetSourceTypes:params[@"sourceTypes"]];
+    options.includeHiddenAssets = [RCTConvert BOOL:params[@"includeHiddenAssets"]];
+    options.includeAllBurstAssets = [RCTConvert BOOL:params[@"includeAllBurstAssets"]];
+    options.fetchLimit = [RCTConvert int:params[@"fetchLimit"]];
+    options.wantsIncrementalChangeDetails = [RCTConvert BOOL:params[@"wantsIncrementalChangeDetails"]];
+    options.predicate = [self getPredicate:params];
+    
+    BOOL sortAscending = [RCTConvert BOOL:params[@"sortAscending"]];
+    NSString *sortDescriptorKey = [RCTConvert NSString:params[@"sortDescriptorKey"]];
+    if(sortDescriptorKey != nil) {
+        options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:sortDescriptorKey ascending:sortAscending]];
+    }
+    return options;
 }
 
 -(NSPredicate *) getPredicate:(NSDictionary *)params  {
@@ -177,5 +139,129 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
   }
   return uriArray;
 }
+
+RCT_EXPORT_METHOD(getAlbums:(NSDictionary *)params
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+    [self getAlbums:params];
+    resolve([self getUserAlbums]);
+}
+
+
+-(NSArray *)getAlbums:(NSDictionary *)params {
+    PHAssetCollectionType type = [RCTConvert PHAssetCollectionType:params[@"type"]];
+    PHAssetCollectionSubtype subType = [RCTConvert PHAssetCollectionSubtype:params[@"subType"]];
+    NSDictionary *fetchOptions = [RCTConvert NSDictionary:params[@"options"]];
+    
+    PHFetchOptions *options = [self getFetchOptionsFromParams:params];
+    PHFetchResult<PHAssetCollection *> *albums = [PHAssetCollection fetchAssetCollectionsWithType:type subtype:subType options:fetchOptions];
+    
+    NSLog(@"COUNT: %d", albums.count);
+
+    return nil;
+}
+
+-(NSArray *)getUserAlbums
+{
+    PHFetchResult *topLevelUserCollections = [PHCollectionList fetchTopLevelUserCollectionsWithOptions:nil];
+
+    PHFetchResult *smartAlbums = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeAlbumRegular options:nil];
+    NSArray *collectionsFetchResults = @[topLevelUserCollections, smartAlbums];
+    //What I do here is fetch both the albums list and the assets of each album.
+    //This way I have acces to the number of items in each album, I can load the 3
+    //thumbnails directly and I can pass the fetched result to the gridViewController.
+    NSArray *collectionsFetchResultsAssets;
+    NSArray *collectionsFetchResultsTitles;
+    
+    //Fetch PHAssetCollections:
+    
+    //All album: Sorted by descending creation date.
+    NSMutableArray *allFetchResultArray = [[NSMutableArray alloc] init];
+    NSMutableArray *allFetchResultLabel = [[NSMutableArray alloc] init];
+    {
+        PHFetchOptions *options = [[PHFetchOptions alloc] init];
+     //   options.predicate = [NSPredicate predicateWithFormat:@"mediaType in %@", self.picker.mediaTypes];
+        options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
+        PHFetchResult *assetsFetchResult = [PHAsset fetchAssetsWithOptions:options];
+        [allFetchResultArray addObject:assetsFetchResult];
+       // [allFetchResultLabel addObject:NSLocalizedStringFromTableInBundle(@"picker.table.all-photos-label",  @"GMImagePicker", [NSBundle bundleForClass:GMImagePickerController.class], @"All photos")];
+    }
+    
+    //User albums:
+    NSMutableArray *userFetchResultArray = [[NSMutableArray alloc] init];
+    NSMutableArray *userFetchResultLabel = [[NSMutableArray alloc] init];
+    for(PHCollection *collection in topLevelUserCollections)
+    {
+        if ([collection isKindOfClass:[PHAssetCollection class]])
+        {
+            PHFetchOptions *options = [[PHFetchOptions alloc] init];
+           // options.predicate = [NSPredicate predicateWithFormat:@"mediaType in %@", self.picker.mediaTypes];
+            PHAssetCollection *assetCollection = (PHAssetCollection *)collection;
+            
+            //Albums collections are allways PHAssetCollectionType=1 & PHAssetCollectionSubtype=2
+            
+            PHFetchResult *assetsFetchResult = [PHAsset fetchAssetsInAssetCollection:assetCollection options:options];
+            [userFetchResultArray addObject:assetsFetchResult];
+            [userFetchResultLabel addObject:collection.localizedTitle];
+        }
+    }
+    
+    
+    //Smart albums: Sorted by descending creation date.
+ /*   NSMutableArray *smartFetchResultArray = [[NSMutableArray alloc] init];
+    NSMutableArray *smartFetchResultLabel = [[NSMutableArray alloc] init];
+    for(PHCollection *collection in smartAlbums)
+    {
+        if ([collection isKindOfClass:[PHAssetCollection class]])
+        {
+            PHAssetCollection *assetCollection = (PHAssetCollection *)collection;
+            
+            //Smart collections are PHAssetCollectionType=2;
+            if(self.picker.customSmartCollections && [self.picker.customSmartCollections containsObject:@(assetCollection.assetCollectionSubtype)])
+            {
+                PHFetchOptions *options = [[PHFetchOptions alloc] init];
+             //   options.predicate = [NSPredicate predicateWithFormat:@"mediaType in %@", self.picker.mediaTypes];
+                options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
+                
+                PHFetchResult *assetsFetchResult = [PHAsset fetchAssetsInAssetCollection:assetCollection options:options];
+                if(assetsFetchResult.count>0)
+                {
+                    [smartFetchResultArray addObject:assetsFetchResult];
+                    [smartFetchResultLabel addObject:collection.localizedTitle];
+                }
+            }
+        }
+    }*/
+    
+    return @[allFetchResultArray,userFetchResultArray];
+}
+
+-(NSDictionary *)getUserOpLevelAlbums:(NSDictionary *)params {
+    PHFetchOptions *options = [self getFetchOptionsFromParams:params];
+
+    PHFetchResult *topLevelUserCollections = [PHCollectionList fetchTopLevelUserCollectionsWithOptions:options];
+    NSMutableArray *userFetchResultArray = [[NSMutableArray alloc] init];
+    NSMutableArray *userFetchResultLabel = [[NSMutableArray alloc] init];
+    for(PHCollection *collection in topLevelUserCollections)
+    {
+        if ([collection isKindOfClass:[PHAssetCollection class]])
+        {
+            PHFetchOptions *options = [[PHFetchOptions alloc] init];
+            // options.predicate = [NSPredicate predicateWithFormat:@"mediaType in %@", self.picker.mediaTypes];
+            PHAssetCollection *assetCollection = (PHAssetCollection *)collection;
+            
+            //Albums collections are allways PHAssetCollectionType=1 & PHAssetCollectionSubtype=2
+            
+            PHFetchResult *assetsFetchResult = [PHAsset fetchAssetsInAssetCollection:assetCollection options:options];
+            [userFetchResultArray addObject:assetsFetchResult];
+            [userFetchResultLabel addObject:collection.localizedTitle];
+        }
+    }
+    
+    return nil;
+}
+
+
 
 @end

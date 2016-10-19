@@ -24,8 +24,14 @@ class CameraRollRNPhotosFramework {
 
   static getPhotos(params) {
     return RCTCameraRollRNPhotosFrameworkManager.getPhotos(params).then((photos) => {
-
         return photos.map(p => new Photo(p));
+    });
+  }
+
+  static getAlbums() {
+    return RCTCameraRollRNPhotosFrameworkManager.getAlbums({}).then((albums) => {
+      debugger;
+        return {};
     });
   }
 }

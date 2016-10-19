@@ -10,6 +10,7 @@
 		632F8C251DB75A4A007E83E1 /* PHCachingImageManagerInstance.m in Sources */ = {isa = PBXBuildFile; fileRef = 632F8C201DB75A4A007E83E1 /* PHCachingImageManagerInstance.m */; };
 		632F8C261DB75A4A007E83E1 /* RCTCameraRollRNPhotosFrameworkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 632F8C221DB75A4A007E83E1 /* RCTCameraRollRNPhotosFrameworkManager.m */; };
 		632F8C271DB75A4A007E83E1 /* RCTImageLoaderRNPhotosFramework.m in Sources */ = {isa = PBXBuildFile; fileRef = 632F8C241DB75A4A007E83E1 /* RCTImageLoaderRNPhotosFramework.m */; };
+		639BE3591DB82A7C00A2BE6F /* RCTConvert+RNPhotosFramework.m in Sources */ = {isa = PBXBuildFile; fileRef = 639BE3581DB82A7C00A2BE6F /* RCTConvert+RNPhotosFramework.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -32,6 +33,8 @@
 		632F8C221DB75A4A007E83E1 /* RCTCameraRollRNPhotosFrameworkManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTCameraRollRNPhotosFrameworkManager.m; sourceTree = "<group>"; };
 		632F8C231DB75A4A007E83E1 /* RCTImageLoaderRNPhotosFramework.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTImageLoaderRNPhotosFramework.h; sourceTree = "<group>"; };
 		632F8C241DB75A4A007E83E1 /* RCTImageLoaderRNPhotosFramework.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageLoaderRNPhotosFramework.m; sourceTree = "<group>"; };
+		639BE3571DB82A7C00A2BE6F /* RCTConvert+RNPhotosFramework.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RCTConvert+RNPhotosFramework.h"; sourceTree = "<group>"; };
+		639BE3581DB82A7C00A2BE6F /* RCTConvert+RNPhotosFramework.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+RNPhotosFramework.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,6 +73,8 @@
 				632F8C221DB75A4A007E83E1 /* RCTCameraRollRNPhotosFrameworkManager.m */,
 				632F8C231DB75A4A007E83E1 /* RCTImageLoaderRNPhotosFramework.h */,
 				632F8C241DB75A4A007E83E1 /* RCTImageLoaderRNPhotosFramework.m */,
+				639BE3571DB82A7C00A2BE6F /* RCTConvert+RNPhotosFramework.h */,
+				639BE3581DB82A7C00A2BE6F /* RCTConvert+RNPhotosFramework.m */,
 			);
 			path = RNPhotosFramework;
 			sourceTree = "<group>";
@@ -133,6 +138,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				632F8C251DB75A4A007E83E1 /* PHCachingImageManagerInstance.m in Sources */,
+				639BE3591DB82A7C00A2BE6F /* RCTConvert+RNPhotosFramework.m in Sources */,
 				632F8C261DB75A4A007E83E1 /* RCTCameraRollRNPhotosFrameworkManager.m in Sources */,
 				632F8C271DB75A4A007E83E1 /* RCTImageLoaderRNPhotosFramework.m in Sources */,
 			);

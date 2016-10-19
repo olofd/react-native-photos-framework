@@ -22,7 +22,6 @@ import {
   Text,
   View
 } from 'react-native';
-import ReactNativeInstaPhotoStudio from 'react-native-insta-photo-studio';
 
 export default class HelloRN extends Component {
 

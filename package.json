@@ -1,0 +1,44 @@
+{
+  "name": "react-native-insta-photo-studio",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/olofd/react-native-insta-photo-studio.git"
+  },
+  "version": "0.0.16",
+  "description": "A component for croping/filtering and selecting photos in React-Native",
+  "author": "Olof Dahlbom olof.dahlbom@me.com",
+  "nativePackage": true,
+  "license": "MIT",
+  "homepage": "https://github.com/olofd/react-native-insta-photo-studio",
+  "keywords": [
+    "react-native",
+    "react",
+    "native",
+    "camera",
+    "photo",
+    "filter",
+    "open gl",
+    "code"
+  ],
+  "dependencies": {
+    "clamp": "^1.0.1",
+    "debounce": "^1.0.0",
+    "gl-react": "^2.2.8",
+    "gl-react-blur": "~1.3.0",
+    "gl-react-color-matrix": "~1.1.0",
+    "gl-react-contrast-saturation-brightness": "~1.1.0",
+    "gl-react-hue-rotate": "~1.1.0",
+    "gl-react-image": "0.0.2",
+    "gl-react-native": "^2.35.0-rc.0",
+    "gl-react-negative": "~1.1.0",
+    "react-native-blur": "^1.0.1",
+    "react-native-camera": "git+https://github.com/lwansbrough/react-native-camera.git",
+    "react-native-circular-progress": "0.0.7",
+    "react-native-image-resizer": "0.0.11",
+    "react-native-vector-icons": "^2.1.0"
+  },
+  "scripts": {
+    "update": "git add . && git commit -m \"Updated\" && npm version patch && git push --tags && git push origin master && npm publish",
+    "postinstall": "node install.js"
+  }
+}

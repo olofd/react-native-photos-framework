@@ -13,9 +13,7 @@
 
 var ReactPropTypes = require('react/lib/ReactPropTypes');
 import { NativeModules } from 'react-native';
-console.log(NativeModules);
 const RCTCameraRollRNPhotosFrameworkManager = NativeModules.CameraRollRNPhotosFrameworkManager;
-
 
 /**
  * `CameraRoll` provides access to the local camera roll / gallery.

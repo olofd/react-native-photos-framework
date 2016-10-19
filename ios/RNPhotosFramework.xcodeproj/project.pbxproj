@@ -233,6 +233,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DEVELOPMENT_TEAM = 5BEG6QJ94B;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../../gotlandskartan/app/node_modules/react-native/React/**",
+					"$(SRCROOT)/../../gotlandskartan/app/node_modules/react-native/Libraries/Image",
+					"$(SRCROOT)/../../react-native/React/**",
+					"$(SRCROOT)/../../react-native/Libraries/Image",
+				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -243,6 +249,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DEVELOPMENT_TEAM = 5BEG6QJ94B;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../../gotlandskartan/app/node_modules/react-native/React/**",
+					"$(SRCROOT)/../../gotlandskartan/app/node_modules/react-native/Libraries/Image",
+					"$(SRCROOT)/../../react-native/React/**",
+					"$(SRCROOT)/../../react-native/Libraries/Image",
+				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;

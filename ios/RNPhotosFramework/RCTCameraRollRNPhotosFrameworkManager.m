@@ -9,17 +9,12 @@
 #import "RCTCameraRollRNPhotosFrameworkManager.h"
 #import "RCTUtils.h"
 #import "PHCachingImageManagerInstance.h"
-
 #import "RCTConvert.h"
 #import "RCTImageLoader.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
 #import "RCTConvert+RNPhotosFramework.h"
 @import Photos;
-
-
-
-
 
 @implementation RCTCameraRollRNPhotosFrameworkManager
 RCT_EXPORT_MODULE()
@@ -36,7 +31,7 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
     CGSize prepareForSizeDisplay = [RCTConvert CGSize:params[@"prepareForSizeDisplay"]];
     CGFloat prepareScale = [RCTConvert CGFloat:params[@"prepareScale"]];
 
-    PHFetchOptions *options = [self getFetchOptionsFromParams:params];
+    PHFetchOptions *options = [self getFetchOptionsFromParams:[RCTConvert NSDictionary:params[@"fetchOptions"]]];
     PHFetchResult *assetsFetchResult = [PHAsset fetchAssetsWithOptions:options];
     
     NSArray *assets = [self getAssetsForFetchResult:assetsFetchResult startIndex:startIndex endIndex:endIndex];
@@ -53,8 +48,62 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
     resolve([self assetsArrayToUriArray:assets]);
 }
 
--(PHFetchOptions *)getFetchOptionsFromParams:(NSDictionary *)params {
+RCT_EXPORT_METHOD(getAlbums:(NSDictionary *)params
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+    
+    NSMutableArray *responseArray = [NSMutableArray new];
+    NSArray *multipleAlbumsQuery = [RCTConvert NSArray:params[@"albums"]];
+    for(int i = 0; i < multipleAlbumsQuery.count;i++) {
+        NSDictionary *albumsQuery = [multipleAlbumsQuery objectAtIndex:i];
 
+        PHFetchResult<PHAssetCollection *> *albums = [self getAlbums:albumsQuery];
+        responseArray = [self generateAlbumsResponseFromParams:albumsQuery andAlbums:albums andResponseArray:responseArray];
+    }
+    resolve(responseArray);
+}
+
+-(void)generateResponseFromListWithAlbums:(NSArray<PHFetchResult<PHAssetCollection *> *> *)listWithAlbums {
+    
+}
+
+
+-(NSMutableArray *)generateAlbumsResponseFromParams:(NSDictionary *)params andAlbums:(PHFetchResult<PHAssetCollection *> *)albums andResponseArray:(NSMutableArray *)responseArray {
+    
+    RNPFAssetCountType countType = [RCTConvert RNPFAssetCountType:params[@"assetCount"]];
+
+    for(PHCollection *collection in albums)
+    {
+        if ([collection isKindOfClass:[PHAssetCollection class]])
+        {
+            NSMutableDictionary *albumDictionary = [NSMutableDictionary new];
+            [albumDictionary setValue:collection.localizedTitle forKey:@"title"];
+            if(countType != RNPFAssetCountTypeNone) {
+               int assetCount = [self getAssetCountForCollection:collection andCountType:countType andFetchParams:params];
+               [albumDictionary setValue:@(assetCount) forKey:@"assetCount"];
+            }
+            [responseArray addObject:albumDictionary];
+        }
+    }
+    return responseArray;
+}
+
+-(int) getAssetCountForCollection:(PHAssetCollection *)collection andCountType:(RNPFAssetCountType)countType andFetchParams:(NSDictionary *)params {
+    if(countType == RNPFAssetCountTypeEstimated){
+        return [collection estimatedAssetCount];
+    }
+    NSDictionary *fetchOptions = [RCTConvert NSDictionary:params[@"fetchOptions"]];
+    PHFetchOptions *options = [self getFetchOptionsFromParams:fetchOptions];
+    PHFetchResult *assetsFetchResult = [PHAsset fetchAssetsInAssetCollection:collection options:options];
+    return assetsFetchResult.count;
+}
+
+
+-(PHFetchOptions *)getFetchOptionsFromParams:(NSDictionary *)params {
+    if(params == nil) {
+        return nil;
+    }
     PHFetchOptions *options = [[PHFetchOptions alloc] init];
     options.includeAssetSourceTypes = [RCTConvert PHAssetSourceTypes:params[@"sourceTypes"]];
     options.includeHiddenAssets = [RCTConvert BOOL:params[@"includeHiddenAssets"]];
@@ -140,26 +189,13 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
   return uriArray;
 }
 
-RCT_EXPORT_METHOD(getAlbums:(NSDictionary *)params
-                  resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject)
-{
-    [self getAlbums:params];
-    resolve([self getUserAlbums]);
-}
-
-
--(NSArray *)getAlbums:(NSDictionary *)params {
+-(PHFetchResult<PHAssetCollection *> *)getAlbums:(NSDictionary *)params {
     PHAssetCollectionType type = [RCTConvert PHAssetCollectionType:params[@"type"]];
     PHAssetCollectionSubtype subType = [RCTConvert PHAssetCollectionSubtype:params[@"subType"]];
-    NSDictionary *fetchOptions = [RCTConvert NSDictionary:params[@"options"]];
-    
+    NSDictionary *fetchOptions = [RCTConvert NSDictionary:params[@"fetchOptions"]];
     PHFetchOptions *options = [self getFetchOptionsFromParams:params];
-    PHFetchResult<PHAssetCollection *> *albums = [PHAssetCollection fetchAssetCollectionsWithType:type subtype:subType options:fetchOptions];
-    
-    NSLog(@"COUNT: %d", albums.count);
-
-    return nil;
+    PHFetchResult<PHAssetCollection *> *albums = [PHAssetCollection fetchAssetCollectionsWithType:type subtype:subType options:options];
+    return albums;
 }
 
 -(NSArray *)getUserAlbums

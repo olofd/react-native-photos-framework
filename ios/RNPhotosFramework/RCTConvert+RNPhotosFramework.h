@@ -8,8 +8,16 @@
 
 #import <Foundation/Foundation.h>
 @import Photos;
+
+typedef NS_ENUM(NSInteger, RNPFAssetCountType) {
+    RNPFAssetCountTypeNone = 1,
+    RNPFAssetCountTypeEstimated = 2,
+    RNPFAssetCountTypeExact = 3,
+};
+
 @interface RCTConvert(ReactNativePhotosFramework)
 
++ (RNPFAssetCountType)RNPFAssetCountType:(id)json;
 + (PHAssetMediaType)PHAssetMediaType:(id)json;
 + (PHAssetMediaSubtype)PHAssetMediaSubtype:(id)json;
 + (PHAssetCollectionType)PHAssetCollectionType:(id)json;

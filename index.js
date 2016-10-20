@@ -28,10 +28,10 @@ class CameraRollRNPhotosFramework {
     });
   }
 
-  static getAlbums() {
-    return RCTCameraRollRNPhotosFrameworkManager.getAlbums({}).then((albums) => {
-      debugger;
-        return {};
+  static getAlbums(params) {
+    return RCTCameraRollRNPhotosFrameworkManager.getAlbums(params).then((albums) => {
+        console.log(albums);
+        return albums;
     });
   }
 }

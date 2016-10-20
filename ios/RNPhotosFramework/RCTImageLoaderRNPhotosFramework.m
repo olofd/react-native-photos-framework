@@ -1,9 +1,3 @@
-/**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
- * Extension of React Natives: RCTPhotoLibraryImageLoader
- **/
-
 #import "RCTImageLoaderRNPhotosFramework.h"
 #import <Photos/Photos.h>
 #import "RCTImageUtils.h"

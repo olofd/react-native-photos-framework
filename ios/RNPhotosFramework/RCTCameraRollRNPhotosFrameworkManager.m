@@ -1,11 +1,3 @@
-//
-//  RCTCameraRollRNPhotosFrameworkManager.m
-//  Gotlandskartan
-//
-//  Created by Olof Dahlbom on 2016-10-18.
-//  Copyright © 2016 Facebook. All rights reserved.
-//
-
 #import "RCTCameraRollRNPhotosFrameworkManager.h"
 #import "RCTUtils.h"
 #import "PHCachingImageManagerInstance.h"
@@ -57,7 +49,6 @@ RCT_EXPORT_METHOD(getAlbums:(NSDictionary *)params
     NSArray *multipleAlbumsQuery = [RCTConvert NSArray:params[@"albums"]];
     for(int i = 0; i < multipleAlbumsQuery.count;i++) {
         NSDictionary *albumsQuery = [multipleAlbumsQuery objectAtIndex:i];
-
         PHFetchResult<PHAssetCollection *> *albums = [self getAlbums:albumsQuery];
         responseArray = [self generateAlbumsResponseFromParams:albumsQuery andAlbums:albums andResponseArray:responseArray];
     }

@@ -5,7 +5,6 @@
 //  Created by Olof Dahlbom on 2016-10-20.
 //  Copyright © 2016 Olof Dahlbom. All rights reserved.
 //
-
 #import "RCTConvert.h"
 #import "RCTConvert+RNPhotosFramework.h"
 @import Photos;

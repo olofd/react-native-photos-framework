@@ -1,5 +1,5 @@
 # react-native-photos-framework
-##2016-10-21. Under heavy development right now. Check back in 2 weeks before you depende on this library!
+##2016-10-21. Under heavy development right now. Check back in 2 weeks before you depend on this library!
 `npm i react-native-photos-framework --save`
 
 Load photos and albums from CameraRoll and iCloud.

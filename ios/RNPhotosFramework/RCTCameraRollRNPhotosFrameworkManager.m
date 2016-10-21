@@ -49,8 +49,9 @@ RCT_EXPORT_METHOD(getAlbums:(NSDictionary *)params
     NSArray *multipleAlbumsQuery = [RCTConvert NSArray:params[@"albums"]];
     for(int i = 0; i < multipleAlbumsQuery.count;i++) {
         NSDictionary *albumsQuery = [multipleAlbumsQuery objectAtIndex:i];
-        PHFetchResult<PHAssetCollection *> *albums = [self getAlbums:albumsQuery];
-        responseArray = [self generateAlbumsResponseFromParams:albumsQuery andAlbums:albums andResponseArray:responseArray];
+        PHFetchResult<PHAssetCollection *> *albums = [self getAlbumsWithParams:albumsQuery];
+        NSDictionary *multipleAlbumsResponse = [self generateAlbumsResponseFromParams:albumsQuery andAlbums:albums];
+        [responseArray addObject:multipleAlbumsResponse];
     }
     resolve(responseArray);
 }
@@ -60,24 +61,46 @@ RCT_EXPORT_METHOD(getAlbums:(NSDictionary *)params
 }
 
 
--(NSMutableArray *)generateAlbumsResponseFromParams:(NSDictionary *)params andAlbums:(PHFetchResult<PHAssetCollection *> *)albums andResponseArray:(NSMutableArray *)responseArray {
+
+-(NSMutableDictionary *)generateAlbumsResponseFromParams:(NSDictionary *)params andAlbums:(PHFetchResult<PHAssetCollection *> *)albums {
     
+    NSMutableDictionary *collectionDictionary = [NSMutableDictionary new];
+    NSString * typeString = params[@"type"];
+    NSString * subTypeString = params[@"subType"];
+    
+    if(typeString != nil && subTypeString != nil) {
+        if(typeString == nil) {
+            typeString = @"album";
+        }
+        if(subTypeString == nil) {
+            subTypeString = @"any";
+        }
+        [collectionDictionary setObject:typeString forKey:@"type"];
+        [collectionDictionary setObject:subTypeString forKey:@"subType"];
+    }
+
     RNPFAssetCountType countType = [RCTConvert RNPFAssetCountType:params[@"assetCount"]];
+    NSMutableArray *albumsArray = [NSMutableArray arrayWithCapacity:albums.count];
 
     for(PHCollection *collection in albums)
     {
         if ([collection isKindOfClass:[PHAssetCollection class]])
         {
             NSMutableDictionary *albumDictionary = [NSMutableDictionary new];
-            [albumDictionary setValue:collection.localizedTitle forKey:@"title"];
+            NSString * typeString = params[@"type"];
+            NSString * subTypeString = params[@"subType"];
+            
+            [albumDictionary setObject:collection.localizedTitle forKey:@"title"];
+            
             if(countType != RNPFAssetCountTypeNone) {
                int assetCount = [self getAssetCountForCollection:collection andCountType:countType andFetchParams:params];
-               [albumDictionary setValue:@(assetCount) forKey:@"assetCount"];
+               [albumDictionary setObject:@(assetCount) forKey:@"assetCount"];
             }
-            [responseArray addObject:albumDictionary];
+            [albumsArray addObject:albumDictionary];
         }
     }
-    return responseArray;
+    [collectionDictionary setObject:albumsArray forKey:@"albums"];
+    return collectionDictionary;
 }
 
 -(int) getAssetCountForCollection:(PHAssetCollection *)collection andCountType:(RNPFAssetCountType)countType andFetchParams:(NSDictionary *)params {
@@ -144,15 +167,6 @@ RCT_EXPORT_METHOD(getAlbums:(NSDictionary *)params
     return [NSCompoundPredicate orPredicateWithSubpredicates:arrayWithPredicates];
 }
 
-+(NSDictionary<NSString *, NSMutableArray<PHFetchResult *> *> *) previousFetches {
-    static NSDictionary<NSString *, NSMutableArray<PHFetchResult *> *> *fetchResults;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        fetchResults = [[NSMutableArray alloc] init];
-    });
-    return fetchResults;
-}
-
 -(NSMutableArray<PHAsset *> *) getAssetsForFetchResult:(PHFetchResult *)assetsFetchResult startIndex:(NSUInteger)startIndex endIndex:(NSUInteger)endIndex {
   
   NSMutableArray<PHAsset *> *assets = [NSMutableArray new];
@@ -180,115 +194,46 @@ RCT_EXPORT_METHOD(getAlbums:(NSDictionary *)params
   return uriArray;
 }
 
--(PHFetchResult<PHAssetCollection *> *)getAlbums:(NSDictionary *)params {
-    PHAssetCollectionType type = [RCTConvert PHAssetCollectionType:params[@"type"]];
-    PHAssetCollectionSubtype subType = [RCTConvert PHAssetCollectionSubtype:params[@"subType"]];
+-(PHFetchResult<PHAssetCollection *> *)getAlbumsWithParams:(NSDictionary *)params {
+    NSString * typeString = params[@"type"];
+    NSString * subTypeString = params[@"subType"];
+    if(typeString == nil && subTypeString == nil) {
+        return [self getTopUserAlbums:params];
+    }
+    PHAssetCollectionType type = [RCTConvert PHAssetCollectionType:typeString];
+    PHAssetCollectionSubtype subType = [RCTConvert PHAssetCollectionSubtype:subTypeString];
     NSDictionary *fetchOptions = [RCTConvert NSDictionary:params[@"fetchOptions"]];
     PHFetchOptions *options = [self getFetchOptionsFromParams:params];
     PHFetchResult<PHAssetCollection *> *albums = [PHAssetCollection fetchAssetCollectionsWithType:type subtype:subType options:options];
     return albums;
 }
 
--(NSArray *)getUserAlbums
+-(PHFetchResult<PHAssetCollection *> *)getTopUserAlbums:(NSDictionary *)params
 {
-    PHFetchResult *topLevelUserCollections = [PHCollectionList fetchTopLevelUserCollectionsWithOptions:nil];
-
-    PHFetchResult *smartAlbums = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeAlbumRegular options:nil];
-    NSArray *collectionsFetchResults = @[topLevelUserCollections, smartAlbums];
-    //What I do here is fetch both the albums list and the assets of each album.
-    //This way I have acces to the number of items in each album, I can load the 3
-    //thumbnails directly and I can pass the fetched result to the gridViewController.
-    NSArray *collectionsFetchResultsAssets;
-    NSArray *collectionsFetchResultsTitles;
-    
-    //Fetch PHAssetCollections:
-    
-    //All album: Sorted by descending creation date.
-    NSMutableArray *allFetchResultArray = [[NSMutableArray alloc] init];
-    NSMutableArray *allFetchResultLabel = [[NSMutableArray alloc] init];
-    {
-        PHFetchOptions *options = [[PHFetchOptions alloc] init];
-     //   options.predicate = [NSPredicate predicateWithFormat:@"mediaType in %@", self.picker.mediaTypes];
-        options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
-        PHFetchResult *assetsFetchResult = [PHAsset fetchAssetsWithOptions:options];
-        [allFetchResultArray addObject:assetsFetchResult];
-       // [allFetchResultLabel addObject:NSLocalizedStringFromTableInBundle(@"picker.table.all-photos-label",  @"GMImagePicker", [NSBundle bundleForClass:GMImagePickerController.class], @"All photos")];
-    }
-    
-    //User albums:
-    NSMutableArray *userFetchResultArray = [[NSMutableArray alloc] init];
-    NSMutableArray *userFetchResultLabel = [[NSMutableArray alloc] init];
-    for(PHCollection *collection in topLevelUserCollections)
-    {
-        if ([collection isKindOfClass:[PHAssetCollection class]])
-        {
-            PHFetchOptions *options = [[PHFetchOptions alloc] init];
-           // options.predicate = [NSPredicate predicateWithFormat:@"mediaType in %@", self.picker.mediaTypes];
-            PHAssetCollection *assetCollection = (PHAssetCollection *)collection;
-            
-            //Albums collections are allways PHAssetCollectionType=1 & PHAssetCollectionSubtype=2
-            
-            PHFetchResult *assetsFetchResult = [PHAsset fetchAssetsInAssetCollection:assetCollection options:options];
-            [userFetchResultArray addObject:assetsFetchResult];
-            [userFetchResultLabel addObject:collection.localizedTitle];
-        }
-    }
-    
-    
-    //Smart albums: Sorted by descending creation date.
- /*   NSMutableArray *smartFetchResultArray = [[NSMutableArray alloc] init];
-    NSMutableArray *smartFetchResultLabel = [[NSMutableArray alloc] init];
-    for(PHCollection *collection in smartAlbums)
-    {
-        if ([collection isKindOfClass:[PHAssetCollection class]])
-        {
-            PHAssetCollection *assetCollection = (PHAssetCollection *)collection;
-            
-            //Smart collections are PHAssetCollectionType=2;
-            if(self.picker.customSmartCollections && [self.picker.customSmartCollections containsObject:@(assetCollection.assetCollectionSubtype)])
-            {
-                PHFetchOptions *options = [[PHFetchOptions alloc] init];
-             //   options.predicate = [NSPredicate predicateWithFormat:@"mediaType in %@", self.picker.mediaTypes];
-                options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
-                
-                PHFetchResult *assetsFetchResult = [PHAsset fetchAssetsInAssetCollection:assetCollection options:options];
-                if(assetsFetchResult.count>0)
-                {
-                    [smartFetchResultArray addObject:assetsFetchResult];
-                    [smartFetchResultLabel addObject:collection.localizedTitle];
-                }
-            }
-        }
-    }*/
-    
-    return @[allFetchResultArray,userFetchResultArray];
-}
-
--(NSDictionary *)getUserOpLevelAlbums:(NSDictionary *)params {
     PHFetchOptions *options = [self getFetchOptionsFromParams:params];
-
-    PHFetchResult *topLevelUserCollections = [PHCollectionList fetchTopLevelUserCollectionsWithOptions:options];
-    NSMutableArray *userFetchResultArray = [[NSMutableArray alloc] init];
-    NSMutableArray *userFetchResultLabel = [[NSMutableArray alloc] init];
-    for(PHCollection *collection in topLevelUserCollections)
-    {
-        if ([collection isKindOfClass:[PHAssetCollection class]])
-        {
-            PHFetchOptions *options = [[PHFetchOptions alloc] init];
-            // options.predicate = [NSPredicate predicateWithFormat:@"mediaType in %@", self.picker.mediaTypes];
-            PHAssetCollection *assetCollection = (PHAssetCollection *)collection;
-            
-            //Albums collections are allways PHAssetCollectionType=1 & PHAssetCollectionSubtype=2
-            
-            PHFetchResult *assetsFetchResult = [PHAsset fetchAssetsInAssetCollection:assetCollection options:options];
-            [userFetchResultArray addObject:assetsFetchResult];
-            [userFetchResultLabel addObject:collection.localizedTitle];
-        }
-    }
-    
-    return nil;
+    PHFetchResult<PHAssetCollection *> *topLevelUserCollections = [PHCollectionList fetchTopLevelUserCollectionsWithOptions:options];
+    return topLevelUserCollections;
+   
 }
 
 
++(void) cacheFetchResult:(PHFetchResult *)fetchResult withuuid:(NSString *)uuid {
+    NSMutableDictionary<NSString *, PHFetchResult *> *previousFetchResults = [RCTCameraRollRNPhotosFrameworkManager previousFetches];
+    [previousFetchResults setObject:fetchResult forKey:uuid];
+}
+
++(PHFetchResult *) getFetchResultFromCacheWithuuid:(NSString *)uuid {
+    NSMutableDictionary<NSString *, PHFetchResult *> *previousFetchResults = [RCTCameraRollRNPhotosFrameworkManager previousFetches];
+    return [previousFetchResults objectForKey:uuid];
+}
+
++(NSMutableDictionary<NSString *, PHFetchResult *> *) previousFetches {
+    static NSMutableDictionary<NSString *, PHFetchResult *> *fetchResults;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        fetchResults = [[NSMutableDictionary alloc] init];
+    });
+    return fetchResults;
+}
 
 @end

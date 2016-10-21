@@ -73,7 +73,7 @@ RCT_ENUM_CONVERTER(PHAssetCollectionSubtype, (@{
                                                 @"smartAlbumSelfPortraits": @(PHAssetCollectionSubtypeSmartAlbumSelfPortraits),
                                                 @"smartAlbumScreenshots": @(PHAssetCollectionSubtypeSmartAlbumScreenshots),
                                                 
-                                                }), PHAssetCollectionSubtypeAlbumRegular, integerValue)
+                                                }), PHCollectionListSubtypeAny, integerValue)
 
 RCT_ENUM_CONVERTER(PHAssetSourceType, (@{
                                          

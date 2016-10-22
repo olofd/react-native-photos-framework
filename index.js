@@ -15,6 +15,8 @@ var ReactPropTypes = require('react/lib/ReactPropTypes');
 import { NativeModules } from 'react-native';
 const RCTCameraRollRNPhotosFrameworkManager = NativeModules.CameraRollRNPhotosFrameworkManager;
 import Photo from './photo';
+import Album from './album';
+import Collection from './collection';
 /**
  * `CameraRoll` provides access to the local camera roll / gallery.
  * Before using this you must link the `RCTCameraRoll` library.
@@ -28,13 +30,12 @@ class CameraRollRNPhotosFramework {
     });
   }
 
-  static getAlbums(params) {
-    return RCTCameraRollRNPhotosFrameworkManager.getAlbums(params).then((albums) => {
-        console.log(albums);
-        return albums;
+  static getCollections(params) {
+    return RCTCameraRollRNPhotosFrameworkManager.getCollections(params).then((collections) => {
+        return collections.map(x => new Collection(x));
     });
   }
 }
 
 
-module.exports = CameraRollRNPhotosFramework;
+export default CameraRollRNPhotosFramework;

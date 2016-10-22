@@ -13,18 +13,26 @@ RCT_EXPORT_MODULE()
 
 @synthesize bridge = _bridge;
 
+static id ObjectOrNull(id object)
+{
+    return object ?: [NSNull null];
+}
 
 RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
+    NSString * cacheKey = [RCTConvert NSString:params[@"_cacheKey"]];
+    if(cacheKey != nil) {
+        
+    }
+
     NSUInteger startIndex = [RCTConvert NSInteger:params[@"startIndex"]];
     NSUInteger endIndex = [RCTConvert NSInteger:params[@"endIndex"]];
     CGSize prepareForSizeDisplay = [RCTConvert CGSize:params[@"prepareForSizeDisplay"]];
     CGFloat prepareScale = [RCTConvert CGFloat:params[@"prepareScale"]];
-
-    PHFetchOptions *options = [self getFetchOptionsFromParams:[RCTConvert NSDictionary:params[@"fetchOptions"]]];
-    PHFetchResult *assetsFetchResult = [PHAsset fetchAssetsWithOptions:options];
+    
+    PHFetchResult<PHAsset *> *assetsFetchResult = [self getAssetsForParams:params andCacheKey:cacheKey];
     
     NSArray *assets = [self getAssetsForFetchResult:assetsFetchResult startIndex:startIndex endIndex:endIndex];
     
@@ -40,7 +48,21 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
     resolve([self assetsArrayToUriArray:assets]);
 }
 
-RCT_EXPORT_METHOD(getAlbums:(NSDictionary *)params
+-(PHFetchResult<PHAsset *> *) getAssetsForParams:(NSDictionary *)params andCacheKey:(NSString *)cacheKey  {
+    if(cacheKey == nil) {
+        return [self getAssetsForParams:params];
+    }
+    return [RCTCameraRollRNPhotosFrameworkManager getFetchResultFromCacheWithuuid:cacheKey];
+}
+
+-(PHFetchResult<PHAsset *> *) getAssetsForParams:(NSDictionary *)params {
+    PHFetchOptions *options = [self getFetchOptionsFromParams:[RCTConvert NSDictionary:params[@"fetchOptions"]]];
+    return [PHAsset fetchAssetsWithOptions:options];
+}
+
+
+
+RCT_EXPORT_METHOD(getCollections:(NSDictionary *)params
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
@@ -50,19 +72,20 @@ RCT_EXPORT_METHOD(getAlbums:(NSDictionary *)params
     for(int i = 0; i < multipleAlbumsQuery.count;i++) {
         NSDictionary *albumsQuery = [multipleAlbumsQuery objectAtIndex:i];
         PHFetchResult<PHAssetCollection *> *albums = [self getAlbumsWithParams:albumsQuery];
-        NSDictionary *multipleAlbumsResponse = [self generateAlbumsResponseFromParams:albumsQuery andAlbums:albums];
+        BOOL cacheAssets = [RCTConvert BOOL:albumsQuery[@"prepareForEnumeration"]];
+        NSMutableDictionary *multipleAlbumsResponse = [self generateAlbumsResponseFromParams:albumsQuery andAlbums:albums andCacheAssets:cacheAssets];
+        if(cacheAssets) {
+            NSString *uuid = [RCTCameraRollRNPhotosFrameworkManager cacheFetchResultAndReturnUUID:albums];
+            [multipleAlbumsResponse setObject:uuid forKey:@"_cacheKey"];
+        }
         [responseArray addObject:multipleAlbumsResponse];
     }
     resolve(responseArray);
 }
 
--(void)generateResponseFromListWithAlbums:(NSArray<PHFetchResult<PHAssetCollection *> *> *)listWithAlbums {
-    
-}
 
 
-
--(NSMutableDictionary *)generateAlbumsResponseFromParams:(NSDictionary *)params andAlbums:(PHFetchResult<PHAssetCollection *> *)albums {
+-(NSMutableDictionary *)generateAlbumsResponseFromParams:(NSDictionary *)params andAlbums:(PHFetchResult<PHAssetCollection *> *)albums andCacheAssets:(BOOL)cacheAssets {
     
     NSMutableDictionary *collectionDictionary = [NSMutableDictionary new];
     NSString * typeString = params[@"type"];
@@ -81,21 +104,35 @@ RCT_EXPORT_METHOD(getAlbums:(NSDictionary *)params
 
     RNPFAssetCountType countType = [RCTConvert RNPFAssetCountType:params[@"assetCount"]];
     NSMutableArray *albumsArray = [NSMutableArray arrayWithCapacity:albums.count];
-
+    
     for(PHCollection *collection in albums)
     {
         if ([collection isKindOfClass:[PHAssetCollection class]])
         {
+            PHAssetCollection *phAssetCollection = (PHAssetCollection *)collection;
             NSMutableDictionary *albumDictionary = [NSMutableDictionary new];
             NSString * typeString = params[@"type"];
             NSString * subTypeString = params[@"subType"];
             
-            [albumDictionary setObject:collection.localizedTitle forKey:@"title"];
-            
-            if(countType != RNPFAssetCountTypeNone) {
-               int assetCount = [self getAssetCountForCollection:collection andCountType:countType andFetchParams:params];
-               [albumDictionary setObject:@(assetCount) forKey:@"assetCount"];
+            [albumDictionary setObject:phAssetCollection.localizedTitle forKey:@"title"];
+            [albumDictionary setObject:phAssetCollection.localIdentifier forKey:@"localIdentifier"];
+            [albumDictionary setObject:ObjectOrNull(phAssetCollection.startDate) forKey:@"startDate"];
+            [albumDictionary setObject:ObjectOrNull(phAssetCollection.endDate) forKey:@"endDate"];
+            [albumDictionary setObject:ObjectOrNull(phAssetCollection.approximateLocation) forKey:@"approximateLocation"];
+            [albumDictionary setObject:ObjectOrNull(phAssetCollection.localizedLocationNames) forKey:@"localizedLocationNames"];
+
+            if(cacheAssets || countType == RNPFAssetCountTypeExact) {
+                PHFetchResult<PHAsset *> * assets = [self getAssetForCollection:collection andFetchParams:params];
+                [albumDictionary setObject:@(assets.count) forKey:@"assetCount"];
+                if(cacheAssets) {
+                   NSString *uuid = [RCTCameraRollRNPhotosFrameworkManager cacheFetchResultAndReturnUUID:assets];
+                   [albumDictionary setObject:uuid forKey:@"_cacheKey"];
+                }
+                
+            }else if(countType == RNPFAssetCountTypeEstimated) {
+                [albumDictionary setObject:@([phAssetCollection estimatedAssetCount]) forKey:@"assetCount"];
             }
+            
             [albumsArray addObject:albumDictionary];
         }
     }
@@ -103,16 +140,11 @@ RCT_EXPORT_METHOD(getAlbums:(NSDictionary *)params
     return collectionDictionary;
 }
 
--(int) getAssetCountForCollection:(PHAssetCollection *)collection andCountType:(RNPFAssetCountType)countType andFetchParams:(NSDictionary *)params {
-    if(countType == RNPFAssetCountTypeEstimated){
-        return [collection estimatedAssetCount];
-    }
+-(PHFetchResult<PHAsset *> *) getAssetForCollection:(PHAssetCollection *)collection andFetchParams:(NSDictionary *)params {
     NSDictionary *fetchOptions = [RCTConvert NSDictionary:params[@"fetchOptions"]];
     PHFetchOptions *options = [self getFetchOptionsFromParams:fetchOptions];
-    PHFetchResult *assetsFetchResult = [PHAsset fetchAssetsInAssetCollection:collection options:options];
-    return assetsFetchResult.count;
+    return  [PHAsset fetchAssetsInAssetCollection:collection options:options];
 }
-
 
 -(PHFetchOptions *)getFetchOptionsFromParams:(NSDictionary *)params {
     if(params == nil) {
@@ -213,13 +245,14 @@ RCT_EXPORT_METHOD(getAlbums:(NSDictionary *)params
     PHFetchOptions *options = [self getFetchOptionsFromParams:params];
     PHFetchResult<PHAssetCollection *> *topLevelUserCollections = [PHCollectionList fetchTopLevelUserCollectionsWithOptions:options];
     return topLevelUserCollections;
-   
 }
 
 
-+(void) cacheFetchResult:(PHFetchResult *)fetchResult withuuid:(NSString *)uuid {
++(NSString *) cacheFetchResultAndReturnUUID:(PHFetchResult *)fetchResult{
+    NSString *uuid = [[NSUUID UUID] UUIDString];
     NSMutableDictionary<NSString *, PHFetchResult *> *previousFetchResults = [RCTCameraRollRNPhotosFrameworkManager previousFetches];
     [previousFetchResults setObject:fetchResult forKey:uuid];
+    return uuid;
 }
 
 +(PHFetchResult *) getFetchResultFromCacheWithuuid:(NSString *)uuid {

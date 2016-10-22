@@ -32,7 +32,13 @@ class CameraRollRNPhotosFramework {
 
   static getCollections(params) {
     return RCTCameraRollRNPhotosFrameworkManager.getCollections(params).then((collections) => {
-        return collections.map(x => new Collection(x));
+        return collections.map((collection, index) => new Collection(collection, params.albums[index].fetchOptions));
+    });
+  }
+
+  static createCollection(collectionName) {
+    return RCTCameraRollRNPhotosFrameworkManager.createCollection(collectionName).then((collections) => {
+        debugger;
     });
   }
 }

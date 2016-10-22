@@ -1,8 +1,10 @@
 
 import Album from './album';
 export default class Collection {
-  constructor(obj) {
+  constructor(obj, fetchOptions)
+  {
+    this._fetchOptions = fetchOptions;
     Object.assign(this, obj);
-    this.albums = this.albums.map(albumObj => new Album(albumObj));
+    this.albums = this.albums.map(albumObj => new Album(albumObj, fetchOptions));
   }
 }

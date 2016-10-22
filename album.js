@@ -1,12 +1,16 @@
 import NativeApi from './index';
 export default class Album {
 
-  constructor(obj) {
+  constructor(obj, fetchOptions) {
+    this._fetchOptions = fetchOptions;
     Object.assign(this, obj);
   }
 
   getPhotos(params) {
-    console.log(NativeApi);
-    return NativeApi.getPhotos({...params, _cacheKey : this._cacheKey});
+    return NativeApi.getPhotos({
+      ...params,
+       _cacheKey : this._cacheKey,
+       collectionLocalIdentifier : this.localIdentifier
+     });
   }
 }

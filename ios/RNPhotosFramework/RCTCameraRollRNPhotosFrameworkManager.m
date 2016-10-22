@@ -12,10 +12,36 @@
 RCT_EXPORT_MODULE()
 
 @synthesize bridge = _bridge;
+NSString *const RNPHotoFrameworkErrorUnableToLoad = @"RNPHOTOSFRAMEWORK_UNABLE_TO_LOAD";
+NSString *const RNPHotoFrameworkErrorUnableToSave = @"RNPHOTOSFRAMEWORK_UNABLE_TO_SAVE";
 
 static id ObjectOrNull(id object)
 {
     return object ?: [NSNull null];
+}
+
+- (dispatch_queue_t)methodQueue
+{
+    return dispatch_queue_create("com.facebook.React.ReactNaticePhotosFramework", DISPATCH_QUEUE_SERIAL);
+}
+
+RCT_EXPORT_METHOD(createCollection:(NSString *)collectionName
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+    if(collectionName == nil) {
+        reject(@"collection name cannot be null", nil, nil);
+    }
+    [self createAlbumWithTitle:collectionName andCompleteBLock:^(BOOL success, NSError * _Nullable error, NSString * _Nullable localIdentifier) {
+        if(success) {
+            resolve(@{
+                      @"localIdentifier" : localIdentifier
+                    });
+        }else{
+            reject([NSString stringWithFormat:@"Error creating album named %@", collectionName], nil, error);
+        }
+    }];
+
 }
 
 RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
@@ -23,18 +49,16 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
                   reject:(RCTPromiseRejectBlock)reject)
 {
     NSString * cacheKey = [RCTConvert NSString:params[@"_cacheKey"]];
-    if(cacheKey != nil) {
-        
-    }
+    NSString * collectionLocalIdentifier = [RCTConvert NSString:params[@"collectionLocalIdentifier"]];
 
     NSUInteger startIndex = [RCTConvert NSInteger:params[@"startIndex"]];
     NSUInteger endIndex = [RCTConvert NSInteger:params[@"endIndex"]];
     CGSize prepareForSizeDisplay = [RCTConvert CGSize:params[@"prepareForSizeDisplay"]];
     CGFloat prepareScale = [RCTConvert CGFloat:params[@"prepareScale"]];
     
-    PHFetchResult<PHAsset *> *assetsFetchResult = [self getAssetsForParams:params andCacheKey:cacheKey];
+    PHFetchResult<PHAsset *> *assetsFetchResult = [self getAssetsForParams:params andCacheKey:cacheKey andCollectionLocalIdentifier:collectionLocalIdentifier];
     
-    NSArray *assets = [self getAssetsForFetchResult:assetsFetchResult startIndex:startIndex endIndex:endIndex];
+    NSArray<PHAsset *> *assets = [self getAssetsForFetchResult:assetsFetchResult startIndex:startIndex endIndex:endIndex];
     
     PHCachingImageManager *cacheManager = [PHCachingImageManagerInstance sharedCachingManager];
     
@@ -48,6 +72,16 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
     resolve([self assetsArrayToUriArray:assets]);
 }
 
+
+-(PHFetchResult<PHAsset *> *) getAssetsForParams:(NSDictionary *)params andCacheKey:(NSString *)cacheKey andCollectionLocalIdentifier:(NSString *)collectionLocalIdentifier   {
+    if(collectionLocalIdentifier == nil){
+        return [self getAssetsForParams:params andCacheKey:cacheKey];
+    }
+    PHFetchOptions *options = [self getFetchOptionsFromParams:[RCTConvert NSDictionary:params[@"fetchOptions"]]];
+    PHAssetCollection *collection = [PHAssetCollection fetchAssetCollectionsWithLocalIdentifiers:@[collectionLocalIdentifier] options:nil].firstObject;
+    return [PHAsset fetchAssetsInAssetCollection:collection options:options];
+}
+
 -(PHFetchResult<PHAsset *> *) getAssetsForParams:(NSDictionary *)params andCacheKey:(NSString *)cacheKey  {
     if(cacheKey == nil) {
         return [self getAssetsForParams:params];
@@ -59,8 +93,6 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
     PHFetchOptions *options = [self getFetchOptionsFromParams:[RCTConvert NSDictionary:params[@"fetchOptions"]]];
     return [PHAsset fetchAssetsWithOptions:options];
 }
-
-
 
 RCT_EXPORT_METHOD(getCollections:(NSDictionary *)params
                   resolve:(RCTPromiseResolveBlock)resolve
@@ -247,7 +279,6 @@ RCT_EXPORT_METHOD(getCollections:(NSDictionary *)params
     return topLevelUserCollections;
 }
 
-
 +(NSString *) cacheFetchResultAndReturnUUID:(PHFetchResult *)fetchResult{
     NSString *uuid = [[NSUUID UUID] UUIDString];
     NSMutableDictionary<NSString *, PHFetchResult *> *previousFetchResults = [RCTCameraRollRNPhotosFrameworkManager previousFetches];
@@ -267,6 +298,79 @@ RCT_EXPORT_METHOD(getCollections:(NSDictionary *)params
         fetchResults = [[NSMutableDictionary alloc] init];
     });
     return fetchResults;
+}
+
+
+
+//CREATE ALBUM:
+
+-(void)saveImage:(NSURLRequest *)request
+            type:(NSString *)type
+            toCollection:(PHFetchResult<PHAssetCollection *> *)collection
+         resolve:(RCTPromiseResolveBlock)resolve
+          reject:(RCTPromiseRejectBlock)reject{
+    if ([type isEqualToString:@"video"]) {
+        // It's unclear if thread-safe
+        dispatch_async(dispatch_get_main_queue(), ^{
+        
+        });
+    } else {
+        [_bridge.imageLoader loadImageWithURLRequest:request
+                                            callback:^(NSError *loadError, UIImage *loadedImage) {
+                                                if (loadError) {
+                                                    reject(RNPHotoFrameworkErrorUnableToLoad, nil, loadError);
+                                                    return;
+                                                }
+                                                // It's unclear if writeImageToSavedPhotosAlbum is thread-safe
+                                                dispatch_async(dispatch_get_main_queue(), ^{
+                                                    
+                                                
+                                                });
+                                            }];
+    }
+}
+
+-(PHFetchResult<PHAssetCollection *> *)getAlbumTiteled:(NSString *)title {
+    PHFetchOptions *fetchOptions = [[PHFetchOptions alloc] init];
+    fetchOptions.predicate = [NSPredicate predicateWithFormat:@"title = %@", title];
+    PHAssetCollection *collection = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum
+                                                          subtype:PHAssetCollectionSubtypeAny
+                                                          options:fetchOptions].firstObject;
+    return collection;
+}
+
+-(void) createAlbumWithTitle:(NSString *)title andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error, NSString *__nullable localIdentifier))completeBlock {
+    __block PHObjectPlaceholder *placeholder;
+
+    [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+        
+        PHAssetCollectionChangeRequest *createAlbum = [PHAssetCollectionChangeRequest creationRequestForAssetCollectionWithTitle:title];
+        placeholder = [createAlbum placeholderForCreatedAssetCollection];
+        
+    } completionHandler:^(BOOL success, NSError *error) {
+        PHAssetCollection *collection;
+        if (success)
+        {
+            PHFetchResult *collectionFetchResult = [PHAssetCollection fetchAssetCollectionsWithLocalIdentifiers:@[placeholder.localIdentifier] options:nil];
+            collection = collectionFetchResult.firstObject;
+        }
+        completeBlock(success, error, collection.localIdentifier);
+    }];
+}
+
+- (void) saveImage:(UIImage *)image toAlbum:(PHCollection *)album andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error, NSString *__nullable localIdentifier))completeBlock {
+    __block PHObjectPlaceholder *placeholder;
+    [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+        PHFetchResult *photosAsset;
+        PHAssetChangeRequest *assetRequest = [PHAssetChangeRequest creationRequestForAssetFromImage:image];
+        placeholder = [assetRequest placeholderForCreatedAsset];
+        photosAsset = [PHAsset fetchAssetsInAssetCollection:album options:nil];
+        PHAssetCollectionChangeRequest *albumChangeRequest = [PHAssetCollectionChangeRequest changeRequestForAssetCollection:album assets:photosAsset];
+        [albumChangeRequest addAssets:@[placeholder]];
+        
+    } completionHandler:^(BOOL success, NSError *error) {
+        completeBlock(success, error, placeholder.localIdentifier);
+    }];
 }
 
 @end

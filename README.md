@@ -58,7 +58,7 @@ import RNPhotosFramework from 'react-native-photos-framework';
 | prepareScale | 2.0 | `number` | The scale to prepare the image in. |
 
 
-# Retrieving albums and enumerating their images:
+# Retrieving albums and enumerating their assets:
 ~~~~
 return RNPhotosFramework.getAlbums(
     {

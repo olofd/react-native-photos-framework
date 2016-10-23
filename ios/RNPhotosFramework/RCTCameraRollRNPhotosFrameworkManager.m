@@ -6,6 +6,7 @@
 #import "RCTLog.h"
 #import "RCTUtils.h"
 #import "RCTConvert+RNPhotosFramework.h"
+#import "PHChangeObserver.h"
 @import Photos;
 
 @implementation RCTCameraRollRNPhotosFrameworkManager
@@ -25,31 +26,54 @@ static id ObjectOrNull(id object)
     return dispatch_queue_create("com.facebook.React.ReactNaticePhotosFramework", DISPATCH_QUEUE_SERIAL);
 }
 
+RCT_EXPORT_METHOD(cleanCache:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+    [[PHChangeObserver sharedChangeObserver] cleanCache];
+    resolve(@{});
+}
 
-RCT_EXPORT_METHOD(addAssets:(NSDictionary *)params
+
+RCT_EXPORT_METHOD(addAssetsToAlbum:(NSDictionary *)params
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
     PHAssetCollection *assetCollection = [self getAssetCollectionForParams:params];
+    PHFetchResult<PHAsset *> *fetchedAssets = [self getAssetsFromParams:params];
+    [self addAssets:fetchedAssets toAssetCollection:assetCollection andCompleteBLock:^(BOOL success, NSError * _Nullable error) {
+        if(success) {
+            resolve(@{ @"success" : @(success) });
+        }else {
+            reject(@"Error", @{ @"success" : @(success) }, nil);
+        }
+        
+    }];
+}
+
+RCT_EXPORT_METHOD(removeAssetsFromAlbum:(NSDictionary *)params
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+    PHAssetCollection *assetCollection = [self getAssetCollectionForParams:params];
+    PHFetchResult<PHAsset *> *fetchedAssets = [self getAssetsFromParams:params];
+    [self removeAssets:fetchedAssets fromAssetCollection:assetCollection andCompleteBLock:^(BOOL success, NSError * _Nullable error) {
+        if(success) {
+            resolve(@{ @"success" : @(success) });
+        }else {
+            reject(@"Error", @{ @"success" : @(success) }, nil);
+        }
+        
+    }];
+}
+
+-(PHFetchResult<PHAsset *> *) getAssetsFromParams:(NSDictionary *)params {
     NSArray *assets = [RCTConvert NSArray:params[@"assets"]];
     NSMutableArray<NSString *> * localIdentifiers = [NSMutableArray arrayWithCapacity:assets.count];
     for(int i = 0; i < assets.count; i++) {
         NSDictionary *asset = [assets objectAtIndex:i];
         [localIdentifiers addObject:[asset objectForKey:@"localIdentifier"]];
     }
-    PHFetchResult<PHAsset *> *fetchedAssets = [PHAsset fetchAssetsWithLocalIdentifiers:localIdentifiers options:nil];
-    [self saveAssets:fetchedAssets toAssetCollection:assetCollection andCompleteBLock:^(BOOL success, NSError * _Nullable error, NSString * _Nullable localIdentifier) {
-        if(success) {
-            resolve(@{
-                      @"success" : @(success)
-                    });
-        }else {
-            reject(@"Error",@{
-                     @"success" : @(success)
-                     }, nil);
-        }
-
-    }];
+    return [PHAsset fetchAssetsWithLocalIdentifiers:localIdentifiers options:nil];
 }
 
 RCT_EXPORT_METHOD(getAlbums:(NSDictionary *)params
@@ -141,7 +165,7 @@ RCT_EXPORT_METHOD(getAssets:(NSDictionary *)params
         PHFetchResult<PHAssetCollection *> *collections = [PHAssetCollection fetchAssetCollectionsWithLocalIdentifiers:@[albumLocalIdentifier] options:options];
         return collections.firstObject;
     }
-    return [RCTCameraRollRNPhotosFrameworkManager getFetchResultFromCacheWithuuid:cacheKey];
+    return [[PHChangeObserver sharedChangeObserver] getFetchResultFromCacheWithuuid:cacheKey];
 }
 
 -(PHFetchResult<PHAsset *> *) getAssetsForParams:(NSDictionary *)params  {
@@ -159,7 +183,7 @@ RCT_EXPORT_METHOD(getAssets:(NSDictionary *)params
     if(cacheKey == nil) {
         return [self getAllAssetsForParams:params];
     }
-    return [RCTCameraRollRNPhotosFrameworkManager getFetchResultFromCacheWithuuid:cacheKey];
+    return [[PHChangeObserver sharedChangeObserver] getFetchResultFromCacheWithuuid:cacheKey];
 }
 
 -(PHFetchResult<PHAsset *> *) getAllAssetsForParams:(NSDictionary *)params {
@@ -176,7 +200,7 @@ RCT_EXPORT_METHOD(getAssets:(NSDictionary *)params
     BOOL cacheAssets = [RCTConvert BOOL:params[@"prepareForEnumeration"]];
     NSMutableDictionary *multipleAlbumsResponse = [self generateAlbumsResponseFromParams:params andAlbums:collections andCacheAssets:cacheAssets];
     if(cacheAssets) {
-        NSString *uuid = [RCTCameraRollRNPhotosFrameworkManager cacheFetchResultAndReturnUUID:collections];
+        NSString *uuid = [[PHChangeObserver sharedChangeObserver] cacheFetchResultAndReturnUUID:collections];
         [multipleAlbumsResponse setObject:uuid forKey:@"_cacheKey"];
     }
     return multipleAlbumsResponse;
@@ -224,7 +248,7 @@ RCT_EXPORT_METHOD(getAssets:(NSDictionary *)params
                 PHFetchResult<PHAsset *> * assets = [self getAssetForCollection:collection andFetchParams:params];
                 [albumDictionary setObject:@(assets.count) forKey:@"assetCount"];
                 if(cacheAssets) {
-                   NSString *uuid = [RCTCameraRollRNPhotosFrameworkManager cacheFetchResultAndReturnUUID:assets];
+                   NSString *uuid = [[PHChangeObserver sharedChangeObserver] cacheFetchResultAndReturnUUID:assets];
                    [albumDictionary setObject:uuid forKey:@"_cacheKey"];
                 }
                 
@@ -348,27 +372,6 @@ RCT_EXPORT_METHOD(getAssets:(NSDictionary *)params
     return topLevelUserCollections;
 }
 
-+(NSString *) cacheFetchResultAndReturnUUID:(PHFetchResult *)fetchResult{
-    NSString *uuid = [[NSUUID UUID] UUIDString];
-    NSMutableDictionary<NSString *, PHFetchResult *> *previousFetchResults = [RCTCameraRollRNPhotosFrameworkManager previousFetches];
-    [previousFetchResults setObject:fetchResult forKey:uuid];
-    return uuid;
-}
-
-+(PHFetchResult *) getFetchResultFromCacheWithuuid:(NSString *)uuid {
-    NSMutableDictionary<NSString *, PHFetchResult *> *previousFetchResults = [RCTCameraRollRNPhotosFrameworkManager previousFetches];
-    return [previousFetchResults objectForKey:uuid];
-}
-
-+(NSMutableDictionary<NSString *, PHFetchResult *> *) previousFetches {
-    static NSMutableDictionary<NSString *, PHFetchResult *> *fetchResults;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        fetchResults = [[NSMutableDictionary alloc] init];
-    });
-    return fetchResults;
-}
-
 //CREATE ALBUM:
 
 -(void)saveImage:(NSURLRequest *)request
@@ -430,18 +433,24 @@ RCT_EXPORT_METHOD(getAssets:(NSDictionary *)params
     }];
 }
 
--(void) saveAssets:(NSArray<PHAsset *> *)assets toAssetCollection:(PHAssetCollection *)assetCollection andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error, NSString *__nullable localIdentifier))completeBlock {
-    __block PHObjectPlaceholder *placeholder;
+-(void) addAssets:(NSArray<PHAsset *> *)assets toAssetCollection:(PHAssetCollection *)assetCollection andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error))completeBlock {
     [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
-        PHFetchResult *existingAssets;
-        existingAssets = [PHAsset fetchAssetsInAssetCollection:assetCollection options:nil];
-        PHAssetCollectionChangeRequest *albumChangeRequest = [PHAssetCollectionChangeRequest changeRequestForAssetCollection:assetCollection assets:existingAssets];
+        PHAssetCollectionChangeRequest *albumChangeRequest = [PHAssetCollectionChangeRequest changeRequestForAssetCollection:assetCollection];
         [albumChangeRequest addAssets:assets];
         
     } completionHandler:^(BOOL success, NSError *error) {
-        completeBlock(success, error, placeholder.localIdentifier);
+        completeBlock(success, error);
     }];
-    
+}
+
+-(void) removeAssets:(NSArray<PHAsset *> *)assets fromAssetCollection:(PHAssetCollection *)assetCollection andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error))completeBlock {
+    [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+        PHAssetCollectionChangeRequest *albumChangeRequest = [PHAssetCollectionChangeRequest changeRequestForAssetCollection:assetCollection];
+        [albumChangeRequest removeAssets:assets];
+        
+    } completionHandler:^(BOOL success, NSError *error) {
+        completeBlock(success, error);
+    }];
 }
 
 - (void) saveImage:(UIImage *)image toAlbum:(PHCollection *)album andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error, NSString *__nullable localIdentifier))completeBlock {

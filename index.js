@@ -12,58 +12,70 @@
 'use strict';
 
 var ReactPropTypes = require('react/lib/ReactPropTypes');
-import { NativeModules } from 'react-native';
+import {NativeAppEventEmitter} from 'react-native';
+import {NativeModules} from 'react-native';
 const RCTCameraRollRNPhotosFrameworkManager = NativeModules.CameraRollRNPhotosFrameworkManager;
 import Asset from './asset';
 import Album from './album';
 import AlbumQueryResult from './album-query-result';
-/**
- * `CameraRoll` provides access to the local camera roll / gallery.
- * Before using this you must link the `RCTCameraRoll` library.
- * You can refer to (Linking)[https://facebook.github.io/react-native/docs/linking-libraries-ios.html] for help.
- */
+
 class CameraRollRNPhotosFramework {
 
-  static addAssets(params) {
-    return RCTCameraRollRNPhotosFrameworkManager.addAssets(params);
-  }
-
-  static getAssets(params) {
-    return RCTCameraRollRNPhotosFrameworkManager.getAssets(params).then((assets) => {
-        return assets.map(p => new Asset(p));
+  constructor() {
+    var subscription = NativeAppEventEmitter.addListener('RNPFChange', (changeDetails) => {
+      console.log('Album changed', changeDetails);
     });
   }
 
-  static getAssets(params) {
+  onPhotosLibraryChanged() {}
+
+  cleanCache() {
+    return RCTCameraRollRNPhotosFrameworkManager.cleanCache();
+  }
+
+  addAssetsToAlbum(params) {
+    return RCTCameraRollRNPhotosFrameworkManager.addAssetsToAlbum(params);
+  }
+
+  removeAssetsFromAlbum(params) {
+    return RCTCameraRollRNPhotosFrameworkManager.removeAssetsFromAlbum(params);
+  }
+
+  getAssets(params) {
     return RCTCameraRollRNPhotosFrameworkManager.getAssets(params).then((assets) => {
-        return assets.map(p => new Asset(p));
+      return assets.map(p => new Asset(p));
     });
   }
 
-  static getAlbums(params) {
+  getAssets(params) {
+    return RCTCameraRollRNPhotosFrameworkManager.getAssets(params).then((assets) => {
+      return assets.map(p => new Asset(p));
+    });
+  }
+
+  getAlbums(params) {
     return RCTCameraRollRNPhotosFrameworkManager.getAlbums(params).then((queryResult) => {
-        return new AlbumQueryResult(queryResult, params.fetchOptions);
+      return new AlbumQueryResult(queryResult, params.fetchOptions);
     });
   }
 
-  static getAlbumsMany(params) {
+  getAlbumsMany(params) {
     return RCTCameraRollRNPhotosFrameworkManager.getAlbumsMany(params).then((albumQueryResultList) => {
-        return albumQueryResultList.map((collection, index) => new AlbumQueryResult(collection, params[index].fetchOptions));
+      return albumQueryResultList.map((collection, index) => new AlbumQueryResult(collection, params[index].fetchOptions));
     });
   }
 
-  static getAlbumsByName(params) {
+  getAlbumsByName(params) {
     return RCTCameraRollRNPhotosFrameworkManager.getAlbumsByName(params).then((collectionResponse) => {
-        return collectionResponse.map((album, index) => new Album(album, params.fetchOptions));
+      return collectionResponse.map((album, index) => new Album(album, params.fetchOptions));
     });
   }
 
-  static createAlbum(albumName) {
+  createAlbum(albumName) {
     return RCTCameraRollRNPhotosFrameworkManager.createAlbum(albumName).then((albumObj) => {
-        return new Album(albumObj);
+      return new Album(albumObj);
     });
   }
 }
 
-
-export default CameraRollRNPhotosFramework;
+export default new CameraRollRNPhotosFramework();

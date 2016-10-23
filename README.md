@@ -7,8 +7,7 @@ Uses Apples photos framework.
 React Native comes with it's own CameraRoll library.
 This however uses ALAssetLibrary which is a deprecated API from Apple
 and can only load photos and videos stored on the users device.
-This is not what your user expects today. Most users photos
-today live on iCloud and these won't show if you use ALAssetLibrary.
+This is not what your user expects today. Most users photos live on iCloud and these won't show if you use ALAssetLibrary.
 
 If you use this library/Photos framework you can display the users local resources and the users iCloud resources.
 
@@ -54,7 +53,7 @@ import RNPhotosFramework from 'react-native-photos-framework';
 | includeAllBurstAssets | false | `boolean` | A Boolean value that determines whether the fetch result includes all assets from burst photo sequences. |
 | fetchLimit | 0 | `number` | The maximum number of objects to include in the fetch result. Remember to not use this in the wrong way combined with startIndex and endIndex. 0 means unlimited. |
 | sortAscending | false | `boolean` |  Defines sort-order |
-| sortDescriptorKey | 'creationDate' | `string` | Defines feild to sort on. More example options to come.  |
+| sortDescriptorKey | 'creationDate' | `string` | Defines field to sort on. More example options to come.  |
 | prepareForSizeDisplay | - | `Rect(width, height)` | The size of the image you soon will display after running the query. This is highly optional and only there for optimizations of big lists. Prepares the images for display in Photos by using PHCachingImageManager |
 | prepareScale | 2.0 | `number` | The scale to prepare the image in. |
 
@@ -96,7 +95,7 @@ return RNPhotosFramework.getAlbums(
 Get collections allow to query the Photos Framework for photo-albums. Both User-created ones and Smart-albums.
 Note that Apple creates a lot of dynamic, so called Smart Albums, like : 'Recently added', 'Favourites' etc.
 
-NOTE: There is also another method called getAlbumsMany. This could be considered a low-level-method of the API. It is constructed so that this library can build more accessable methods on top of one joint native-call: like getUserTopAlbums in pure JS.
+NOTE: There is also another method called `getAlbumsMany`. This could be considered a low-level-method of the API. It is constructed so that this library can build more accessable methods on top of one joint native-call: like getUserTopAlbums in pure JS.
 The getAlbumsMany-api can take multiple queries (array<albumquery>) and return an array<albumqueryresult>.
 
 

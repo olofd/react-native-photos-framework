@@ -30,9 +30,21 @@ class CameraRollRNPhotosFramework {
     });
   }
 
+  static getPhotos(params) {
+    return RCTCameraRollRNPhotosFrameworkManager.getPhotos(params).then((photos) => {
+        return photos.map(p => new Photo(p));
+    });
+  }
+
   static getCollections(params) {
     return RCTCameraRollRNPhotosFrameworkManager.getCollections(params).then((collections) => {
         return collections.map((collection, index) => new Collection(collection, params.albums[index].fetchOptions));
+    });
+  }
+
+  static getAlbumsByName(params) {
+    return RCTCameraRollRNPhotosFrameworkManager.getAlbumsByName(params).then((collectionResponse) => {
+        return collectionResponse.map((album, index) => new Album(album, params.fetchOptions));
     });
   }
 

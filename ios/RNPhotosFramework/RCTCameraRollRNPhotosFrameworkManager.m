@@ -41,7 +41,18 @@ RCT_EXPORT_METHOD(createCollection:(NSString *)collectionName
             reject([NSString stringWithFormat:@"Error creating album named %@", collectionName], nil, error);
         }
     }];
+}
 
+RCT_EXPORT_METHOD(getAlbumsByName:(NSDictionary *)params
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+    NSString * collectionName = [RCTConvert NSString:params[@"albumName"]];
+    if(collectionName == nil) {
+        reject(@"albumName cannot be null", nil, nil);
+    }
+    PHFetchResult<PHAssetCollection *> * collections = [self getUserAlbumsTiteled:collectionName withParams:params];
+    resolve([[self generateCollectionResponseWithCollections:collections andParams:params] objectForKey:@"albums"]);
 }
 
 RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
@@ -53,13 +64,17 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
 
     NSUInteger startIndex = [RCTConvert NSInteger:params[@"startIndex"]];
     NSUInteger endIndex = [RCTConvert NSInteger:params[@"endIndex"]];
-    CGSize prepareForSizeDisplay = [RCTConvert CGSize:params[@"prepareForSizeDisplay"]];
-    CGFloat prepareScale = [RCTConvert CGFloat:params[@"prepareScale"]];
-    
+
     PHFetchResult<PHAsset *> *assetsFetchResult = [self getAssetsForParams:params andCacheKey:cacheKey andCollectionLocalIdentifier:collectionLocalIdentifier];
     
     NSArray<PHAsset *> *assets = [self getAssetsForFetchResult:assetsFetchResult startIndex:startIndex endIndex:endIndex];
-    
+    [self prepareAssetsForDisplayWithParams:params andAssets:assets];
+    resolve([self assetsArrayToUriArray:assets]);
+}
+
+-(void) prepareAssetsForDisplayWithParams:(NSDictionary *)params andAssets:(NSArray<PHAsset *> *)assets {
+    CGSize prepareForSizeDisplay = [RCTConvert CGSize:params[@"prepareForSizeDisplay"]];
+    CGFloat prepareScale = [RCTConvert CGFloat:params[@"prepareScale"]];
     PHCachingImageManager *cacheManager = [PHCachingImageManagerInstance sharedCachingManager];
     
     if(prepareForSizeDisplay.width != 0 && prepareForSizeDisplay.height != 0) {
@@ -68,8 +83,6 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
         }
         [cacheManager startCachingImagesForAssets:assets targetSize:CGSizeApplyAffineTransform(prepareForSizeDisplay, CGAffineTransformMakeScale(prepareScale, prepareScale)) contentMode:PHImageContentModeAspectFill options:nil];
     }
-    
-    resolve([self assetsArrayToUriArray:assets]);
 }
 
 
@@ -98,21 +111,29 @@ RCT_EXPORT_METHOD(getCollections:(NSDictionary *)params
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-    
     NSMutableArray *responseArray = [NSMutableArray new];
     NSArray *multipleAlbumsQuery = [RCTConvert NSArray:params[@"albums"]];
     for(int i = 0; i < multipleAlbumsQuery.count;i++) {
         NSDictionary *albumsQuery = [multipleAlbumsQuery objectAtIndex:i];
-        PHFetchResult<PHAssetCollection *> *albums = [self getAlbumsWithParams:albumsQuery];
-        BOOL cacheAssets = [RCTConvert BOOL:albumsQuery[@"prepareForEnumeration"]];
-        NSMutableDictionary *multipleAlbumsResponse = [self generateAlbumsResponseFromParams:albumsQuery andAlbums:albums andCacheAssets:cacheAssets];
-        if(cacheAssets) {
-            NSString *uuid = [RCTCameraRollRNPhotosFrameworkManager cacheFetchResultAndReturnUUID:albums];
-            [multipleAlbumsResponse setObject:uuid forKey:@"_cacheKey"];
-        }
-        [responseArray addObject:multipleAlbumsResponse];
+        [responseArray addObject:[self getCollection:albumsQuery]];
     }
     resolve(responseArray);
+}
+
+
+-(NSMutableDictionary *) getCollection:(NSDictionary *)params {
+    PHFetchResult<PHAssetCollection *> *albums = [self getAlbumsWithParams:params];
+    return [self generateCollectionResponseWithCollections:albums andParams:params];
+}
+
+-(NSMutableDictionary *) generateCollectionResponseWithCollections:(PHFetchResult<PHAssetCollection *> *)collections andParams:(NSDictionary *)params {
+    BOOL cacheAssets = [RCTConvert BOOL:params[@"prepareForEnumeration"]];
+    NSMutableDictionary *multipleAlbumsResponse = [self generateAlbumsResponseFromParams:params andAlbums:collections andCacheAssets:cacheAssets];
+    if(cacheAssets) {
+        NSString *uuid = [RCTCameraRollRNPhotosFrameworkManager cacheFetchResultAndReturnUUID:collections];
+        [multipleAlbumsResponse setObject:uuid forKey:@"_cacheKey"];
+    }
+    return multipleAlbumsResponse;
 }
 
 
@@ -300,43 +321,46 @@ RCT_EXPORT_METHOD(getCollections:(NSDictionary *)params
     return fetchResults;
 }
 
-
-
 //CREATE ALBUM:
 
 -(void)saveImage:(NSURLRequest *)request
             type:(NSString *)type
             toCollection:(PHFetchResult<PHAssetCollection *> *)collection
-         resolve:(RCTPromiseResolveBlock)resolve
-          reject:(RCTPromiseRejectBlock)reject{
+            andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error, NSString *__nullable localIdentifier))completeBlock {
     if ([type isEqualToString:@"video"]) {
         // It's unclear if thread-safe
         dispatch_async(dispatch_get_main_queue(), ^{
-        
+            [NSException raise:@"Not implementeted exception" format:@"Sry"];
+
         });
     } else {
         [_bridge.imageLoader loadImageWithURLRequest:request
                                             callback:^(NSError *loadError, UIImage *loadedImage) {
                                                 if (loadError) {
-                                                    reject(RNPHotoFrameworkErrorUnableToLoad, nil, loadError);
+                                                    completeBlock(NO, loadError, nil);
                                                     return;
                                                 }
                                                 // It's unclear if writeImageToSavedPhotosAlbum is thread-safe
                                                 dispatch_async(dispatch_get_main_queue(), ^{
-                                                    
-                                                
+                                                    [self saveImage:loadedImage toAlbum:collection andCompleteBLock:^(BOOL success, NSError * _Nullable error, NSString * _Nullable localIdentifier) {
+                                                        completeBlock(success, error, localIdentifier);
+                                                    }];
                                                 });
                                             }];
     }
 }
 
--(PHFetchResult<PHAssetCollection *> *)getAlbumTiteled:(NSString *)title {
-    PHFetchOptions *fetchOptions = [[PHFetchOptions alloc] init];
+-(PHFetchResult<PHAssetCollection *> *)getUserAlbumsTiteled:(NSString *)title withParams:(NSDictionary *)params {
+    PHFetchOptions *fetchOptions = [self getFetchOptionsFromParams:params];
     fetchOptions.predicate = [NSPredicate predicateWithFormat:@"title = %@", title];
-    PHAssetCollection *collection = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum
-                                                          subtype:PHAssetCollectionSubtypeAny
-                                                          options:fetchOptions].firstObject;
-    return collection;
+    NSString * typeString = params[@"type"];
+    NSString * subTypeString = params[@"subType"];
+    PHAssetCollectionType type = [RCTConvert PHAssetCollectionType:typeString];
+    PHAssetCollectionSubtype subType = [RCTConvert PHAssetCollectionSubtype:subTypeString];
+    PHAssetCollection *collections = [PHAssetCollection fetchAssetCollectionsWithType:type
+                                                          subtype:subType
+                                                          options:fetchOptions];
+    return collections;
 }
 
 -(void) createAlbumWithTitle:(NSString *)title andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error, NSString *__nullable localIdentifier))completeBlock {

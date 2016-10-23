@@ -24,10 +24,10 @@ import RNPhotosFramework from 'react-native-photos-framework';
           //Media types you wish to display. See table bellow for possible options.
           mediaTypes : ['photo', 'video'],
           mediaSubTypes : ['photoPanorama'],
-			
+
 			//Where is the image located? See table bellow for possible options.
 			sourceTypes : ['userLibrary']
-			
+
           sortAscending : true,
           sortDescriptorKey : 'creationDate',
 
@@ -61,8 +61,7 @@ import RNPhotosFramework from 'react-native-photos-framework';
 
 # Retriving albums and enumerating their images:
 ~~~~
-return RNPhotosFramework.getCollections({
-  albums: [
+return RNPhotosFramework.getAlbums(
     {
       type: 'album',
       subType: 'any',
@@ -75,11 +74,10 @@ return RNPhotosFramework.getCollections({
         includeAllBurstAssets: false
       }
     }
-  ]
-}).then((collections) => {
-  const album = collections[0].albums[0];
+  ).then((queryResult) => {
+  const album = queryResult.albums[0];
   return album.getPhotos({
-    //The fetch-options from the outer query will apply 	here, if we get 
+    //The fetch-options from the outer query will apply 	here, if we get
     startIndex : 0,
     endIndex : 10,
     prepareForSizeDisplay: {
@@ -93,16 +91,18 @@ return RNPhotosFramework.getCollections({
 });
 ~~~~
 
-#### Props to `getCollections`
+#### Props to `getAlbums`
 
 Get collections allow to query the Photos Framework for photo-albums. Both User-created ones and Smart-albums.
-Note that Apple creates alot of dynamic, so called Smart Albums, like : 'Recently added', 'Favourites' etc. The getCollections-api can take multiple queries of albums in one call to native and can return albums that are prepared for enumeration and displaying. We pass an array of queries to this method and get an array of responses back.
+Note that Apple creates a lot of dynamic, so called Smart Albums, like : 'Recently added', 'Favourites' etc.
 
-NOTE: This could be considered a low-level-method of the API. It is constructed so that this library can build more accessable methods ontop of: like getUserTopAlbums in pure JS.
+NOTE: There is also another method called getAlbumsMany. This could be considered a low-level-method of the API. It is constructed so that this library can build more accessable methods on top of one joint native-call: like getUserTopAlbums in pure JS.
+The getAlbumsMany-api can take multiple queries (array<albumquery>) and return an array<albumqueryresult>.
+
 
 | Prop  | Default  | Type | Description |
 | :------------ |:---------------:| :---------------:| :-----|
-| type | `album` | `string` | Defines what type of album/collection you wish to retrive. Converted in Native to PHAssetCollectionType. Accepted enum-values: `album`, `smartAlbum`, `moment` |
-| subType | `any` | `string` | Defines what subType the album/collection you wish to retrive should have. Converted in Native to PHAssetCollectionSubtype. Accepted enum-values: `any`, `albumRegular`, `syncedEvent`, `syncedFaces`, `syncedAlbum`, `imported`, `albumMyPhotoStream`, `albumCloudShared`, `smartAlbumGeneric`, `smartAlbumPanoramas`, `smartAlbumVideos`, `smartAlbumFavorites`, `smartAlbumTimelapses`, `smartAlbumAllHidden`, `smartAlbumRecentlyAdded`, `smartAlbumBursts`, `smartAlbumSlomoVideos`, `smartAlbumUserLibrary`, `smartAlbumSelfPortraits`, `smartAlbumScreenshots` |
-| assetCount | `none` | `string/enum` | By default you wont get any asset-count from the collection. But you can choose to get `estimated` count of the collection or `exact`-count. Of cource these have different performace-impacts. Remember that your of cource fetchOptions affects this count. |
-| prepareForEnumeration | `false` | `boolean` | If this property is `true` then the collections will get cached in native and you will be able to call `getPhotos` on any album returned from the query effectevly enumerating the result. |
+| type | `album` | `string` | Defines what type of album/collection you wish to retrieve. Converted in Native to PHAssetCollectionType. Accepted enum-values: `album`, `smartAlbum`, `moment` |
+| subType | `any` | `string` | Defines what subType the album/collection you wish to retrieve should have. Converted in Native to PHAssetCollectionSubtype. Accepted enum-values: `any`, `albumRegular`, `syncedEvent`, `syncedFaces`, `syncedAlbum`, `imported`, `albumMyPhotoStream`, `albumCloudShared`, `smartAlbumGeneric`, `smartAlbumPanoramas`, `smartAlbumVideos`, `smartAlbumFavorites`, `smartAlbumTimelapses`, `smartAlbumAllHidden`, `smartAlbumRecentlyAdded`, `smartAlbumBursts`, `smartAlbumSlomoVideos`, `smartAlbumUserLibrary`, `smartAlbumSelfPortraits`, `smartAlbumScreenshots` |
+| assetCount | `none` | `string/enum` | By default you wont get any asset-count from the collection. But you can choose to get `estimated` count of the collection or `exact`-count. Of course these have different performance-impacts. Remember that your of course fetchOptions affects this count. |
+| prepareForEnumeration | `false` | `boolean` | If this property is `true` then the collections will get cached in native and you will be able to call `getPhotos` on any album returned from the query effectively enumerating the result. |

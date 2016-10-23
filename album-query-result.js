@@ -1,6 +1,6 @@
 
 import Album from './album';
-export default class Collection {
+export default class AlbumQueryResult {
   constructor(obj, fetchOptions)
   {
     this._fetchOptions = fetchOptions;

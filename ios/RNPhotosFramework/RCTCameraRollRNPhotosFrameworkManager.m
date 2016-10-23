@@ -25,34 +25,53 @@ static id ObjectOrNull(id object)
     return dispatch_queue_create("com.facebook.React.ReactNaticePhotosFramework", DISPATCH_QUEUE_SERIAL);
 }
 
-RCT_EXPORT_METHOD(createCollection:(NSString *)collectionName
+RCT_EXPORT_METHOD(getAlbums:(NSDictionary *)params
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-    if(collectionName == nil) {
-        reject(@"collection name cannot be null", nil, nil);
+    resolve([self getAlbums:params]);
+}
+
+RCT_EXPORT_METHOD(getAlbumsMany:(NSArray *)params
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+    NSMutableArray *responseArray = [NSMutableArray new];
+    for(int i = 0; i < params.count;i++) {
+        NSDictionary *albumsQuery = [params objectAtIndex:i];
+        [responseArray addObject:[self getAlbums:albumsQuery]];
     }
-    [self createAlbumWithTitle:collectionName andCompleteBLock:^(BOOL success, NSError * _Nullable error, NSString * _Nullable localIdentifier) {
-        if(success) {
-            resolve(@{
-                      @"localIdentifier" : localIdentifier
-                    });
-        }else{
-            reject([NSString stringWithFormat:@"Error creating album named %@", collectionName], nil, error);
-        }
-    }];
+    resolve(responseArray);
 }
 
 RCT_EXPORT_METHOD(getAlbumsByName:(NSDictionary *)params
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-    NSString * collectionName = [RCTConvert NSString:params[@"albumName"]];
-    if(collectionName == nil) {
+    NSString * albumName = [RCTConvert NSString:params[@"albumName"]];
+    if(albumName == nil) {
         reject(@"albumName cannot be null", nil, nil);
     }
-    PHFetchResult<PHAssetCollection *> * collections = [self getUserAlbumsTiteled:collectionName withParams:params];
+    PHFetchResult<PHAssetCollection *> * collections = [self getUserAlbumsTiteled:albumName withParams:params];
     resolve([[self generateCollectionResponseWithCollections:collections andParams:params] objectForKey:@"albums"]);
+}
+
+RCT_EXPORT_METHOD(createAlbum:(NSString *)albumName
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+    if(albumName == nil) {
+        reject(@"albumName cannot be null", nil, nil);
+    }
+    [self createAlbumWithTitle:albumName andCompleteBLock:^(BOOL success, NSError * _Nullable error, NSString * _Nullable localIdentifier) {
+        if(success) {
+            resolve(@{
+                      @"localIdentifier" : localIdentifier
+                    });
+        }else{
+            reject([NSString stringWithFormat:@"Error creating album named %@", albumName], nil, error);
+        }
+    }];
 }
 
 RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
@@ -60,12 +79,12 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
                   reject:(RCTPromiseRejectBlock)reject)
 {
     NSString * cacheKey = [RCTConvert NSString:params[@"_cacheKey"]];
-    NSString * collectionLocalIdentifier = [RCTConvert NSString:params[@"collectionLocalIdentifier"]];
+    NSString * albumLocalIdentifier = [RCTConvert NSString:params[@"albumLocalIdentifier"]];
 
     NSUInteger startIndex = [RCTConvert NSInteger:params[@"startIndex"]];
     NSUInteger endIndex = [RCTConvert NSInteger:params[@"endIndex"]];
 
-    PHFetchResult<PHAsset *> *assetsFetchResult = [self getAssetsForParams:params andCacheKey:cacheKey andCollectionLocalIdentifier:collectionLocalIdentifier];
+    PHFetchResult<PHAsset *> *assetsFetchResult = [self getAssetsForParams:params andCacheKey:cacheKey andAlbumLocalIdentifier:albumLocalIdentifier];
     
     NSArray<PHAsset *> *assets = [self getAssetsForFetchResult:assetsFetchResult startIndex:startIndex endIndex:endIndex];
     [self prepareAssetsForDisplayWithParams:params andAssets:assets];
@@ -86,12 +105,12 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
 }
 
 
--(PHFetchResult<PHAsset *> *) getAssetsForParams:(NSDictionary *)params andCacheKey:(NSString *)cacheKey andCollectionLocalIdentifier:(NSString *)collectionLocalIdentifier   {
-    if(collectionLocalIdentifier == nil){
+-(PHFetchResult<PHAsset *> *) getAssetsForParams:(NSDictionary *)params andCacheKey:(NSString *)cacheKey andAlbumLocalIdentifier:(NSString *)albumLocalIdentifier   {
+    if(albumLocalIdentifier == nil){
         return [self getAssetsForParams:params andCacheKey:cacheKey];
     }
     PHFetchOptions *options = [self getFetchOptionsFromParams:[RCTConvert NSDictionary:params[@"fetchOptions"]]];
-    PHAssetCollection *collection = [PHAssetCollection fetchAssetCollectionsWithLocalIdentifiers:@[collectionLocalIdentifier] options:nil].firstObject;
+    PHFetchResult<PHAssetCollection *> *collection = [PHAssetCollection fetchAssetCollectionsWithLocalIdentifiers:@[albumLocalIdentifier] options:nil].firstObject;
     return [PHAsset fetchAssetsInAssetCollection:collection options:options];
 }
 
@@ -107,21 +126,8 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
     return [PHAsset fetchAssetsWithOptions:options];
 }
 
-RCT_EXPORT_METHOD(getCollections:(NSDictionary *)params
-                  resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject)
-{
-    NSMutableArray *responseArray = [NSMutableArray new];
-    NSArray *multipleAlbumsQuery = [RCTConvert NSArray:params[@"albums"]];
-    for(int i = 0; i < multipleAlbumsQuery.count;i++) {
-        NSDictionary *albumsQuery = [multipleAlbumsQuery objectAtIndex:i];
-        [responseArray addObject:[self getCollection:albumsQuery]];
-    }
-    resolve(responseArray);
-}
 
-
--(NSMutableDictionary *) getCollection:(NSDictionary *)params {
+-(NSMutableDictionary *) getAlbums:(NSDictionary *)params {
     PHFetchResult<PHAssetCollection *> *albums = [self getAlbumsWithParams:params];
     return [self generateCollectionResponseWithCollections:albums andParams:params];
 }

@@ -24,6 +24,10 @@ import AlbumQueryResult from './album-query-result';
  */
 class CameraRollRNPhotosFramework {
 
+  static addAssets(params) {
+    return RCTCameraRollRNPhotosFrameworkManager.addAssets(params);
+  }
+
   static getAssets(params) {
     return RCTCameraRollRNPhotosFrameworkManager.getAssets(params).then((assets) => {
         return assets.map(p => new Asset(p));

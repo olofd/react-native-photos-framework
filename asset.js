@@ -1,13 +1,13 @@
 export default class Asset {
     static scheme = "pk://";
     constructor(assetObj, options) {
-        this._localIdentifier = assetObj.uri;
+        this.localIdentifier = assetObj.localIdentifier;
         this.width = assetObj.width;
         this.height = assetObj.height;
         if(options) {
           this._queryString = this.serialize(options);
         }
-        this.uri = Asset.scheme + this._localIdentifier;
+        this.uri = Asset.scheme + this.localIdentifier;
         if(this._queryString) {
           this.uri = this.uri + `?${this._queryString}`;
         }

@@ -13,4 +13,16 @@ export default class Album {
        albumLocalIdentifier : this.localIdentifier
      });
   }
+
+  addAsset(asset) {
+    return this.addAssets([asset]);
+  }
+
+  addAssets(assets) {
+    return NativeApi.addAssets({
+       assets : assets,
+       _cacheKey : this._cacheKey,
+       albumLocalIdentifier : this.localIdentifier
+     });
+  }
 }

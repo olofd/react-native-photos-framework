@@ -12,7 +12,7 @@ today live on iCloud and these won't show if you use ALAssetLibrary.
 
 If you use this library/Photos framework you can display the users local resources and the users iCloud resources.
 
-# Retriving images:
+# Retrieving images:
 ~~~~
 import RNPhotosFramework from 'react-native-photos-framework';
 
@@ -59,7 +59,7 @@ import RNPhotosFramework from 'react-native-photos-framework';
 | prepareScale | 2.0 | `number` | The scale to prepare the image in. |
 
 
-# Retriving albums and enumerating their images:
+# Retrieving albums and enumerating their images:
 ~~~~
 return RNPhotosFramework.getAlbums(
     {

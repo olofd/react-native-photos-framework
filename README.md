@@ -1,7 +1,7 @@
 # react-native-photos-framework
 `npm i react-native-photos-framework --save`
 
-Load photos and albums from CameraRoll and iCloud.
+Load photos/videos and more from CameraRoll and iCloud.
 Uses Apples photos framework.
 
 React Native comes with it's own CameraRoll library.
@@ -15,7 +15,7 @@ If you use this library/Photos framework you can display the users local resourc
 ~~~~
 import RNPhotosFramework from 'react-native-photos-framework';
 
-    RNPhotosFramework.getPhotos({
+    RNPhotosFramework.getAssets({
           //You can call this function multiple times providing startIndex and endIndex as pagination
           startIndex : 0,
           endIndex : 100,
@@ -40,7 +40,7 @@ import RNPhotosFramework from 'react-native-photos-framework';
 
 ~~~~
 
-#### Props to `getPhotos`
+#### Props to `getAssets`
 
 | Prop  | Default  | Type | Description |
 | :------------ |:---------------:| :---------------:| :-----|
@@ -75,7 +75,7 @@ return RNPhotosFramework.getAlbums(
     }
   ).then((queryResult) => {
   const album = queryResult.albums[0];
-  return album.getPhotos({
+  return album.getAssets({
     //The fetch-options from the outer query will apply 	here, if we get
     startIndex : 0,
     endIndex : 10,
@@ -84,15 +84,15 @@ return RNPhotosFramework.getAlbums(
       height: 91.5
     },
     prepareScale: 2
-  }).then((photos) => {
-   	  console.log(photos, 'The photos in the first album');
+  }).then((assets) => {
+   	  console.log(assets, 'The assets in the first album');
   });
 });
 ~~~~
 
 #### Props to `getAlbums`
 
-Get collections allow to query the Photos Framework for photo-albums. Both User-created ones and Smart-albums.
+Get collections allow to query the Photos Framework for asset-albums. Both User-created ones and Smart-albums.
 Note that Apple creates a lot of dynamic, so called Smart Albums, like : 'Recently added', 'Favourites' etc.
 
 NOTE: There is also another method called `getAlbumsMany`. This could be considered a low-level-method of the API. It is constructed so that this library can build more accessable methods on top of one joint native-call: like getUserTopAlbums in pure JS.
@@ -104,4 +104,10 @@ The getAlbumsMany-api can take multiple queries (array<albumquery>) and return a
 | type | `album` | `string` | Defines what type of album/collection you wish to retrieve. Converted in Native to PHAssetCollectionType. Accepted enum-values: `album`, `smartAlbum`, `moment` |
 | subType | `any` | `string` | Defines what subType the album/collection you wish to retrieve should have. Converted in Native to PHAssetCollectionSubtype. Accepted enum-values: `any`, `albumRegular`, `syncedEvent`, `syncedFaces`, `syncedAlbum`, `imported`, `albumMyPhotoStream`, `albumCloudShared`, `smartAlbumGeneric`, `smartAlbumPanoramas`, `smartAlbumVideos`, `smartAlbumFavorites`, `smartAlbumTimelapses`, `smartAlbumAllHidden`, `smartAlbumRecentlyAdded`, `smartAlbumBursts`, `smartAlbumSlomoVideos`, `smartAlbumUserLibrary`, `smartAlbumSelfPortraits`, `smartAlbumScreenshots` |
 | assetCount | `none` | `string/enum` | By default you wont get any asset-count from the collection. But you can choose to get `estimated` count of the collection or `exact`-count. Of course these have different performance-impacts. Remember that your of course fetchOptions affects this count. |
-| prepareForEnumeration | `false` | `boolean` | If this property is `true` then the collections will get cached in native and you will be able to call `getPhotos` on any album returned from the query effectively enumerating the result. |
+| prepareForEnumeration | `false` | `boolean` | If this property is `true` then the collections will get cached in native and you will be able to call `getAssets` on any album returned from the query effectively enumerating the result. |
+
+# Creating new Album:
+
+~~~~
+const localIdentifier = RNPhotosFramework.createAlbum('test-album');
+~~~~

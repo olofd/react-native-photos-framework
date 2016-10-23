@@ -74,18 +74,22 @@ RCT_EXPORT_METHOD(createAlbum:(NSString *)albumName
     }];
 }
 
-RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
+RCT_EXPORT_METHOD(getAssets:(NSDictionary *)params
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
     NSString * cacheKey = [RCTConvert NSString:params[@"_cacheKey"]];
     NSString * albumLocalIdentifier = [RCTConvert NSString:params[@"albumLocalIdentifier"]];
 
-    NSUInteger startIndex = [RCTConvert NSInteger:params[@"startIndex"]];
-    NSUInteger endIndex = [RCTConvert NSInteger:params[@"endIndex"]];
-
     PHFetchResult<PHAsset *> *assetsFetchResult = [self getAssetsForParams:params andCacheKey:cacheKey andAlbumLocalIdentifier:albumLocalIdentifier];
-    
+
+    NSString *startIndexParam = params[@"startIndex"];
+    NSString *endIndexParam = params[@"endIndex"];
+
+    NSUInteger startIndex = [RCTConvert NSInteger:startIndexParam];
+    NSUInteger endIndex = endIndexParam != nil ? [RCTConvert NSInteger:endIndexParam] : (assetsFetchResult.count -1);
+
+
     NSArray<PHAsset *> *assets = [self getAssetsForFetchResult:assetsFetchResult startIndex:startIndex endIndex:endIndex];
     [self prepareAssetsForDisplayWithParams:params andAssets:assets];
     resolve([self assetsArrayToUriArray:assets]);
@@ -262,12 +266,14 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
   
   NSMutableArray<PHAsset *> *assets = [NSMutableArray new];
   [assetsFetchResult enumerateObjectsUsingBlock:^(PHAsset *asset, NSUInteger index, BOOL *stop) {
+    if(index >= endIndex){
+        *stop = YES;
+        return;
+    }
     if(index >= startIndex){
       [assets addObject:asset];
     }
-    if(index >= endIndex){
-      *stop = YES;
-    }
+
   }];
   return assets;
 }

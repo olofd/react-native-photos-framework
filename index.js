@@ -14,7 +14,7 @@
 var ReactPropTypes = require('react/lib/ReactPropTypes');
 import { NativeModules } from 'react-native';
 const RCTCameraRollRNPhotosFrameworkManager = NativeModules.CameraRollRNPhotosFrameworkManager;
-import Photo from './photo';
+import Asset from './asset';
 import Album from './album';
 import AlbumQueryResult from './album-query-result';
 /**
@@ -24,15 +24,15 @@ import AlbumQueryResult from './album-query-result';
  */
 class CameraRollRNPhotosFramework {
 
-  static getPhotos(params) {
-    return RCTCameraRollRNPhotosFrameworkManager.getPhotos(params).then((photos) => {
-        return photos.map(p => new Photo(p));
+  static getAssets(params) {
+    return RCTCameraRollRNPhotosFrameworkManager.getAssets(params).then((assets) => {
+        return assets.map(p => new Asset(p));
     });
   }
 
-  static getPhotos(params) {
-    return RCTCameraRollRNPhotosFrameworkManager.getPhotos(params).then((photos) => {
-        return photos.map(p => new Photo(p));
+  static getAssets(params) {
+    return RCTCameraRollRNPhotosFrameworkManager.getAssets(params).then((assets) => {
+        return assets.map(p => new Asset(p));
     });
   }
 
@@ -54,9 +54,9 @@ class CameraRollRNPhotosFramework {
     });
   }
 
-  static createCollection(collectionName) {
-    return RCTCameraRollRNPhotosFrameworkManager.createCollection(collectionName).then((collections) => {
-        debugger;
+  static createAlbum(albumName) {
+    return RCTCameraRollRNPhotosFrameworkManager.createAlbum(albumName).then((albumObj) => {
+        return new Album(albumObj);
     });
   }
 }

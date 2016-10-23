@@ -7,10 +7,10 @@ export default class Album {
   }
 
   getPhotos(params) {
-    return NativeApi.getPhotos({
+    return NativeApi.getAssets({
       ...params,
        _cacheKey : this._cacheKey,
-       collectionLocalIdentifier : this.localIdentifier
+       albumLocalIdentifier : this.localIdentifier
      });
   }
 }

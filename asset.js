@@ -1,17 +1,17 @@
-export default class Photo {
+export default class Asset {
     static scheme = "pk://";
-    constructor(photoObj, options) {
-        this._localIdentifier = photoObj.uri;
-        this.width = photoObj.width;
-        this.height = photoObj.height;
+    constructor(assetObj, options) {
+        this._localIdentifier = assetObj.uri;
+        this.width = assetObj.width;
+        this.height = assetObj.height;
         if(options) {
           this._queryString = this.serialize(options);
         }
-        this.uri = Photo.scheme + this._localIdentifier;
+        this.uri = Asset.scheme + this._localIdentifier;
         if(this._queryString) {
           this.uri = this.uri + `?${this._queryString}`;
         }
-        this._photoObj = photoObj;
+        this._assetObj = assetObj;
     }
 
     serialize(obj) {
@@ -26,6 +26,6 @@ export default class Photo {
     }
 
     widthOptions(options) {
-      return new Photo(this._photoObj, options);
+      return new Asset(this._assetObj, options);
     }
 }

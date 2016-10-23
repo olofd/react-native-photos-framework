@@ -11,6 +11,15 @@
 @implementation RCTConvert(ReactNativePhotosFramework)
 
 
+RCT_ENUM_CONVERTER(RNPFAssetCountType, (@{
+                                          
+                                          // New values
+                                          @"none": @(RNPFAssetCountTypeNone),
+                                          @"estimated": @(RNPFAssetCountTypeEstimated),
+                                          @"exact": @(RNPFAssetCountTypeExact)
+                                          
+                                          }), RNPFAssetCountTypeNone, integerValue)
+
 RCT_ENUM_CONVERTER(PHAssetMediaType, (@{
                                         
                                         // New values
@@ -21,14 +30,6 @@ RCT_ENUM_CONVERTER(PHAssetMediaType, (@{
                                         
                                         }), PHAssetMediaTypeImage, integerValue)
 
-RCT_ENUM_CONVERTER(RNPFAssetCountType, (@{
-                                        
-                                        // New values
-                                        @"none": @(RNPFAssetCountTypeNone),
-                                        @"estimated": @(RNPFAssetCountTypeEstimated),
-                                        @"exact": @(RNPFAssetCountTypeExact)
-                                        
-                                        }), RNPFAssetCountTypeNone, integerValue)
 
 RCT_ENUM_CONVERTER(PHAssetMediaSubtype, (@{
                                            @"none": @(PHAssetMediaSubtypeNone),

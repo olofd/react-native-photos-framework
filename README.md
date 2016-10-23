@@ -11,7 +11,7 @@ This is not what your user expects today. Most users photos live on iCloud and t
 
 If you use this library/Photos framework you can display the users local resources and the users iCloud resources.
 
-# Retrieving images:
+# Retrieving photos/videos/audio:
 ~~~~
 import RNPhotosFramework from 'react-native-photos-framework';
 
@@ -111,3 +111,6 @@ The getAlbumsMany-api can take multiple queries (array<albumquery>) and return a
 ~~~~
 const localIdentifier = RNPhotosFramework.createAlbum('test-album');
 ~~~~
+
+
+documentation ongoing...

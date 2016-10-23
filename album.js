@@ -6,7 +6,7 @@ export default class Album {
     Object.assign(this, obj);
   }
 
-  getPhotos(params) {
+  getAssets(params) {
     return NativeApi.getAssets({
       ...params,
        _cacheKey : this._cacheKey,

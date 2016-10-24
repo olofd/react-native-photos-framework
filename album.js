@@ -1,9 +1,15 @@
 import NativeApi from './index';
 export default class Album {
 
-  constructor(obj, fetchOptions) {
+  constructor(obj, fetchOptions, eventEmitter) {
     this._fetchOptions = fetchOptions;
     Object.assign(this, obj);
+    eventEmitter.addListener('onAlbumChange', (changeDetails) => {
+      if(changeDetails._cacheKey === this._cacheKey && this._changeHandler) {
+        console.log('CHANGE', changeDetails);
+        this._changeHandler(changeDetails);
+      }
+    });
   }
 
   getAssets(params) {

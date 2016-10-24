@@ -70,7 +70,6 @@ import RNPhotosFramework from 'react-native-photos-framework';
     type: 'album',
     subType: 'any',
     assetCount: 'exact',
-    prepareForEnumeration: true,
     fetchOptions: {
       sortDescriptorKey: 'creationDate',
       sortAscending: true,
@@ -108,9 +107,10 @@ The getAlbumsMany-api can take multiple queries (array<albumquery>) and return a
 | type | `album` | `string` | Defines what type of album/collection you wish to retrieve. Converted in Native to PHAssetCollectionType. Accepted enum-values: `album`, `smartAlbum`, `moment` |
 | subType | `any` | `string` | Defines what subType the album/collection you wish to retrieve should have. Converted in Native to PHAssetCollectionSubtype. Accepted enum-values: `any`, `albumRegular`, `syncedEvent`, `syncedFaces`, `syncedAlbum`, `imported`, `albumMyPhotoStream`, `albumCloudShared`, `smartAlbumGeneric`, `smartAlbumPanoramas`, `smartAlbumVideos`, `smartAlbumFavorites`, `smartAlbumTimelapses`, `smartAlbumAllHidden`, `smartAlbumRecentlyAdded`, `smartAlbumBursts`, `smartAlbumSlomoVideos`, `smartAlbumUserLibrary`, `smartAlbumSelfPortraits`, `smartAlbumScreenshots` |
 | assetCount | `none` | `string/enum` | By default you wont get any asset-count from the collection. But you can choose to get `estimated` count of the collection or `exact`-count. Of course these have different performance-impacts. Remember that your of course fetchOptions affects this count. |
-| prepareForEnumeration | `false` | `boolean` | If this property is `true` then the collections will get cached in native and you will be able to call `getAssets` on any album returned from the query effectively enumerating the result. |
+| cacheForEnumeration | `false` | `boolean` | If this property is `true` then the collections will get cached in native and you will be able to call `getAssets` on any album returned from the query effectively enumerating the result. |
 
 # Working with Albums:
+
 
 ##Static methods:
 

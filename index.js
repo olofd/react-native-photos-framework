@@ -1,29 +1,18 @@
-/**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- *
- * @providesModule CameraRollRNPhotosFramework
- * @flow
- */
 'use strict';
-
-var ReactPropTypes = require('react/lib/ReactPropTypes');
+import ReactPropTypes from 'react/lib/ReactPropTypes';
 import {NativeAppEventEmitter} from 'react-native';
 import {NativeModules} from 'react-native';
-const RCTCameraRollRNPhotosFrameworkManager = NativeModules.CameraRollRNPhotosFrameworkManager;
 import Asset from './asset';
 import Album from './album';
 import AlbumQueryResult from './album-query-result';
-
+import EventEmitter from '../react-native/Libraries/EventEmitter/EventEmitter';
+const RCTCameraRollRNPhotosFrameworkManager = NativeModules.CameraRollRNPhotosFrameworkManager;
+export const eventEmitter = new EventEmitter();
 class CameraRollRNPhotosFramework {
 
   constructor() {
     var subscription = NativeAppEventEmitter.addListener('RNPFChange', (changeDetails) => {
-      console.log('Album changed', changeDetails);
+      eventEmitter.emit('onAlbumChange', changeDetails);
     });
   }
 
@@ -55,25 +44,25 @@ class CameraRollRNPhotosFramework {
 
   getAlbums(params) {
     return RCTCameraRollRNPhotosFrameworkManager.getAlbums(params).then((queryResult) => {
-      return new AlbumQueryResult(queryResult, params.fetchOptions);
+      return new AlbumQueryResult(queryResult, params.fetchOptions, eventEmitter);
     });
   }
 
   getAlbumsMany(params) {
     return RCTCameraRollRNPhotosFrameworkManager.getAlbumsMany(params).then((albumQueryResultList) => {
-      return albumQueryResultList.map((collection, index) => new AlbumQueryResult(collection, params[index].fetchOptions));
+      return albumQueryResultList.map((collection, index) => new AlbumQueryResult(collection, params[index].fetchOptions, eventEmitter));
     });
   }
 
   getAlbumsByName(params) {
-    return RCTCameraRollRNPhotosFrameworkManager.getAlbumsByName(params).then((collectionResponse) => {
-      return collectionResponse.map((album, index) => new Album(album, params.fetchOptions));
+    return RCTCameraRollRNPhotosFrameworkManager.getAlbumsByName(params).then((albumQueryResult) => {
+      return new AlbumQueryResult(albumQueryResult, params.fetchOptions, eventEmitter);
     });
   }
 
   createAlbum(albumName) {
     return RCTCameraRollRNPhotosFrameworkManager.createAlbum(albumName).then((albumObj) => {
-      return new Album(albumObj);
+      return new Album(albumObj, undefined,eventEmitter);
     });
   }
 }

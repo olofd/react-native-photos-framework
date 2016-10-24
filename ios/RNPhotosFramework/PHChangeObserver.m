@@ -2,12 +2,16 @@
 #import "RCTBridge.h"
 #import "RCTBridge+Private.h"
 #import "RCTEventDispatcher.h"
-
+#import "RCTCachedFetchResult.h"
 @implementation PHChangeObserver
 
 static id ObjectOrNull(id object)
 {
     return object ?: [NSNull null];
+}
+
+-(void) receiveTestNotification:(NSNotification*)notification {
+    NSLog(@"onRestart");
 }
 
 + (PHChangeObserver *)sharedChangeObserver {
@@ -32,25 +36,45 @@ static id ObjectOrNull(id object)
 }
 
 - (void)photoLibraryDidChange:(PHChange *)changeInstance {
-    //Unfortunately we seem to have to use a private-api here.
-    //Let me know if you know how we can avoid this.
+    if(changeInstance != nil) {
+        //Unfortunately we seem to have to use a private-api here.
+        //Let me know if you know how we can avoid this.
+        RCTBridge * bridge = [RCTBridge currentBridge];
+        
+        NSMutableDictionary<NSString *, RCTCachedFetchResult *> *previousFetches = [[PHChangeObserver sharedChangeObserver] fetchResults];
+        [previousFetches enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull uuid, RCTCachedFetchResult * _Nonnull cachedFetchResult, BOOL * _Nonnull stop) {
 
-    RCTBridge * bridge = [RCTBridge currentBridge];
+            PHFetchResultChangeDetails *changeDetails = [changeInstance changeDetailsForFetchResult:cachedFetchResult.fetchResult];
+            if(changeDetails != nil) {
+                
+                if(cachedFetchResult.objectType == [PHAsset class]) {
+                    //ALBUM-ASSETS FETCH::
+                    NSLog(@"Fetchresult with PHASSET");
+                }
+                if(cachedFetchResult.objectType == [PHAssetCollection class]) {
+                    //ALBUMS-QUERY FETCH::
+                    NSLog(@"Fetchresult with PHAssetCollection");
+                }
+                
+                
+                NSArray *removedIndexes = [self indexSetToReturnableArray:changeDetails.removedIndexes];
+                if(removedIndexes != [NSNull null]) {
+                    
+                }
+                [bridge.eventDispatcher sendAppEventWithName:@"RNPFChange"
+                                                        body:@{
+                                                               @"_cacheKey": uuid,
+                                                               @"removedIndexes" : [self indexSetToReturnableArray:changeDetails.removedIndexes],
+                                                               @"insertedIndexes" : [self indexSetToReturnableArray:changeDetails.insertedIndexes],
+                                                               @"changedIndexes" : [self indexSetToReturnableArray:changeDetails.changedIndexes],
+                                                               @"hasIncrementalChanges" : @(changeDetails.hasIncrementalChanges),
+                                                               @"hasMoves" : @(changeDetails.hasMoves)
+                                                               }];
+                cachedFetchResult.fetchResult = [changeDetails fetchResultAfterChanges];
+            }
+        }];
+    }
 
-    NSMutableDictionary<NSString *, PHFetchResult *> *previousFetches = [[PHChangeObserver sharedChangeObserver] fetchResults];
-    [previousFetches enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull uuid, PHFetchResult * _Nonnull fetchResult, BOOL * _Nonnull stop) {
-        PHFetchResultChangeDetails *changeDetails = [changeInstance changeDetailsForFetchResult:fetchResult];
-        if(changeDetails != nil) {
-            [bridge.eventDispatcher sendAppEventWithName:@"RNPFChange"
-                                                    body:@{
-                                                           @"uuid": uuid,
-                                                           @"removedIndexes" : [self indexSetToReturnableArray:changeDetails.removedIndexes],
-                                                           @"insertedIndexes" : [self indexSetToReturnableArray:changeDetails.insertedIndexes],
-                                                           @"changedIndexes" : [self indexSetToReturnableArray:changeDetails.changedIndexes]
-                                                           }];
-            [previousFetches setObject:[changeDetails fetchResultAfterChanges] forKey:uuid];
-        }
-    }];
 }
 
 -(NSArray *)indexSetToReturnableArray:(NSIndexSet *)inputIndexSet {
@@ -64,16 +88,14 @@ static id ObjectOrNull(id object)
     return indexArray;
 }
 
--(NSString *) cacheFetchResultAndReturnUUID:(PHFetchResult *)fetchResult {
+-(NSString *) cacheFetchResultAndReturnUUID:(PHFetchResult *)fetchResult andObjectType:(Class)objectType {
     NSString *uuid = [[NSUUID UUID] UUIDString];
-    NSMutableDictionary<NSString *, PHFetchResult *> *previousFetchResults = self.fetchResults;
-    [previousFetchResults setObject:fetchResult forKey:uuid];
+    [self.fetchResults setObject:[[RCTCachedFetchResult alloc] initWithFetchResult:fetchResult andObjectType:objectType] forKey:uuid];
     return uuid;
 }
 
--(PHFetchResult *) getFetchResultFromCacheWithuuid:(NSString *)uuid {
-    NSMutableDictionary<NSString *, PHFetchResult *> *previousFetchResults = self.fetchResults;
-    return [previousFetchResults objectForKey:uuid];
+-(RCTCachedFetchResult *) getFetchResultFromCacheWithuuid:(NSString *)uuid {
+    return [self.fetchResults objectForKey:uuid];
 }
 
 

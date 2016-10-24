@@ -124,14 +124,14 @@ Signature: RNPhotosFramework.createAlbum(albumName) : Promise<album>.
 NOTE: Alums can have the same name. All resources in Photos are unique on their
 localIdentifier. You can use the bellow methods to tackle this:
 
-###getAlbumsByName
+###getAlbumsByTitle
 ~~~~
-return RNPhotosFramework.getAlbumsByName('test-album').then((albums) => {
+return RNPhotosFramework.getAlbumsByTitle('test-album').then((albums) => {
 
 });
 ~~~~
-Signature: RNPhotosFramework.getAlbumsByName(albumName) : Promise<array<album>>.
-May albums can have the same name. Returns all matching albums.
+Signature: RNPhotosFramework.getAlbumsByTitle(albumTitle) : Promise<array<album>>.
+May albums can have the same title. Returns all matching albums.
 
 ###getAlbumByLocalIdentifier and getAlbumByLocalIdentifiers
 ~~~~
@@ -152,6 +152,9 @@ return album.addAssetToAlbum(asset).then((status) => {
 ~~~~
 Signature: album.addAssetToAlbum(asset) : Promise<status>.
 Add an asset/assets to an album.
+NOTE: Can only be called with assets that are stored in the library already.
+If you have a image that you want to save to the library see createAsset.
+
 
 ###removeAssetFromAlbum and removeAssetsFromAlbum
 ~~~~
@@ -159,6 +162,27 @@ return album.removeAssetFromAlbum(asset).then((status) => {
 
 });
 ~~~~
+Signature: album.removeAssetFromAlbum(asset) : Promise<status>.
+Remove asset from album.
+NOTE: Can only be called with assets that are stored in the library already.
+If you have a image that you want to save to the library see createAsset.
 
+###updateTitle
+~~~~
+return album.updateTitle(newTitle).then((status) => {
+
+});
+~~~~
+Signature: album.updateTitle(string) : Promise<status>.
+Change title on an album.
+
+###remove
+~~~~
+return album.remove().then((status) => {
+
+});
+~~~~
+Signature: album.updateTitle() : Promise<status>.
+Remove an album.
 
 documentation in progress...

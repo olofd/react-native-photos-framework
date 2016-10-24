@@ -23,28 +23,26 @@ Check that it is there after the install or update it's value from the default:
 ~~~~
 import RNPhotosFramework from 'react-native-photos-framework';
 
-    RNPhotosFramework.getAssets({
-          //You can call this function multiple times providing startIndex and endIndex as pagination
-          startIndex : 0,
-          endIndex : 100,
+  RNPhotosFramework.getAssets({
+    // You can call this function multiple times providing startIndex and endIndex as
+    // pagination
+    startIndex: 0,
+    endIndex: 100,
 
-          //Media types you wish to display. See table bellow for possible options.
-          mediaTypes : ['photo', 'video'],
-          mediaSubTypes : ['photoPanorama'],
+    // Media types you wish to display. See table bellow for possible options. Where
+    // is the image located? See table bellow for possible options.
+    sourceTypes: ['userLibrary'],
 
-			//Where is the image located? See table bellow for possible options.
-			sourceTypes : ['userLibrary']
+    sortAscending: true,
+    sortDescriptorKey: 'creationDate',
 
-          sortAscending : true,
-          sortDescriptorKey : 'creationDate',
-
-          //Start loading images into memory with these displayOptions (Not required)
-          prepareForSizeDisplay : {
-            width : 91.5,
-            height : 91.5
-          },
-          prepareScale : 2
-        }).then((images) => console.log(images));
+    //Start loading images into memory with these displayOptions (Not required)
+    prepareForSizeDisplay: {
+      width: 91.5,
+      height: 91.5
+    },
+    prepareScale: 2
+  }).then((images) => console.log(images));
 
 ~~~~
 
@@ -68,34 +66,32 @@ import RNPhotosFramework from 'react-native-photos-framework';
 
 # Retrieving albums and enumerating their assets:
 ~~~~
-return RNPhotosFramework.getAlbums(
-    {
-      type: 'album',
-      subType: 'any',
-      assetCount: 'exact',
-      prepareForEnumeration: true,
-      fetchOptions: {
-        sortDescriptorKey: 'creationDate',
-        sortAscending: true,
-        includeHiddenAssets: false,
-        includeAllBurstAssets: false
-      }
+  RNPhotosFramework.getAlbums({
+    type: 'album',
+    subType: 'any',
+    assetCount: 'exact',
+    prepareForEnumeration: true,
+    fetchOptions: {
+      sortDescriptorKey: 'creationDate',
+      sortAscending: true,
+      includeHiddenAssets: false,
+      includeAllBurstAssets: false
     }
-  ).then((queryResult) => {
-  const album = queryResult.albums[0];
-  return album.getAssets({
-    //The fetch-options from the outer query will apply 	here, if we get
-    startIndex : 0,
-    endIndex : 10,
-    prepareForSizeDisplay: {
-      width: 91.5,
-      height: 91.5
-    },
-    prepareScale: 2
-  }).then((assets) => {
-   	  console.log(assets, 'The assets in the first album');
+  }).then((queryResult) => {
+    const album = queryResult.albums[0];
+    return album.getAssets({
+      //The fetch-options from the outer query will apply 	here, if we get
+      startIndex: 0,
+      endIndex: 10,
+      prepareForSizeDisplay: {
+        width: 91.5,
+        height: 91.5
+      },
+      prepareScale: 2
+    }).then((assets) => {
+      console.log(assets, 'The assets in the first album');
+    });
   });
-});
 ~~~~
 
 ###### Props to `getAlbums`
@@ -120,12 +116,10 @@ The getAlbumsMany-api can take multiple queries (array<albumquery>) and return a
 
 ###createAlbum
 ~~~~
-return RNPhotosFramework.createAlbum('test-album').then((album) => {
-  //You can now use the album like any other album:
-  return album.getAssets().then((photos) => {
-
+  RNPhotosFramework.createAlbum('test-album').then((album) => {
+    //You can now use the album like any other album:
+    return album.getAssets().then((photos) => {});
   });
-});
 ~~~~
 
 Signature: RNPhotosFramework.createAlbum(albumName) : Promise<album>.
@@ -134,18 +128,14 @@ localIdentifier. You can use the bellow methods to tackle this:
 
 ###getAlbumsByTitle
 ~~~~
-return RNPhotosFramework.getAlbumsByTitle('test-album').then((albums) => {
-
-});
+  RNPhotosFramework.getAlbumsByTitle('test-album').then((albums) => {});
 ~~~~
 Signature: RNPhotosFramework.getAlbumsByTitle(albumTitle) : Promise<array<album>>.
 May albums can have the same title. Returns all matching albums.
 
 ###getAlbumByLocalIdentifier and getAlbumByLocalIdentifiers
 ~~~~
-return RNPhotosFramework.getAlbumByLocalIdentifier(localIdentifier).then((album) => {
-
-});
+  RNPhotosFramework.getAlbumByLocalIdentifier(localIdentifier).then((album) => {});
 ~~~~
 Signature: RNPhotosFramework.getAlbumByLocalIdentifier(localIdentifier) : Promise<album>.
 All alums carry their localIdentifier on album.localIdentifier.
@@ -154,9 +144,7 @@ All alums carry their localIdentifier on album.localIdentifier.
 
 ###addAssetToAlbum and addAssetsToAlbum
 ~~~~
-return album.addAssetToAlbum(asset).then((status) => {
-
-});
+  album.addAssetToAlbum(asset).then((status) => {});
 ~~~~
 Signature: album.addAssetToAlbum(asset) : Promise<status>.
 Add an asset/assets to an album.
@@ -166,9 +154,7 @@ If you have a image that you want to save to the library see createAsset.
 
 ###removeAssetFromAlbum and removeAssetsFromAlbum
 ~~~~
-return album.removeAssetFromAlbum(asset).then((status) => {
-
-});
+  album.removeAssetFromAlbum(asset).then((status) => {});
 ~~~~
 Signature: album.removeAssetFromAlbum(asset) : Promise<status>.
 Remove asset from album.
@@ -177,18 +163,14 @@ If you have a image that you want to save to the library see createAsset.
 
 ###updateTitle
 ~~~~
-return album.updateTitle(newTitle).then((status) => {
-
-});
+  album.updateTitle(newTitle).then((status) => {});
 ~~~~
 Signature: album.updateTitle(string) : Promise<status>.
 Change title on an album.
 
 ###remove
 ~~~~
-return album.remove().then((status) => {
-
-});
+  album.remove().then((status) => {});
 ~~~~
 Signature: album.remove() : Promise<status>.
 Remove an album.
@@ -228,8 +210,8 @@ PHImageRequestOptionsDeliveryModeHighQualityFormat = 1, // client will get one r
 PHImageRequestOptionsDeliveryModeFastFormat = 2 // client will get one result only and it may be degraded
 ~~~~
 
-This library defaults to loading assets with PHImageRequestOptionsDeliveryModeHighQualityFormat.
-This can be considered to be the same as RN normally loads images. It will simply download the image and and display it.
+This library defaults to loading assets with `PHImageRequestOptionsDeliveryModeHighQualityFormat`.
+This can be considered to be the same as RN normally loads images. It will simply download the image in the size of your <Image> (iCloud-images are stored in multiple sizes, and Photos Framework will download the one closest to your target size) and display it.
 
 But you can choose to use the other two deliveryMode's to. you do this by calling:
 ~~~~
@@ -241,8 +223,6 @@ But you can choose to use the other two deliveryMode's to. you do this by callin
 If you choose to use opportunistic here you will see a low-res-version of the image displayed
 while the highQuality version of the resource is downloaded. NOTE: This library will call correct lifecycle callback's on your image-tag when this is used: the
 `<Image onPartialLoad={//Low-res-callback} onLoad={//High-res-callback} onProgress={//downloadCallback}>`
-
-
 
 
 documentation in progress...

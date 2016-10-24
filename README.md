@@ -17,9 +17,9 @@ NOTE: When running `npm install` this library will try to automatically add `NSP
 Check that it is there after the install or update it's value from the default:
 `Using photo library to select pictures`
 
-###2016-10-24 Under heavy development right now. Feel free to try out and file a issue if anything does not work as expected/documented.
+###2016-10-24 Under heavy development right now. Feel free to try out and file an issue if anything does not work as expected/documented.
 
-# Retrieving photos/videos/audio:
+# Retrieving Assets (photos/videos/audio):
 ~~~~
 import RNPhotosFramework from 'react-native-photos-framework';
 
@@ -239,7 +239,7 @@ But you can choose to use the other two deliveryMode's to. you do this by callin
   });
 ~~~~
 If you choose to use opportunistic here you will see a low-res-version of the image displayed
-while the highQuality version of the resource is downloaded. NOTE: This library will call correct lifecycle callback's on your image-obj when this is used: the
+while the highQuality version of the resource is downloaded. NOTE: This library will call correct lifecycle callback's on your image-tag when this is used: the
 `<Image onPartialLoad={//Low-res-callback} onLoad={//High-res-callback} onProgress={//downloadCallback}>`
 
 

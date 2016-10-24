@@ -40,7 +40,7 @@ import RNPhotosFramework from 'react-native-photos-framework';
 
 ~~~~
 
-#### Props to `getAssets`
+###### Props to `getAssets`
 
 | Prop  | Default  | Type | Description |
 | :------------ |:---------------:| :---------------:| :-----|
@@ -90,7 +90,7 @@ return RNPhotosFramework.getAlbums(
 });
 ~~~~
 
-#### Props to `getAlbums`
+###### Props to `getAlbums`
 
 Get collections allow to query the Photos Framework for asset-albums. Both User-created ones and Smart-albums.
 Note that Apple creates a lot of dynamic, so called Smart Albums, like : 'Recently added', 'Favourites' etc.
@@ -108,7 +108,9 @@ The getAlbumsMany-api can take multiple queries (array<albumquery>) and return a
 
 # Working with Albums:
 
-##createAlbum
+##Static methods:
+
+###createAlbum
 ~~~~
 return RNPhotosFramework.createAlbum('test-album').then((album) => {
   //You can now use the album like any other album:
@@ -122,7 +124,7 @@ Signature: RNPhotosFramework.createAlbum(albumName) : Promise<album>.
 NOTE: Alums can have the same name. All resources in Photos are unique on their
 localIdentifier. You can use the bellow methods to tackle this:
 
-##getAlbumsByName
+###getAlbumsByName
 ~~~~
 return RNPhotosFramework.getAlbumsByName('test-album').then((albums) => {
 
@@ -131,7 +133,7 @@ return RNPhotosFramework.getAlbumsByName('test-album').then((albums) => {
 Signature: RNPhotosFramework.getAlbumsByName(albumName) : Promise<array<album>>.
 May albums can have the same name. Returns all matching albums.
 
-##getAlbumByLocalIdentifier and getAlbumByLocalIdentifiers
+###getAlbumByLocalIdentifier and getAlbumByLocalIdentifiers
 ~~~~
 return RNPhotosFramework.getAlbumByLocalIdentifier(localIdentifier).then((album) => {
 
@@ -140,7 +142,9 @@ return RNPhotosFramework.getAlbumByLocalIdentifier(localIdentifier).then((album)
 Signature: RNPhotosFramework.getAlbumByLocalIdentifier(localIdentifier) : Promise<album>.
 All alums carry their localIdentifier on album.localIdentifier.
 
-##addAssetToAlbum and addAssetsToAlbum
+##Album instance-methods:
+
+###addAssetToAlbum and addAssetsToAlbum
 ~~~~
 return album.addAssetToAlbum(asset).then((status) => {
 
@@ -149,7 +153,7 @@ return album.addAssetToAlbum(asset).then((status) => {
 Signature: album.addAssetToAlbum(asset) : Promise<status>.
 Add an asset/assets to an album.
 
-##removeAssetFromAlbum and removeAssetsFromAlbum
+###removeAssetFromAlbum and removeAssetsFromAlbum
 ~~~~
 return album.removeAssetFromAlbum(asset).then((status) => {
 

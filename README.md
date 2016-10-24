@@ -186,12 +186,15 @@ Signature: album.remove() : Promise<status>.
 Remove an album.
 
 # Working with Assets (Images/Photos):
-
 When you retrieve assets from the API you will get back an Asset object.
 There is nothing special about this object. I've defined it as a class so
 that it can have some instance-methods. But it should be highly compatible with
 native RN-elements like `<Image source={asset}></Image>`.
+//More info about videos/audio coming soon
 
+##Images/Photos
+
+###ImageLoader Concept:
 ~~~~
 NOTE about RN's concept of Image loaders:
 RN has a plugin-like system for displaying Images/Photos.

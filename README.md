@@ -106,10 +106,54 @@ The getAlbumsMany-api can take multiple queries (array<albumquery>) and return a
 | assetCount | `none` | `string/enum` | By default you wont get any asset-count from the collection. But you can choose to get `estimated` count of the collection or `exact`-count. Of course these have different performance-impacts. Remember that your of course fetchOptions affects this count. |
 | prepareForEnumeration | `false` | `boolean` | If this property is `true` then the collections will get cached in native and you will be able to call `getAssets` on any album returned from the query effectively enumerating the result. |
 
-# Creating new Album:
+# Working with Albums:
 
+##createAlbum
 ~~~~
-const localIdentifier = RNPhotosFramework.createAlbum('test-album');
+return RNPhotosFramework.createAlbum('test-album').then((album) => {
+  //You can now use the album like any other album:
+  return album.getAssets().then((photos) => {
+
+  });
+});
+~~~~
+
+Signature: RNPhotosFramework.createAlbum(albumName) : Promise<album>.
+NOTE: Alums can have the same name. All resources in Photos are unique on their
+localIdentifier. You can use the bellow methods to tackle this:
+
+##getAlbumsByName
+~~~~
+return RNPhotosFramework.getAlbumsByName('test-album').then((albums) => {
+
+});
+~~~~
+Signature: RNPhotosFramework.getAlbumsByName(albumName) : Promise<array<album>>.
+May albums can have the same name. Returns all matching albums.
+
+##getAlbumByLocalIdentifier and getAlbumByLocalIdentifiers
+~~~~
+return RNPhotosFramework.getAlbumByLocalIdentifier(localIdentifier).then((album) => {
+
+});
+~~~~
+Signature: RNPhotosFramework.getAlbumByLocalIdentifier(localIdentifier) : Promise<album>.
+All alums carry their localIdentifier on album.localIdentifier.
+
+##addAssetToAlbum and addAssetsToAlbum
+~~~~
+return album.addAssetToAlbum(asset).then((status) => {
+
+});
+~~~~
+Signature: album.addAssetToAlbum(asset) : Promise<status>.
+Add an asset/assets to an album.
+
+##removeAssetFromAlbum and removeAssetsFromAlbum
+~~~~
+return album.removeAssetFromAlbum(asset).then((status) => {
+
+});
 ~~~~
 
 

@@ -1,5 +1,5 @@
 # react-native-photos-framework
-`npm i react-native-photos-framework --save`
+`npm i react-native-photos-framework --save && react-native link react-native-photos-framework`
 
 ###2016-10-24 Under heavy development right now. Feel free to try out and file a issue if anything does not work as expected/documented.
 

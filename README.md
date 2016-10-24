@@ -1,6 +1,10 @@
 # react-native-photos-framework
 `npm i react-native-photos-framework --save && react-native link react-native-photos-framework`
 
+NOTE: When running react-native link react-native-photos-framework this library will try to automatically add `NSPhotoLibraryUsageDescription` to your Info.plist.
+Check that it is there after the install or update it's value from the default:
+`Using photo library to select pictures`
+
 ###2016-10-24 Under heavy development right now. Feel free to try out and file a issue if anything does not work as expected/documented.
 
 Load photos/videos and more from CameraRoll and iCloud.

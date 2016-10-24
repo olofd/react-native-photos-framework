@@ -225,6 +225,7 @@ while the highQuality version of the resource is downloaded. NOTE: This library 
 `<Image onPartialLoad={//Low-res-callback} onLoad={//High-res-callback} onProgress={//downloadCallback}>`
 
 ##Observing library changes
+You can register listeners for library-change-detection on different levels of the api.
 
 ###Library-level
 You can detect globally if the library changed by:
@@ -235,8 +236,18 @@ RNPhotosFramework.onLibraryChange(() => {
 ~~~~
 No details provided
 
+###AlbumQueryResult-level
+You can register a listener that receives updates when any of the albums that result contains
+changes (Not if their assets change, only the Albums get those messages, see bellow).
+You currently receive the following events: `AlbumTitleChanged` (More to come).
+~~~~
+albumQueryResult.onChange((details) => {
+  console.log(details);
+});
+~~~~
+NOTE: If a change occures that affects one of the AlbumQueryResults albums that change will also be passed along to the album.
+
 ###Album-level
-You can register listeners for library-change-detection on different levels of the api.
 On an album object you can do:
 ~~~~
 album.onChange((changeDetails) => {
@@ -246,6 +257,8 @@ album.onChange((changeDetails) => {
 The changeDetails for albums contains the following props:
 ~~~~
 {
+  type : string //AssetChange, AlbumTitleChanged
+  newTitle : string //If AlbumTitleChanged-event.
   removedIndexes : array<number> //The removed indexes
   changedIndexes : array<number> //The changed indexes
   insertedIndexes : array<number> //The inserted indexes
@@ -255,8 +268,6 @@ The changeDetails for albums contains the following props:
 ~~~~
 NOTE: You will have to decide for yourself if you want to do a full reload of the album or rearrange the assets you have in JS-memory according to the information in the changeDetails.
 
-
-
-
+All of these change events is for information. This library will provide a way of getting new immutable collections out of the changes so you can rerender efficiently.
 
 documentation in progress...

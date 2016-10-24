@@ -194,6 +194,9 @@ native RN-elements like `<Image source={asset}></Image>`.
 
 ##Images/Photos
 
+An Image/Photo-asset is fully compatible with RN's <Image>-tag.
+This includes all resizeModes.
+
 ###ImageLoader Concept:
 ~~~~
 NOTE about RN's concept of Image loaders:
@@ -207,6 +210,28 @@ This library defines it's own ImageLoader which can load images from iCloud. (RN
 A ´uri´ that our loader can load is defined in scheme: `pk://` and localIdentifier eg: `9509A678-2A07-405F-B3C6-49FD806915CC/L0/001`
 URI-example: pk://9509A678-2A07-405F-B3C6-49FD806915CC/L0/001
 ~~~~
+
+###deliveryMode (Advanced)
+Apple's Photo Framework will download images from iCloud on demand, and will generally be very smart about caching and loading resources quickly. You can however define how an Image should be loaded. We have 3 different options in PHImageRequestOptionsDeliveryMode:
+
+~~~~
+PHImageRequestOptionsDeliveryModeOpportunistic = 0, // client may get several image results when the call is asynchronous or will get one result when the call is synchronous
+PHImageRequestOptionsDeliveryModeHighQualityFormat = 1, // client will get one result only and it will be as asked or better than asked (sync requests are automatically processed this way regardless of the specified mode)
+PHImageRequestOptionsDeliveryModeFastFormat = 2 // client will get one result only and it may be degraded
+~~~~
+
+This library defaults to loading assets with PHImageRequestOptionsDeliveryModeHighQualityFormat.
+This can be considered to be the same as RN normally loads images. It will simply download the image and and display it.
+
+But you can choose to use the other two deliveryMode's to. you do this by calling:
+~~~~
+  const newAssetWithAnotherDeliveryMode = asset.withOptions({
+      //one of opportunistic|highQuality|fast
+      deliveryMode : 'opportunistic'
+  });
+~~~~
+If you choose to use opportunistic here you will see a low-res-version of the image displayed
+while the highQuality version of the resource is downloaded. NOTE: This library will call correct lifecycle callback's on your image-obj when this is used: the <Image onPartialLoad={//Low-res-callback} onLoad={//High-res-callback} onProgress={//downloadCallback}>
 
 
 

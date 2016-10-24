@@ -42,13 +42,43 @@ static id ObjectOrNull(id object)
         RCTBridge * bridge = [RCTBridge currentBridge];
         
         NSMutableDictionary<NSString *, RCTCachedFetchResult *> *previousFetches = [[PHChangeObserver sharedChangeObserver] fetchResults];
+        
+        
         [previousFetches enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull uuid, RCTCachedFetchResult * _Nonnull cachedFetchResult, BOOL * _Nonnull stop) {
+            
+            if(cachedFetchResult.objectType == [PHAssetCollection class]){
+                [cachedFetchResult.fetchResult enumerateObjectsUsingBlock:^(PHObject *  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                    PHObjectChangeDetails *objDetails = [changeInstance changeDetailsForObject:obj];
+                        if(objDetails != nil) {
+                            PHAssetCollection *before = (PHAssetCollection *)[objDetails objectBeforeChanges];
+                            PHAssetCollection *after = (PHAssetCollection *)[objDetails objectAfterChanges];
+                            if(before && after) {
+                                NSString *oldTitle = [before localizedTitle];
+                                NSString *newTitle = [after localizedTitle];
+                            
+                                if(![oldTitle isEqualToString:newTitle]) {
+                                    NSString *localIdentifier = [after localIdentifier];
+                                    [bridge.eventDispatcher sendAppEventWithName:@"RNPFObjectChange"
+                                                                        body:@{
+                                                                               @"_cacheKey": uuid,
+                                                                               @"albumLocalIdentifier" : localIdentifier,
+                                                                               @"type" : @"AlbumTitleChange",
+                                                                               @"newTitle" : newTitle
+                                                                               }];
+                            }
+
+
+                        }
+                   }
+               }];
+        }
 
             PHFetchResultChangeDetails *changeDetails = [changeInstance changeDetailsForFetchResult:cachedFetchResult.fetchResult];
             if(changeDetails != nil) {
                 [bridge.eventDispatcher sendAppEventWithName:@"RNPFObjectChange"
                                                         body:@{
                                                                @"_cacheKey": uuid,
+                                                               @"type" : @"AssetChange",
                                                                @"removedIndexes" : [self indexSetToReturnableArray:changeDetails.removedIndexes],
                                                                @"insertedIndexes" : [self indexSetToReturnableArray:changeDetails.insertedIndexes],
                                                                @"changedIndexes" : [self indexSetToReturnableArray:changeDetails.changedIndexes],

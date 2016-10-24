@@ -8,6 +8,8 @@ import AlbumQueryResult from './album-query-result';
 import EventEmitter from '../react-native/Libraries/EventEmitter/EventEmitter';
 const RCTCameraRollRNPhotosFrameworkManager = NativeModules.CameraRollRNPhotosFrameworkManager;
 export const eventEmitter = new EventEmitter();
+const cleanCachePromise = RCTCameraRollRNPhotosFrameworkManager.cleanCache();
+
 class CameraRollRNPhotosFramework {
 
   constructor() {
@@ -67,9 +69,22 @@ class CameraRollRNPhotosFramework {
 
   createAlbum(albumName) {
     return RCTCameraRollRNPhotosFrameworkManager.createAlbum(albumName).then((albumObj) => {
-      return new Album(albumObj, undefined,eventEmitter);
+      return new Album(albumObj, undefined, eventEmitter);
     });
+  }
+
+  updateAlbumTitle(params) {
+    return RCTCameraRollRNPhotosFrameworkManager.updateAlbumTitle(params);
   }
 }
 
-export default new CameraRollRNPhotosFramework();
+export default new Proxy(new CameraRollRNPhotosFramework(), {
+  get: function(target, propKey, receiver) {
+    const origMethod = target[propKey];
+    return function(...args) {
+      return cleanCachePromise.then(() => {
+        return origMethod.apply(this, args);
+      });
+    };
+  }
+});

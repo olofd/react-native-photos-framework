@@ -5,8 +5,8 @@ export default class Album {
     this._fetchOptions = fetchOptions;
     Object.assign(this, obj);
     eventEmitter.addListener('onObjectChange', (changeDetails) => {
-      if(changeDetails._cacheKey === this._cacheKey && this._changeHandler) {
-        this._changeHandler(changeDetails);
+      if(changeDetails._cacheKey === this._cacheKey) {
+        this._emitChange(changeDetails);
       }
     });
   }
@@ -43,8 +43,20 @@ export default class Album {
      });
   }
 
+  updateTitle(newTitle) {
+    return NativeApi.updateAlbumTitle({
+       newTitle : newTitle,
+       _cacheKey : this._cacheKey,
+       albumLocalIdentifier : this.localIdentifier
+     });
+  }
+
   onChange(changeHandler) {
     this._changeHandler = changeHandler;
     return () => this._changeHandler = undefined;
+  }
+
+  _emitChange(changeDetails) {
+    this._changeHandler && this._changeHandler(changeDetails);
   }
 }

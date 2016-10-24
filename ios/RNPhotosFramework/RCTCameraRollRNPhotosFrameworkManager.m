@@ -38,6 +38,34 @@ RCT_EXPORT_METHOD(cleanCache:(RCTPromiseResolveBlock)resolve
 }
 
 
+RCT_EXPORT_METHOD(updateAlbumTitle:(NSDictionary *)params
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+    PHAssetCollection *collection = [PHCollectionService getAssetCollectionForParams:params];
+    NSString *newTitle = [RCTConvert NSString:params[@"newTitle"]];
+    if(newTitle == nil) {
+        reject(@"You have to provide newTitle-prop to rename album", @{ @"success" : @(NO) }, nil);
+    }
+    if (![collection canPerformEditOperation:PHCollectionEditOperationRename]) {
+        reject(@"Can't PerformEditOperation", @{ @"success" : @(NO) }, nil);
+        return;
+    }
+    
+    [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+        PHAssetCollectionChangeRequest *changeTitlerequest =[PHAssetCollectionChangeRequest changeRequestForAssetCollection:collection];
+        changeTitlerequest.title = newTitle;
+        
+    } completionHandler:^(BOOL success, NSError *error) {
+        if(success) {
+            resolve(@{ @"success" : @(success) });
+        }else {
+            reject(@"Error", @{ @"success" : @(success) }, nil);
+        }
+    }];
+}
+
+
 RCT_EXPORT_METHOD(addAssetsToAlbum:(NSDictionary *)params
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)

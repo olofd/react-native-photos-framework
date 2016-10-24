@@ -1,12 +1,5 @@
 # react-native-photos-framework
-`npm i react-native-photos-framework --save && react-native link react-native-photos-framework`
-
-NOTE: When running `npm install` this library will try to automatically add `NSPhotoLibraryUsageDescription` to your Info.plist.
-Check that it is there after the install or update it's value from the default:
-`Using photo library to select pictures`
-
-###2016-10-24 Under heavy development right now. Feel free to try out and file a issue if anything does not work as expected/documented.
-
+###Description
 Load photos/videos and more from CameraRoll and iCloud.
 Uses Apples photos framework.
 
@@ -16,6 +9,15 @@ and can only load photos and videos stored on the users device.
 This is not what your user expects today. Most users photos live on iCloud and these won't show if you use ALAssetLibrary.
 
 If you use this library/Photos framework you can display the users local resources and the users iCloud resources.
+
+###Installation:
+`npm i react-native-photos-framework --save && react-native link react-native-photos-framework`
+
+NOTE: When running `npm install` this library will try to automatically add `NSPhotoLibraryUsageDescription` to your Info.plist.
+Check that it is there after the install or update it's value from the default:
+`Using photo library to select pictures`
+
+###2016-10-24 Under heavy development right now. Feel free to try out and file a issue if anything does not work as expected/documented.
 
 # Retrieving photos/videos/audio:
 ~~~~

@@ -131,7 +131,7 @@ localIdentifier. You can use the bellow methods to tackle this:
   RNPhotosFramework.getAlbumsByTitle('test-album').then((albums) => {});
 ~~~~
 Signature: RNPhotosFramework.getAlbumsByTitle(albumTitle) : Promise<array<album>>.
-May albums can have the same title. Returns all matching albums.
+Many albums can have the same title. Returns all matching albums.
 
 ###getAlbumByLocalIdentifier and getAlbumByLocalIdentifiers
 ~~~~
@@ -223,6 +223,40 @@ But you can choose to use the other two deliveryMode's to. you do this by callin
 If you choose to use opportunistic here you will see a low-res-version of the image displayed
 while the highQuality version of the resource is downloaded. NOTE: This library will call correct lifecycle callback's on your image-tag when this is used: the
 `<Image onPartialLoad={//Low-res-callback} onLoad={//High-res-callback} onProgress={//downloadCallback}>`
+
+##Observing library changes
+
+###Library-level
+You can detect globally if the library changed by:
+~~~~
+RNPhotosFramework.onLibraryChange(() => {
+  console.log('Library Change');
+});
+~~~~
+No details provided
+
+###Album-level
+You can register listeners for library-change-detection on different levels of the api.
+On an album object you can do:
+~~~~
+album.onChange((changeDetails) => {
+  console.log('album did change', changeDetails);
+});
+~~~~
+The changeDetails for albums contains the following props:
+~~~~
+{
+  removedIndexes : array<number> //The removed indexes
+  changedIndexes : array<number> //The changed indexes
+  insertedIndexes : array<number> //The inserted indexes
+  hasIncrementalChanges : boolean // A Boolean value that indicates whether changes to the fetch result can be described incrementally.
+  hasMoves : boolean // A Boolean value that indicates whether objects have been rearranged in the fetch result.
+}
+~~~~
+NOTE: You will have to decide for yourself if you want to do a full reload of the album or rearrange the assets you have in JS-memory according to the information in the changeDetails.
+
+
+
 
 
 documentation in progress...

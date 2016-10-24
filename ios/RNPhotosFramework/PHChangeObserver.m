@@ -46,22 +46,7 @@ static id ObjectOrNull(id object)
 
             PHFetchResultChangeDetails *changeDetails = [changeInstance changeDetailsForFetchResult:cachedFetchResult.fetchResult];
             if(changeDetails != nil) {
-                
-                if(cachedFetchResult.objectType == [PHAsset class]) {
-                    //ALBUM-ASSETS FETCH::
-                    NSLog(@"Fetchresult with PHASSET");
-                }
-                if(cachedFetchResult.objectType == [PHAssetCollection class]) {
-                    //ALBUMS-QUERY FETCH::
-                    NSLog(@"Fetchresult with PHAssetCollection");
-                }
-                
-                
-                NSArray *removedIndexes = [self indexSetToReturnableArray:changeDetails.removedIndexes];
-                if(removedIndexes != [NSNull null]) {
-                    
-                }
-                [bridge.eventDispatcher sendAppEventWithName:@"RNPFChange"
+                [bridge.eventDispatcher sendAppEventWithName:@"RNPFObjectChange"
                                                         body:@{
                                                                @"_cacheKey": uuid,
                                                                @"removedIndexes" : [self indexSetToReturnableArray:changeDetails.removedIndexes],
@@ -73,6 +58,9 @@ static id ObjectOrNull(id object)
                 cachedFetchResult.fetchResult = [changeDetails fetchResultAfterChanges];
             }
         }];
+        
+        [bridge.eventDispatcher sendAppEventWithName:@"RNPFLibraryChange"
+                                                body:@{}];
     }
 
 }

@@ -11,12 +11,17 @@ export const eventEmitter = new EventEmitter();
 class CameraRollRNPhotosFramework {
 
   constructor() {
-    var subscription = NativeAppEventEmitter.addListener('RNPFChange', (changeDetails) => {
-      eventEmitter.emit('onAlbumChange', changeDetails);
+    var subscription = NativeAppEventEmitter.addListener('RNPFObjectChange', (changeDetails) => {
+      eventEmitter.emit('onObjectChange', changeDetails);
+    });
+    var subscription = NativeAppEventEmitter.addListener('RNPFLibraryChange', (changeDetails) => {
+      eventEmitter.emit('onLibraryChange', changeDetails);
     });
   }
 
-  onPhotosLibraryChanged() {}
+  onLibraryChange(cb) {
+    return eventEmitter.addListener('onLibraryChange', cb);
+  }
 
   cleanCache() {
     return RCTCameraRollRNPhotosFrameworkManager.cleanCache();

@@ -182,7 +182,30 @@ return album.remove().then((status) => {
 
 });
 ~~~~
-Signature: album.updateTitle() : Promise<status>.
+Signature: album.remove() : Promise<status>.
 Remove an album.
+
+# Working with Assets (Images/Photos):
+
+When you retrieve assets from the API you will get back an Asset object.
+There is nothing special about this object. I've defined it as a class so
+that it can have some instance-methods. But it should be highly compatible with
+native RN-elements like `<Image source={asset}></Image>`.
+
+~~~~
+NOTE about RN's concept of Image loaders:
+RN has a plugin-like system for displaying Images/Photos.
+This means that any library (like this library) can define it's own
+ImageLoader. When RN later gets a request to display a <Image> it will query
+all ImageLoaders loaded in the system and ask which loader can load a specific resource.
+If the resource starts with `https://` for instance, RN's own network-image-loader will take care of loading that resource. While if the scheme of the resource is `asset-library://` another ImageLoader will load that Image.
+
+This library defines it's own ImageLoader which can load images from iCloud. (RN actually already have a ImageLoader that can load iCloud images, but we define our own/extend their original loader so we can have some extra functionality on our loader. (See deliveryMode below)).
+A ´uri´ that our loader can load is defined in scheme: `pk://` and localIdentifier eg: `9509A678-2A07-405F-B3C6-49FD806915CC/L0/001`
+URI-example: pk://9509A678-2A07-405F-B3C6-49FD806915CC/L0/001
+~~~~
+
+
+
 
 documentation in progress...

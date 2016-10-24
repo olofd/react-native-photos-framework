@@ -231,7 +231,8 @@ But you can choose to use the other two deliveryMode's to. you do this by callin
   });
 ~~~~
 If you choose to use opportunistic here you will see a low-res-version of the image displayed
-while the highQuality version of the resource is downloaded. NOTE: This library will call correct lifecycle callback's on your image-obj when this is used: the <Image onPartialLoad={//Low-res-callback} onLoad={//High-res-callback} onProgress={//downloadCallback}>
+while the highQuality version of the resource is downloaded. NOTE: This library will call correct lifecycle callback's on your image-obj when this is used: the
+`<Image onPartialLoad={//Low-res-callback} onLoad={//High-res-callback} onProgress={//downloadCallback}>`
 
 
 

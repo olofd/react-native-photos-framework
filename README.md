@@ -1,6 +1,8 @@
 # react-native-photos-framework
 `npm i react-native-photos-framework --save`
 
+###2016-10-24 Under heavy development right now. Feel free to try out and file a issue if anything does not work as expected/documented.
+
 Load photos/videos and more from CameraRoll and iCloud.
 Uses Apples photos framework.
 

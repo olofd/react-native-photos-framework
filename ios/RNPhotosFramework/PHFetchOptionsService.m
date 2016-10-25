@@ -15,23 +15,65 @@
     options.fetchLimit = [RCTConvert int:params[@"fetchLimit"]];
     options.wantsIncrementalChangeDetails = [RCTConvert BOOL:params[@"wantsIncrementalChangeDetails"]];
     options.predicate = [PHFetchOptionsService getPredicate:params];
+    options.sortDescriptors = [self getSortDescriptorsFromParams:params];
     
-    BOOL sortAscending = [RCTConvert BOOL:params[@"sortAscending"]];
-    NSString *sortDescriptorKey = [RCTConvert NSString:params[@"sortDescriptorKey"]];
-    if(sortDescriptorKey != nil) {
-        options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:sortDescriptorKey ascending:sortAscending]];
-    }
     return options;
+}
+
++(NSArray<NSSortDescriptor *> *)getSortDescriptorsFromParams:(NSDictionary *)params {
+    NSArray *sortDescriptors = [RCTConvert NSArray:params[@"sortDescriptors"]];
+    if(sortDescriptors == nil || sortDescriptors.count == 0) {
+        return nil;
+    }
+    NSMutableArray<NSSortDescriptor *> *nsSortDescriptors = [NSMutableArray arrayWithCapacity:sortDescriptors.count];
+    for(int i = 0; i < sortDescriptors.count; i++) {
+        NSDictionary *sortDescriptorObj = [RCTConvert NSDictionary:[sortDescriptors objectAtIndex:i]];
+        BOOL sortAscending = [RCTConvert BOOL:sortDescriptorObj[@"ascending"]];
+        NSString *sortDescriptorKey = [RCTConvert NSString:sortDescriptorObj[@"key"]];
+        if(sortDescriptorKey != nil) {
+            [nsSortDescriptors addObject:[NSSortDescriptor sortDescriptorWithKey:sortDescriptorKey ascending:sortAscending]];
+        }
+    }
+    return nsSortDescriptors;
+}
+
++(NSPredicate *) getCustomPredicatesForParams:(NSDictionary *)params {
+    NSArray *customPredicates = [RCTConvert NSArray:params[@"customPredicates"]];
+    if(customPredicates == nil || customPredicates.count == 0) {
+        return nil;
+    }
+    NSMutableArray<NSPredicate *> *nsPredicates = [NSMutableArray arrayWithCapacity:customPredicates.count];
+    for(int i = 0; i < customPredicates.count; i++) {
+        NSDictionary *predicateObj = [RCTConvert NSDictionary:[customPredicates objectAtIndex:i]];
+        NSString *predicate = [predicateObj objectForKey:@"predicate"];
+        if(predicate != nil) {
+            NSString *argument = [predicateObj objectForKey:@"predicateArg"];
+            [nsPredicates addObject:[NSPredicate predicateWithFormat:predicate, argument]];
+        }
+    }
+    return [NSCompoundPredicate andPredicateWithSubpredicates:nsPredicates];
+
+}
+
++(PHFetchOptions *)extendWithDefaultsForAssets:(PHFetchOptions *)phFetchOptions {
+    return nil;
 }
 
 +(NSPredicate *) getPredicate:(NSDictionary *)params  {
     NSPredicate *mediaTypePredicate = [PHFetchOptionsService getMediaTypePredicate:params];
-    
     NSPredicate *subTypePredicate = [PHFetchOptionsService getMediaSubTypePredicate:params];
-    if(mediaTypePredicate && subTypePredicate) {
-        return [NSCompoundPredicate andPredicateWithSubpredicates:@[mediaTypePredicate, subTypePredicate]];
+    NSPredicate *customPredicate = [PHFetchOptionsService getCustomPredicatesForParams:params];
+    NSMutableArray *arrayWithPredicates = [NSMutableArray arrayWithCapacity:3];
+    if(mediaTypePredicate) {
+        [arrayWithPredicates addObject:mediaTypePredicate];
     }
-    return mediaTypePredicate != nil ? mediaTypePredicate : subTypePredicate;
+    if(subTypePredicate) {
+        [arrayWithPredicates addObject:subTypePredicate];
+    }
+    if(customPredicate) {
+        [arrayWithPredicates addObject:customPredicate];
+    }
+    return [NSCompoundPredicate andPredicateWithSubpredicates:arrayWithPredicates];
 }
 
 +(NSPredicate *) getMediaTypePredicate:(NSDictionary *)params {

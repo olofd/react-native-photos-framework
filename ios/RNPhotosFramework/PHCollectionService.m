@@ -64,11 +64,10 @@ static id ObjectOrNull(id object)
 
 +(NSMutableDictionary *) generateCollectionResponseWithCollections:(PHFetchResult<PHAssetCollection *> *)collections andParams:(NSDictionary *)params {
     NSString *noCacheFlag = params[@"noCache"];
-    NSString *noCacheChildrenFlag = params[@"noCacheChildren"];
-    BOOL shouldCacheChildren = noCacheChildrenFlag == nil || ![RCTConvert BOOL:noCacheChildrenFlag];
+    BOOL preCacheAssets = [RCTConvert BOOL:params[@"preCacheAssets"]];
     BOOL shouldCache = noCacheFlag == nil || ![RCTConvert BOOL:noCacheFlag];
     
-    NSMutableDictionary *multipleAlbumsResponse = [PHCollectionService generateAlbumsResponseFromParams:params andAlbums:collections andCacheAssets:shouldCache && shouldCacheChildren];
+    NSMutableDictionary *multipleAlbumsResponse = [PHCollectionService generateAlbumsResponseFromParams:params andAlbums:collections andCacheAssets:preCacheAssets];
     if(shouldCache) {
         NSString *uuid = [[PHChangeObserver sharedChangeObserver] cacheFetchResultAndReturnUUID:collections andObjectType:[PHAssetCollection class]];
         [multipleAlbumsResponse setObject:uuid forKey:@"_cacheKey"];
@@ -107,11 +106,15 @@ static id ObjectOrNull(id object)
             
             [albumDictionary setObject:phAssetCollection.localizedTitle forKey:@"title"];
             [albumDictionary setObject:phAssetCollection.localIdentifier forKey:@"localIdentifier"];
-            [albumDictionary setObject:ObjectOrNull(phAssetCollection.startDate) forKey:@"startDate"];
-            [albumDictionary setObject:ObjectOrNull(phAssetCollection.endDate) forKey:@"endDate"];
-            [albumDictionary setObject:ObjectOrNull(phAssetCollection.approximateLocation) forKey:@"approximateLocation"];
-            [albumDictionary setObject:ObjectOrNull(phAssetCollection.localizedLocationNames) forKey:@"localizedLocationNames"];
             
+            BOOL * includeMetaData =  [RCTConvert BOOL:params[@"includeMetaData"]];
+            if(includeMetaData) {
+                [albumDictionary setObject:ObjectOrNull(phAssetCollection.startDate) forKey:@"startDate"];
+                [albumDictionary setObject:ObjectOrNull(phAssetCollection.endDate) forKey:@"endDate"];
+                [albumDictionary setObject:ObjectOrNull(phAssetCollection.approximateLocation) forKey:@"approximateLocation"];
+                [albumDictionary setObject:ObjectOrNull(phAssetCollection.localizedLocationNames) forKey:@"localizedLocationNames"];
+            }
+
             if(cacheAssets || countType == RNPFAssetCountTypeExact) {
                 PHFetchResult<PHAsset *> * assets = [PHCollectionService getAssetForCollection:collection andFetchParams:params];
                 [albumDictionary setObject:@(assets.count) forKey:@"assetCount"];

@@ -3,6 +3,9 @@
 #import "RCTConvert+RNPhotosFramework.h"
 #import "PHFetchOptionsService.h"
 #import "PHChangeObserver.h"
+#import "PHHelpers.h"
+#import "RCTConvert.h"
+#import "RCTConvert+RNPhotosFramework.h"
 @import Photos;
 @implementation PHAssetsService
 
@@ -13,7 +16,7 @@
         return [PHAssetsService getAssetsForParams:params andCacheKey:cacheKey];
     }
     PHFetchOptions *options = [PHFetchOptionsService getFetchOptionsFromParams:[RCTConvert NSDictionary:params[@"fetchOptions"]]];
-    PHFetchResult<PHAssetCollection *> *collections = [PHAssetCollection fetchAssetCollectionsWithLocalIdentifiers:@[albumLocalIdentifier] options:options];
+    PHFetchResult<PHAssetCollection *> *collections = [PHAssetCollection fetchAssetCollectionsWithLocalIdentifiers:@[albumLocalIdentifier] options:nil];
     return [PHAsset fetchAssetsInAssetCollection:collections.firstObject options:options];
 }
 
@@ -39,17 +42,31 @@
     return [PHAsset fetchAssetsWithOptions:options];
 }
 
-+(NSArray<NSDictionary *> *) assetsArrayToUriArray:(NSArray<PHAsset *> *)assetsArray {
++(NSArray<NSDictionary *> *) assetsArrayToUriArray:(NSArray<PHAsset *> *)assetsArray andIncludeMetaData:(BOOL)includeMetaData {
     NSMutableArray *uriArray = [NSMutableArray arrayWithCapacity:assetsArray.count];
     for(int i = 0;i < assetsArray.count;i++) {
         PHAsset *asset =[assetsArray objectAtIndex:i];
-        [uriArray addObject:@{
-                              @"localIdentifier" : [asset localIdentifier],
-                              @"width" : @([asset pixelWidth]),
-                              @"height" : @([asset pixelHeight])
-                              }];
+        NSMutableDictionary *responseDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:[asset localIdentifier], @"localIdentifier", @([asset pixelWidth]), @"width", @([asset pixelHeight]), @"height", nil];
+        if(includeMetaData) {
+
+            [responseDict addEntriesFromDictionary:@{
+                                                     @"modificationDate" : @([PHHelpers getTimeSince1970:[asset creationDate]]),
+                                                     @"creationDate" : @([PHHelpers getTimeSince1970:[asset modificationDate]]),
+                                                     @"location" : [PHHelpers CLLocationToJson:[asset location]],
+                                                     @"mediaType" : [[RCTConvert PHAssetMediaTypeValuesReversed] objectForKey:@([asset mediaType])]
+                                                     }];
+        }
+        [uriArray addObject:responseDict];
     }
     return uriArray;
+}
+
++(NSString *)nsDateToString:(NSDate *)date andDateFormatter:(NSDateFormatter *)dateFormatter {
+    if(date == nil) {
+        return [NSNull null];
+    }
+    NSString *iso8601String = [dateFormatter stringFromDate:date];
+    return iso8601String;
 }
 
 +(NSMutableArray<PHAsset *> *) getAssetsForFetchResult:(PHFetchResult *)assetsFetchResult startIndex:(NSUInteger)startIndex endIndex:(NSUInteger)endIndex {

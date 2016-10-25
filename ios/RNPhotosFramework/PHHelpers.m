@@ -1,0 +1,46 @@
+#import "PHHelpers.h"
+#import <CoreLocation/CLLocation.h>
+#import "RCTConvert.h"
+#import "RCTConvert+RNPhotosFramework.h"
+
+@implementation PHHelpers
+
++(NSDateFormatter *)getISODateFormatter {
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    NSLocale *enUSPOSIXLocale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
+    [dateFormatter setLocale:enUSPOSIXLocale];
+    [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ssZZZZZ"];
+    return dateFormatter;
+}
+
++(NSString *)NSDateToJsonString:(NSDate *)date andDateFormatter:(NSDateFormatter *)dateFormatter {
+    if(date == nil) {
+        return [NSNull null];
+    }
+    NSString *iso8601String = [dateFormatter stringFromDate:date];
+    return iso8601String;
+}
+
++(NSTimeInterval)getTimeSince1970:(NSDate *)date {
+    if(date == nil) {
+        return 0;
+    }
+    return date.timeIntervalSince1970;
+}
+
++(NSDictionary *)CLLocationToJson:(CLLocation *)loc {
+    return loc ? @{
+                       @"latitude": @(loc.coordinate.latitude),
+                       @"longitude": @(loc.coordinate.longitude),
+                       @"altitude": @(loc.altitude),
+                       @"heading": @(loc.course),
+                       @"speed": @(loc.speed),
+                       } : @{};
+}
+
++(NSString *)convertEnumToStringValue:(int)type andValues:(NSDictionary *)values {
+    NSString *match = [[values allKeysForObject:[NSNumber numberWithInt:type]] firstObject];
+    return [[values allKeysForObject:[NSNumber numberWithInt:type]] firstObject];
+}
+
+@end

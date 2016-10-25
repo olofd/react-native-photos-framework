@@ -156,6 +156,8 @@ RCT_EXPORT_METHOD(getAssets:(NSDictionary *)params
 
     NSString *startIndexParam = params[@"startIndex"];
     NSString *endIndexParam = params[@"endIndex"];
+    BOOL includeMetaData = [RCTConvert BOOL:params[@"includeMetaData"]];
+
 
     NSUInteger startIndex = [RCTConvert NSInteger:startIndexParam];
     NSUInteger endIndex = endIndexParam != nil ? [RCTConvert NSInteger:endIndexParam] : (assetsFetchResult.count -1);
@@ -163,7 +165,11 @@ RCT_EXPORT_METHOD(getAssets:(NSDictionary *)params
 
     NSArray<PHAsset *> *assets = [PHAssetsService getAssetsForFetchResult:assetsFetchResult startIndex:startIndex endIndex:endIndex];
     [self prepareAssetsForDisplayWithParams:params andAssets:assets];
-    resolve([PHAssetsService assetsArrayToUriArray:assets]);
+    BOOL includesLastAsset = endIndex >= (assetsFetchResult.count -1);
+    resolve(@{
+              @"assets" : [PHAssetsService assetsArrayToUriArray:assets andIncludeMetaData:includeMetaData],
+              @"includesLastAsset" : @(includesLastAsset)
+            });
 }
 
 -(void) prepareAssetsForDisplayWithParams:(NSDictionary *)params andAssets:(NSArray<PHAsset *> *)assets {

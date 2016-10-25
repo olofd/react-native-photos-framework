@@ -1,9 +1,7 @@
 export default class Asset {
     static scheme = "pk://";
     constructor(assetObj, options) {
-        this.localIdentifier = assetObj.localIdentifier;
-        this.width = assetObj.width;
-        this.height = assetObj.height;
+        Object.assign(this, assetObj);
         if(options) {
           this._queryString = this.serialize(options);
         }

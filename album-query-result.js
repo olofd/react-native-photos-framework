@@ -1,11 +1,11 @@
 import Album from './album';
 export default class AlbumQueryResult {
-    constructor(obj, fetchOptions, eventEmitter) {
-        this._fetchOptions = fetchOptions;
+    constructor(obj, fetchParams, eventEmitter) {
+        this._fetchParams = fetchParams || {};
         Object.assign(this, obj);
         this._albumNativeObjs = this.albums;
         this.albums = this._albumNativeObjs.map(albumObj => new Album(albumObj,
-            fetchOptions, eventEmitter));
+            this._fetchParams.fetchOptions, eventEmitter));
         eventEmitter.addListener('onObjectChange', (changeDetails) => {
             if (changeDetails._cacheKey === this._cacheKey && this._changeHandler) {
                 this._changeHandler(changeDetails);

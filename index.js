@@ -44,26 +44,29 @@ class CameraRollRNPhotosFramework {
   }
 
   getAssets(params) {
-    return RCTCameraRollRNPhotosFrameworkManager.getAssets(params).then((assets) => {
-      return assets.map(p => new Asset(p));
+    return RCTCameraRollRNPhotosFrameworkManager.getAssets(params).then((assetsResponse) => {
+      return {
+        assets : assetsResponse.assets.map(p => new Asset(p)),
+        includesLastAsset : assetsResponse.includesLastAsset
+      };
     });
   }
 
   getAlbums(params) {
     return RCTCameraRollRNPhotosFrameworkManager.getAlbums(params).then((queryResult) => {
-      return new AlbumQueryResult(queryResult, params.fetchOptions, eventEmitter);
+      return new AlbumQueryResult(queryResult, params, eventEmitter);
     });
   }
 
   getAlbumsMany(params) {
     return RCTCameraRollRNPhotosFrameworkManager.getAlbumsMany(params).then((albumQueryResultList) => {
-      return albumQueryResultList.map((collection, index) => new AlbumQueryResult(collection, params[index].fetchOptions, eventEmitter));
+      return albumQueryResultList.map((collection, index) => new AlbumQueryResult(collection, params[index], eventEmitter));
     });
   }
 
   getAlbumsByName(params) {
     return RCTCameraRollRNPhotosFrameworkManager.getAlbumsByName(params).then((albumQueryResult) => {
-      return new AlbumQueryResult(albumQueryResult, params.fetchOptions, eventEmitter);
+      return new AlbumQueryResult(albumQueryResult, params, eventEmitter);
     });
   }
 

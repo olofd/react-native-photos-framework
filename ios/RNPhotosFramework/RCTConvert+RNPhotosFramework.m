@@ -11,37 +11,81 @@
 @implementation RCTConvert(ReactNativePhotosFramework)
 
 
-RCT_ENUM_CONVERTER(RNPFAssetCountType, (@{
-                                          
-                                          // New values
-                                          @"none": @(RNPFAssetCountTypeNone),
-                                          @"estimated": @(RNPFAssetCountTypeEstimated),
-                                          @"exact": @(RNPFAssetCountTypeExact)
-                                          
-                                          }), RNPFAssetCountTypeNone, integerValue)
+#define RCT_ENUM_VALUES(type, values) \
++ (NSDictionary *)type##Values                            \
+{                                                         \
+static NSDictionary *mapping;                           \
+static dispatch_once_t onceToken;                       \
+dispatch_once(&onceToken, ^{                            \
+mapping = values;                                     \
+});                                                     \
+return mapping; \
+}
 
-RCT_ENUM_CONVERTER(PHAssetMediaType, (@{
+#define RCT_ENUM_TO_STRING(type, values) \
++ (NSDictionary *)type##Values                            \
+{                                                         \
+static NSDictionary *mapping;                           \
+static dispatch_once_t onceToken;                       \
+dispatch_once(&onceToken, ^{                            \
+mapping = values;                                     \
+});                                                     \
+return mapping; \
+}
+
+#define RCT_REVERSE_VALUE_KEYS(type, values) \
++ (NSDictionary *)type##ValuesReversed                        \
+{                                                         \
+    static NSDictionary *mapping;                           \
+    static dispatch_once_t onceToken;                       \
+    dispatch_once(&onceToken, ^{                            \
+        NSArray *keys = values.allKeys;                     \
+        NSArray *valuesArray = [values objectsForKeys:keys notFoundMarker:[NSNull null]];    \
+        mapping = [NSDictionary dictionaryWithObjects:keys forKeys:valuesArray];\
+    });                                                     \
+    return mapping;                                         \
+}
+
+
+
+
+RCT_ENUM_VALUES(RNPFAssetCountType, (@{
+                                      // New values
+                                      @"none": @(RNPFAssetCountTypeNone),
+                                      @"estimated": @(RNPFAssetCountTypeEstimated),
+                                      @"exact": @(RNPFAssetCountTypeExact)
+                                      }))
+
+RCT_ENUM_VALUES(PHAssetMediaType, (@{
+                                     
+                                     // New values
+                                     @"image": @(PHAssetMediaTypeImage),
+                                     @"video": @(PHAssetMediaTypeVideo),
+                                     @"audio": @(PHAssetMediaTypeAudio),
+                                     @"unknown": @(PHAssetMediaTypeUnknown)
+                                     
+                                     }))
+RCT_ENUM_VALUES(PHAssetMediaSubtype, (@{
+                                        @"none": @(PHAssetMediaSubtypeNone),
+                                        @"photoPanorama": @(PHAssetMediaSubtypePhotoPanorama),
+                                        @"photoHDR": @(PHAssetMediaSubtypePhotoHDR),
+                                        @"photoScreenshot": @(PHAssetMediaSubtypePhotoScreenshot),
+                                        @"photoLive": @(PHAssetMediaSubtypePhotoLive),
+                                        @"videoStreamed": @(PHAssetMediaSubtypeVideoStreamed),
+                                        @"videoHighFrameRate": @(PHAssetMediaSubtypeVideoHighFrameRate),
+                                        @"videoTimeLapse": @(PHAssetMediaSubtypeVideoTimelapse),
                                         
-                                        // New values
-                                        @"photo": @(PHAssetMediaTypeImage),
-                                        @"video": @(PHAssetMediaTypeVideo),
-                                        @"audio": @(PHAssetMediaTypeAudio),
-                                        @"unknown": @(PHAssetMediaTypeUnknown)
-                                        
-                                        }), PHAssetMediaTypeImage, integerValue)
+                                        }))
 
+RCT_ENUM_CONVERTER(RNPFAssetCountType, [RCTConvert RNPFAssetCountTypeValues], RNPFAssetCountTypeNone, integerValue)
+RCT_REVERSE_VALUE_KEYS(RNPFAssetCountType, [RCTConvert RNPFAssetCountTypeValues])
 
-RCT_ENUM_CONVERTER(PHAssetMediaSubtype, (@{
-                                           @"none": @(PHAssetMediaSubtypeNone),
-                                           @"photoPanorama": @(PHAssetMediaSubtypePhotoPanorama),
-                                           @"photoHDR": @(PHAssetMediaSubtypePhotoHDR),
-                                           @"photoScreenshot": @(PHAssetMediaSubtypePhotoScreenshot),
-                                           @"photoLive": @(PHAssetMediaSubtypePhotoLive),
-                                           @"videoStreamed": @(PHAssetMediaSubtypeVideoStreamed),
-                                           @"videoHighFrameRate": @(PHAssetMediaSubtypeVideoHighFrameRate),
-                                           @"videoTimeLapse": @(PHAssetMediaSubtypeVideoTimelapse),
-                                           
-                                           }), PHAssetMediaSubtypeNone, integerValue)
+RCT_ENUM_CONVERTER(PHAssetMediaType, [RCTConvert PHAssetMediaTypeValues], PHAssetMediaTypeImage, integerValue)
+RCT_REVERSE_VALUE_KEYS(PHAssetMediaType, [RCTConvert PHAssetMediaTypeValues])
+
+RCT_ENUM_CONVERTER(PHAssetMediaSubtype, [RCTConvert PHAssetMediaSubtypeValues], PHAssetMediaSubtypeNone, integerValue)
+RCT_REVERSE_VALUE_KEYS(PHAssetMediaSubtype, [RCTConvert PHAssetMediaSubtypeValues])
+
 
 RCT_ENUM_CONVERTER(PHAssetCollectionType, (@{
                                              @"album": @(PHAssetCollectionTypeAlbum),

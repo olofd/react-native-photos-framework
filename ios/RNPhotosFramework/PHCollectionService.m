@@ -5,6 +5,7 @@
 #import "PHChangeObserver.h"
 #import "RCTConvert.h"
 #import "RCTConvert+RNPhotosFramework.h"
+#import "PHHelpers.h"
 @import Photos;
 @implementation PHCollectionService
 
@@ -112,9 +113,9 @@ static id ObjectOrNull(id object)
             
             BOOL * includeMetaData =  [RCTConvert BOOL:params[@"includeMetaData"]];
             if(includeMetaData) {
-                [albumDictionary setObject:ObjectOrNull(phAssetCollection.startDate) forKey:@"startDate"];
-                [albumDictionary setObject:ObjectOrNull(phAssetCollection.endDate) forKey:@"endDate"];
-                [albumDictionary setObject:ObjectOrNull(phAssetCollection.approximateLocation) forKey:@"approximateLocation"];
+                [albumDictionary setObject:@([PHHelpers getTimeSince1970:phAssetCollection.startDate])forKey:@"startDate"];
+                [albumDictionary setObject:@([PHHelpers getTimeSince1970:phAssetCollection.endDate]) forKey:@"endDate"];
+                [albumDictionary setObject:[PHHelpers CLLocationToJson:phAssetCollection.approximateLocation] forKey:@"approximateLocation"];
                 [albumDictionary setObject:ObjectOrNull(phAssetCollection.localizedLocationNames) forKey:@"localizedLocationNames"];
             }
 

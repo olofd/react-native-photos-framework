@@ -43,4 +43,39 @@
     return [[values allKeysForObject:[NSNumber numberWithInt:type]] firstObject];
 }
 
++(NSMutableArray*) nsOptionsToArray:(int)option andBitSize:(int)bitSize andReversedEnumDict:(NSDictionary *)dict
+{
+    if(option == 0){
+        NSString *zeroValue = [dict objectForKey:0];
+        return zeroValue ? [NSArray arrayWithObject:zeroValue] : [NSNull null];
+    }
+    NSMutableArray * nsOptions = [[NSMutableArray alloc] init];
+        for (NSUInteger i=0; i < bitSize; i++) {
+        NSUInteger enumBitValueToCheck = 1UL << i;
+        if (option & enumBitValueToCheck) {
+            [nsOptions addObject:[dict objectForKey:@(enumBitValueToCheck)]];
+            
+        }
+    }
+    
+    return nsOptions;
+}
+
++(NSString*) nsOptionsToValue:(int)option andBitSize:(int)bitSize andReversedEnumDict:(NSDictionary *)dict
+{
+    if(option == 0){
+        NSString *zeroValue = [dict objectForKey:0];
+        return zeroValue ? zeroValue : [NSNull null];
+    }
+    for (NSUInteger i=0; i < bitSize; i++) {
+        NSUInteger enumBitValueToCheck = 1UL << i;
+        if (option & enumBitValueToCheck) {
+            return [dict objectForKey:@(enumBitValueToCheck)];
+            
+        }
+    }
+    
+    return [NSNull null];
+}
+
 @end

@@ -22,5 +22,8 @@ typedef NS_ENUM(NSInteger, RNPFAssetCountType) {
 + (NSDictionary *)RNPFAssetCountTypeValuesReversed;
 + (NSDictionary *)PHAssetMediaTypeValuesReversed;
 + (NSDictionary *)PHAssetMediaSubtypeValuesReversed;
++ (NSDictionary *)PHAssetBurstSelectionTypeValuesReversed;
++ (NSDictionary *)PHAssetSourceTypeValuesReversed;
+
 
 @end

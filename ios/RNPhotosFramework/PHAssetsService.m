@@ -44,29 +44,32 @@
 
 +(NSArray<NSDictionary *> *) assetsArrayToUriArray:(NSArray<PHAsset *> *)assetsArray andIncludeMetaData:(BOOL)includeMetaData {
     NSMutableArray *uriArray = [NSMutableArray arrayWithCapacity:assetsArray.count];
+    NSDictionary *reveredMediaTypes = [RCTConvert PHAssetMediaTypeValuesReversed];
     for(int i = 0;i < assetsArray.count;i++) {
         PHAsset *asset =[assetsArray objectAtIndex:i];
-        NSMutableDictionary *responseDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:[asset localIdentifier], @"localIdentifier", @([asset pixelWidth]), @"width", @([asset pixelHeight]), @"height", nil];
+        NSMutableDictionary *responseDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:[asset localIdentifier], @"localIdentifier", @([asset pixelWidth]), @"width", @([asset pixelHeight]), @"height", [reveredMediaTypes objectForKey:@([asset mediaType])], @"mediaType",nil];
         if(includeMetaData) {
-
-            [responseDict addEntriesFromDictionary:@{
-                                                     @"modificationDate" : @([PHHelpers getTimeSince1970:[asset creationDate]]),
-                                                     @"creationDate" : @([PHHelpers getTimeSince1970:[asset modificationDate]]),
-                                                     @"location" : [PHHelpers CLLocationToJson:[asset location]],
-                                                     @"mediaType" : [[RCTConvert PHAssetMediaTypeValuesReversed] objectForKey:@([asset mediaType])]
-                                                     }];
+            [responseDict setObject:@([PHHelpers getTimeSince1970:[asset creationDate]]) forKey:@"creationDate"];
+            [responseDict setObject:@([PHHelpers getTimeSince1970:[asset modificationDate]])forKey:@"modificationDate"];
+            [responseDict setObject:[PHHelpers CLLocationToJson:[asset location]] forKey:@"location"];
+            [responseDict setObject:[PHHelpers nsOptionsToArray:[asset mediaSubtypes] andBitSize:32 andReversedEnumDict:[RCTConvert PHAssetMediaSubtypeValuesReversed]] forKey:@"mediaSubTypes"];
+            [responseDict setObject:@([asset isFavorite]) forKey:@"isFavorite"];
+            [responseDict setObject:@([asset isHidden]) forKey:@"isHidden"];
+            [responseDict setObject:[PHHelpers nsOptionsToValue:[asset sourceType] andBitSize:32 andReversedEnumDict:[RCTConvert PHAssetSourceTypeValuesReversed]] forKey:@"sourceType"];
+            NSString *burstIdentifier = [asset burstIdentifier];
+            if(burstIdentifier != nil) {
+                [responseDict setObject:burstIdentifier forKey:@"burstIdentifier"];
+                [responseDict setObject:@([asset representsBurst]) forKey:@"representsBurst"];
+                [responseDict setObject:[PHHelpers nsOptionsToArray:[asset burstSelectionTypes] andBitSize:32 andReversedEnumDict:[RCTConvert PHAssetBurstSelectionTypeValuesReversed]] forKey:@"burstSelectionTypes"];
+            }
+            if([asset mediaType] == PHAssetMediaTypeVideo || [asset mediaType] == PHAssetMediaTypeAudio) {
+                [responseDict setObject:@([asset duration]) forKey:@"duration"];
+            }
         }
+        
         [uriArray addObject:responseDict];
     }
     return uriArray;
-}
-
-+(NSString *)nsDateToString:(NSDate *)date andDateFormatter:(NSDateFormatter *)dateFormatter {
-    if(date == nil) {
-        return [NSNull null];
-    }
-    NSString *iso8601String = [dateFormatter stringFromDate:date];
-    return iso8601String;
 }
 
 +(NSMutableArray<PHAsset *> *) getAssetsForFetchResult:(PHFetchResult *)assetsFetchResult startIndex:(NSUInteger)startIndex endIndex:(NSUInteger)endIndex {

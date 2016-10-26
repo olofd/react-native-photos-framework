@@ -7,4 +7,6 @@
 +(NSTimeInterval)getTimeSince1970:(NSDate *)date;
 +(NSDictionary *)CLLocationToJson:(CLLocation *)loc;
 +(NSString *)convertEnumToStringValue:(int)type andValues:(NSDictionary *)values;
++(NSMutableArray*) nsOptionsToArray:(int)option andBitSize:(int)bitSize andReversedEnumDict:(NSDictionary *)dict;
++(NSString*) nsOptionsToValue:(int)option andBitSize:(int)bitSize andReversedEnumDict:(NSDictionary *)dict;
 @end

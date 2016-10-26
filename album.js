@@ -25,7 +25,7 @@ export default class Album {
 
   addAssetsToAlbum(assets) {
     return NativeApi.addAssetsToAlbum({
-       assets : assets,
+       assets : assets.map(asset => asset.localIdentifier),
        _cacheKey : this._cacheKey,
        albumLocalIdentifier : this.localIdentifier
      });
@@ -37,7 +37,7 @@ export default class Album {
 
   removeAssetsFromAlbum(assets) {
     return NativeApi.removeAssetsFromAlbum({
-       assets : assets,
+       assets : assets.map(asset => asset.localIdentifier),
        _cacheKey : this._cacheKey,
        albumLocalIdentifier : this.localIdentifier
      });

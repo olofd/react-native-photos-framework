@@ -79,6 +79,10 @@ class CameraRollRNPhotosFramework {
   updateAlbumTitle(params) {
     return RCTCameraRollRNPhotosFrameworkManager.updateAlbumTitle(params);
   }
+
+  getAssetsMetaData(assetsLocalIdentifiers) {
+    return RCTCameraRollRNPhotosFrameworkManager.getAssetsMetaData(assetsLocalIdentifiers);
+  }
 }
 
 export default new Proxy(new CameraRollRNPhotosFramework(), {

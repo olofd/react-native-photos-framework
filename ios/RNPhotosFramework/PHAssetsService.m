@@ -15,19 +15,13 @@
     if(albumLocalIdentifier == nil){
         return [PHAssetsService getAssetsForParams:params andCacheKey:cacheKey];
     }
-    PHFetchOptions *options = [PHFetchOptionsService getFetchOptionsFromParams:[RCTConvert NSDictionary:params[@"fetchOptions"]]];
+    PHFetchOptions *options = [PHFetchOptionsService getFetchOptionsFromParams:params];
     PHFetchResult<PHAssetCollection *> *collections = [PHAssetCollection fetchAssetCollectionsWithLocalIdentifiers:@[albumLocalIdentifier] options:nil];
     return [PHAsset fetchAssetsInAssetCollection:collections.firstObject options:options];
 }
 
-+(PHFetchResult<PHAsset *> *) getAssetsForExplicitAssetsParam:(NSDictionary *)params {
-    NSArray *assets = [RCTConvert NSArray:params[@"assets"]];
-    NSMutableArray<NSString *> * localIdentifiers = [NSMutableArray arrayWithCapacity:assets.count];
-    for(int i = 0; i < assets.count; i++) {
-        NSDictionary *asset = [assets objectAtIndex:i];
-        [localIdentifiers addObject:[asset objectForKey:@"localIdentifier"]];
-    }
-    return [PHAsset fetchAssetsWithLocalIdentifiers:localIdentifiers options:nil];
++(PHFetchResult<PHAsset *> *) getAssetsFromArrayOfLocalIdentifiers:(NSArray<NSString *> *)arrayWithLocalIdentifiers {
+    return [PHAsset fetchAssetsWithLocalIdentifiers:arrayWithLocalIdentifiers options:nil];
 }
 
 +(PHFetchResult<PHAsset *> *) getAssetsForParams:(NSDictionary *)params andCacheKey:(NSString *)cacheKey  {
@@ -38,7 +32,7 @@
 }
 
 +(PHFetchResult<PHAsset *> *) getAllAssetsForParams:(NSDictionary *)params {
-    PHFetchOptions *options = [PHFetchOptionsService getFetchOptionsFromParams:[RCTConvert NSDictionary:params[@"fetchOptions"]]];
+    PHFetchOptions *options = [PHFetchOptionsService getFetchOptionsFromParams:params];
     return [PHAsset fetchAssetsWithOptions:options];
 }
 

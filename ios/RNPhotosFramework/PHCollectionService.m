@@ -18,7 +18,7 @@ static id ObjectOrNull(id object)
     NSString * cacheKey = [RCTConvert NSString:params[@"_cacheKey"]];
     NSString * albumLocalIdentifier = [RCTConvert NSString:params[@"albumLocalIdentifier"]];
     if(albumLocalIdentifier) {
-        PHFetchOptions *options = [PHFetchOptionsService getFetchOptionsFromParams:[RCTConvert NSDictionary:params[@"fetchOptions"]]];
+        PHFetchOptions *options = [PHFetchOptionsService getFetchOptionsFromParams:params];
         PHFetchResult<PHAssetCollection *> *collections = [PHAssetCollection fetchAssetCollectionsWithLocalIdentifiers:@[albumLocalIdentifier] options:options];
         return collections.firstObject;
     }
@@ -38,7 +38,6 @@ static id ObjectOrNull(id object)
     }
     PHAssetCollectionType type = [RCTConvert PHAssetCollectionType:typeString];
     PHAssetCollectionSubtype subType = [RCTConvert PHAssetCollectionSubtype:subTypeString];
-    NSDictionary *fetchOptions = [RCTConvert NSDictionary:params[@"fetchOptions"]];
     PHFetchOptions *options = [PHFetchOptionsService getFetchOptionsFromParams:params];
     PHFetchResult<PHAssetCollection *> *albums = [PHAssetCollection fetchAssetCollectionsWithType:type subtype:subType options:options];
     return albums;
@@ -139,8 +138,7 @@ static id ObjectOrNull(id object)
 }
 
 +(PHFetchResult<PHAsset *> *) getAssetForCollection:(PHAssetCollection *)collection andFetchParams:(NSDictionary *)params {
-    NSDictionary *fetchOptions = [RCTConvert NSDictionary:params[@"fetchOptions"]];
-    PHFetchOptions *options = [PHFetchOptionsService getFetchOptionsFromParams:fetchOptions];
+    PHFetchOptions *options = [PHFetchOptionsService getFetchOptionsFromParams:params];
     return  [PHAsset fetchAssetsInAssetCollection:collection options:options];
 }
 

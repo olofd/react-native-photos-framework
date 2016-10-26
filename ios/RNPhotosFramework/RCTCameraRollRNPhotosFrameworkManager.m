@@ -71,7 +71,7 @@ RCT_EXPORT_METHOD(addAssetsToAlbum:(NSDictionary *)params
                   reject:(RCTPromiseRejectBlock)reject)
 {
     PHAssetCollection *assetCollection = [PHCollectionService getAssetCollectionForParams:params];
-    PHFetchResult<PHAsset *> *fetchedAssets = [PHAssetsService getAssetsForExplicitAssetsParam:params];
+    PHFetchResult<PHAsset *> *fetchedAssets = [PHAssetsService getAssetsFromArrayOfLocalIdentifiers:[RCTConvert NSArray:params[@"assets"]]];
     [PHCollectionService addAssets:fetchedAssets toAssetCollection:assetCollection andCompleteBLock:^(BOOL success, NSError * _Nullable error) {
         if(success) {
             resolve(@{ @"success" : @(success) });
@@ -87,7 +87,7 @@ RCT_EXPORT_METHOD(removeAssetsFromAlbum:(NSDictionary *)params
                   reject:(RCTPromiseRejectBlock)reject)
 {
     PHAssetCollection *assetCollection = [PHCollectionService getAssetCollectionForParams:params];
-    PHFetchResult<PHAsset *> *fetchedAssets = [PHAssetsService getAssetsForExplicitAssetsParam:params];
+    PHFetchResult<PHAsset *> *fetchedAssets = [PHAssetsService getAssetsFromArrayOfLocalIdentifiers:[RCTConvert NSArray:params[@"assets"]]];
     [PHCollectionService removeAssets:fetchedAssets fromAssetCollection:assetCollection andCompleteBLock:^(BOOL success, NSError * _Nullable error) {
         if(success) {
             resolve(@{ @"success" : @(success) });
@@ -171,6 +171,20 @@ RCT_EXPORT_METHOD(getAssets:(NSDictionary *)params
               @"includesLastAsset" : @(includesLastAsset)
             });
 }
+
+RCT_EXPORT_METHOD(getAssetsMetaData:(NSArray<NSString *> *)arrayWithLocalIdentifiers
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+    PHFetchResult<PHAsset *> * arrayWithAssets = [PHAssetsService getAssetsFromArrayOfLocalIdentifiers:arrayWithLocalIdentifiers];
+    NSMutableArray<NSDictionary *>  *arrayWithMetaDataObjs = [NSMutableArray arrayWithCapacity:arrayWithAssets.count];
+    [arrayWithAssets enumerateObjectsUsingBlock:^(PHAsset * _Nonnull asset, NSUInteger idx, BOOL * _Nonnull stop) {
+        [arrayWithMetaDataObjs addObject:[PHAssetsService extendAssetDicWithAssetMetaData:[NSMutableDictionary dictionaryWithObject:asset.localIdentifier forKey:@"localIdentifier"] andPHAsset:asset]];
+    }];
+    resolve(arrayWithMetaDataObjs);
+}
+
+
 
 -(void) prepareAssetsForDisplayWithParams:(NSDictionary *)params andAssets:(NSArray<PHAsset *> *)assets {
     CGSize prepareForSizeDisplay = [RCTConvert CGSize:params[@"prepareForSizeDisplay"]];

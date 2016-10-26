@@ -19,6 +19,25 @@ Check that it is there after the install or update it's value from the default:
 
 ###2016-10-24 Under heavy development right now. Feel free to try out and file an issue if anything does not work as expected/documented.
 
+
+###### `fetchOptions`
+
+fetchOptions is a query-object which can be sent both when fetching albums with
+`getAlbums` and when fetching assets with `getAssets`. Bellow you can see the available options
+for fetchOptions. You can also read Apple's documentation around [PHFetchOptions here](https://developer.apple.com/reference/photos/phfetchoptions).
+(Many of the args map one-to-one with native data structures.)
+
+| Prop  | Default  | Type | Description |
+| :------------ |:---------------:| :---------------:| :-----|
+| startIndex | 0 | `number` | startIndex-offset for fetching |
+| mediaTypes (Only for `getAssets`) | ['photo'] | `array<string>` | Defines what mediaType the asset should be. Array combined with OR-operator. eg. ['photo', 'video'] will return both photos and videos. Converted in Native to PHAssetMediaType. Accepted values: `photo`, `video`, `audio`, `unknown` |
+| mediaSubTypes (Only for `getAssets`) | [`none`] | `array<string>` | Defines what subtype the asset should be. Array combined with OR-operator. eg. ['photoPanorama', 'photoHDR'] will return both panorama and HDR-assets. Converted in Native to PHAssetMediaSubtype. Accepted enum-values: `none`, `photoPanorama`, `photoHDR`, `photoScreenshot`, `photoLive`, `videoStreamed`, `videoHighFrameRate`, `videoTimeLapse` (mediaTypes and mediaSubTypes are combined with AND-operator) |
+| sourceTypes (Only for `getAssets`) | - | `array<string>` | Defines where the asset should come from originally. Array combined with OR-operator. Converted in Native to PHAssetSourceType. Accepted enum-values: `none`, `userLibrary`, `cloudShared`, `itunesSynced`. |
+| includeHiddenAssets | false | `boolean` | A Boolean value that determines whether the fetch result includes assets marked as hidden. |
+| includeAllBurstAssets | false | `boolean` | A Boolean value that determines whether the fetch result includes all assets from burst photo sequences. |
+| fetchLimit | 0 | `number` | The maximum number of objects to include in the fetch result. Remember to not use this in the wrong way combined with startIndex and endIndex. 0 means unlimited. |
+| sortDescriptors | - | `array<{key : <string>, ascending : <boolean>}>` |  Multiple sortDescriptors which decide how the result should be sorted. |
+
 # Retrieving Assets (photos/videos/audio):
 ~~~~
 import RNPhotosFramework from 'react-native-photos-framework';
@@ -33,8 +52,14 @@ import RNPhotosFramework from 'react-native-photos-framework';
     // is the image located? See table bellow for possible options.
     sourceTypes: ['userLibrary'],
 
-    sortAscending: true,
-    sortDescriptorKey: 'creationDate',
+    fetchOptions : {
+      sortDescriptors : [
+        {
+          key: 'creationDate',
+          ascending: true,
+        }
+      ]
+    },
 
     //Start loading images into memory with these displayOptions (Not required)
     prepareForSizeDisplay: {
@@ -52,14 +77,7 @@ import RNPhotosFramework from 'react-native-photos-framework';
 | :------------ |:---------------:| :---------------:| :-----|
 | startIndex | 0 | `number` | startIndex-offset for fetching |
 | endIndex | 0 | `number` | endIndex-offset stop for fetching |
-| mediaTypes | ['photo'] | `array<string>` | Defines what mediaType the asset should be. Array combined with OR-operator. eg. ['photo', 'video'] will return both photos and videos. Converted in Native to PHAssetMediaType. Accepted values: `photo`, `video`, `audio`, `unknown` |
-| mediaSubTypes | [`none`] | `array<string>` | Defines what subtype the asset should be. Array combined with OR-operator. eg. ['photoPanorama', 'photoHDR'] will return both panorama and HDR-assets. Converted in Native to PHAssetMediaSubtype. Accepted enum-values: `none`, `photoPanorama`, `photoHDR`, `photoScreenshot`, `photoLive`, `videoStreamed`, `videoHighFrameRate`, `videoTimeLapse` (mediaTypes and mediaSubTypes are combined with AND-operator) |
-| sourceTypes | - | `array<string>` | Defines where the asset should come from originally. Array combined with OR-operator. Converted in Native to PHAssetSourceType. Accepted enum-values: `none`, `userLibrary`, `cloudShared`, `itunesSynced`. |
-| includeHiddenAssets | false | `boolean` | A Boolean value that determines whether the fetch result includes assets marked as hidden. |
-| includeAllBurstAssets | false | `boolean` | A Boolean value that determines whether the fetch result includes all assets from burst photo sequences. |
-| fetchLimit | 0 | `number` | The maximum number of objects to include in the fetch result. Remember to not use this in the wrong way combined with startIndex and endIndex. 0 means unlimited. |
-| sortAscending | false | `boolean` |  Defines sort-order |
-| sortDescriptorKey | 'creationDate' | `string` | Defines field to sort on. More example options to come.  |
+| includeMetaData | false | `boolean` | Include a lot of meta data about the asset (See bellow). You can also choose to get this metaData at a later point by calling asset.getMetaData (See bellow) |
 | prepareForSizeDisplay | - | `Rect(width, height)` | The size of the image you soon will display after running the query. This is highly optional and only there for optimizations of big lists. Prepares the images for display in Photos by using PHCachingImageManager |
 | prepareScale | 2.0 | `number` | The scale to prepare the image in. |
 
@@ -71,8 +89,12 @@ import RNPhotosFramework from 'react-native-photos-framework';
     subType: 'any',
     assetCount: 'exact',
     fetchOptions: {
-      sortDescriptorKey: 'creationDate',
-      sortAscending: true,
+      sortDescriptors : [
+        {
+          key: 'localizedTitle',
+          ascending: true,
+        }
+      ],
       includeHiddenAssets: false,
       includeAllBurstAssets: false
     }
@@ -95,22 +117,22 @@ import RNPhotosFramework from 'react-native-photos-framework';
 
 ###### Props to `getAlbums`
 
-Get collections allow to query the Photos Framework for asset-albums. Both User-created ones and Smart-albums.
+Get albums allow to query the Photos Framework for asset-albums. Both User-created ones and Smart-albums.
 Note that Apple creates a lot of dynamic, so called Smart Albums, like : 'Recently added', 'Favourites' etc.
 
 NOTE: There is also another method called `getAlbumsMany`. This could be considered a low-level-method of the API. It is constructed so that this library can build more accessable methods on top of one joint native-call: like getUserTopAlbums in pure JS.
 The getAlbumsMany-api can take multiple queries (array<albumquery>) and return an array<albumqueryresult>.
-
 
 | Prop  | Default  | Type | Description |
 | :------------ |:---------------:| :---------------:| :-----|
 | type | `album` | `string` | Defines what type of album/collection you wish to retrieve. Converted in Native to PHAssetCollectionType. Accepted enum-values: `album`, `smartAlbum`, `moment` |
 | subType | `any` | `string` | Defines what subType the album/collection you wish to retrieve should have. Converted in Native to PHAssetCollectionSubtype. Accepted enum-values: `any`, `albumRegular`, `syncedEvent`, `syncedFaces`, `syncedAlbum`, `imported`, `albumMyPhotoStream`, `albumCloudShared`, `smartAlbumGeneric`, `smartAlbumPanoramas`, `smartAlbumVideos`, `smartAlbumFavorites`, `smartAlbumTimelapses`, `smartAlbumAllHidden`, `smartAlbumRecentlyAdded`, `smartAlbumBursts`, `smartAlbumSlomoVideos`, `smartAlbumUserLibrary`, `smartAlbumSelfPortraits`, `smartAlbumScreenshots` |
 | assetCount | `none` | `string/enum` | By default you wont get any asset-count from the collection. But you can choose to get `estimated` count of the collection or `exact`-count. Of course these have different performance-impacts. Remember that your of course fetchOptions affects this count. |
-| cacheForEnumeration | `false` | `boolean` | If this property is `true` then the collections will get cached in native and you will be able to call `getAssets` on any album returned from the query effectively enumerating the result. |
+| includeMetaData | false | `boolean` | Include some meta data about the album. You can also choose to get this metaData at a later point by calling album.getMetaData (See bellow) |
+| noCache | `false` | `boolean` | If you set this flag to true. The result won't get cached or tracked for changes. |
+| preCacheAssets | `false` | `boolean` | If you set this property to true all assets of all albums your query returned will be cached and change-tracking will start. |
 
 # Working with Albums:
-
 
 ##Static methods:
 
@@ -175,17 +197,34 @@ Change title on an album.
 Signature: album.remove() : Promise<status>.
 Remove an album.
 
+###getMetaData
+~~~~
+  album.getMetaData().then((mutatedAlbumWithMetaData) => {});
+~~~~
+Fetch meta data for a specific album. You can also include metadata on all albums in the first `getAlbum`-call
+by explicitly setting option `includeMetaData: true`.
+
 # Working with Assets (Images/Photos):
 When you retrieve assets from the API you will get back an Asset object.
 There is nothing special about this object. I've defined it as a class so
 that it can have some instance-methods. But it should be highly compatible with
-native RN-elements like `<Image source={asset}></Image>`.
+native RN-elements like `<Image source={asset.image}></Image>`.
+NOTE: Use the property .image on an asset for the <Image>-tag. Otherwise
+RN will freeze your asset object. And they are, right now at least mutable.
 //More info about videos/audio coming soon
 
 ##Images/Photos
 
 An Image/Photo-asset is fully compatible with RN's <Image>-tag.
 This includes all resizeModes.
+
+##Asset instance-methods:
+
+###getMetaData
+~~~~
+  asset.getMetaData().then((mutatedAssetWithMetaData) => {});
+~~~~
+Fetch meta data for a specific asset. You can also include metadata on all assets in the first `getAsset`-call by explicitly setting option `includeMetaData: true`.
 
 ###ImageLoader Concept:
 ~~~~

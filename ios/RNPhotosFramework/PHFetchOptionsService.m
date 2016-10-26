@@ -4,10 +4,11 @@
 @import Photos;
 @implementation PHFetchOptionsService
 
-+(PHFetchOptions *)getFetchOptionsFromParams:(NSDictionary *)params {
-    if(params == nil) {
++(PHFetchOptions *)getFetchOptionsFromParams:(NSDictionary *)outerParams {
+    if(outerParams == nil) {
         return nil;
     }
+    NSDictionary *params = [RCTConvert NSDictionary:outerParams[@"fetchOptions"]];
     PHFetchOptions *options = [[PHFetchOptions alloc] init];
     options.includeAssetSourceTypes = [RCTConvert PHAssetSourceTypes:params[@"sourceTypes"]];
     options.includeHiddenAssets = [RCTConvert BOOL:params[@"includeHiddenAssets"]];

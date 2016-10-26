@@ -26,7 +26,7 @@
   "files": [
     "LICENSE",
     "ios/",
-    "scr/",
+    "src/",
     "local-cli/",
     "index.js",
     "README.md",

@@ -9,8 +9,7 @@
   "dependencies": {
     "react": "15.3.2",
     "react-native": "^0.35.0",
-    "react-native-camera-roll-picker": "git+https://github.com/olofd/react-native-camera-roll-picker.git",
-    "react-native-photos-framework": "0.0.38"
+    "react-native-photos-framework": "0.0.39"
   },
   "jest": {
     "preset": "jest-react-native"

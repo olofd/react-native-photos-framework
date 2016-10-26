@@ -12,7 +12,7 @@ import {
   View
 } from 'react-native';
 
-import CameraRollPicker from 'react-native-camera-roll-picker';
+import CameraRollPicker from './react-native-camera-roll-picker';
 
 export default class Example extends Component {
   constructor(props) {

@@ -10,6 +10,7 @@
 #import "PHFetchOptionsService.h"
 #import "PHAssetsService.h"
 #import "PHCollectionService.h"
+#import "RCTCachedFetchResult.h"
 @import Photos;
 
 @implementation RCTCameraRollRNPhotosFrameworkManager
@@ -27,6 +28,42 @@ static id ObjectOrNull(id object)
 - (dispatch_queue_t)methodQueue
 {
     return dispatch_queue_create("com.facebook.React.ReactNaticePhotosFramework", DISPATCH_QUEUE_SERIAL);
+}
+
+RCT_EXPORT_METHOD(getAssets:(NSDictionary *)params
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+    NSString *fetchId = params[@"fetchId"];
+    PHFetchResult<PHAsset *> *assetsFetchResult;
+    if(fetchId != nil) {
+        RCTCachedFetchResult *cachedFetchResult = [[PHChangeObserver sharedChangeObserver] getFetchResultFromCacheWithuuid:fetchId];
+        if(cachedFetchResult != nil) {
+            assetsFetchResult = cachedFetchResult.fetchResult;
+        }
+    }
+    if(assetsFetchResult == nil) {
+        assetsFetchResult = [PHAssetsService getAssetsForParams:params];
+        if(fetchId != nil) {
+            [[PHChangeObserver sharedChangeObserver] cacheFetchResultWithUUID:assetsFetchResult andObjectType:[PHAsset class] andUUID:fetchId];
+        }
+    }
+    
+    NSString *startIndexParam = params[@"startIndex"];
+    NSString *endIndexParam = params[@"endIndex"];
+    BOOL includeMetaData = [RCTConvert BOOL:params[@"includeMetaData"]];
+    
+    NSUInteger startIndex = [RCTConvert NSInteger:startIndexParam];
+    NSUInteger endIndex = endIndexParam != nil ? [RCTConvert NSInteger:endIndexParam] : (assetsFetchResult.count -1);
+    
+    
+    NSArray<PHAsset *> *assets = [PHAssetsService getAssetsForFetchResult:assetsFetchResult startIndex:startIndex endIndex:endIndex];
+    [self prepareAssetsForDisplayWithParams:params andAssets:assets];
+    BOOL includesLastAsset = endIndex >= (assetsFetchResult.count -1);
+    resolve(@{
+              @"assets" : [PHAssetsService assetsArrayToUriArray:assets andIncludeMetaData:includeMetaData],
+              @"includesLastAsset" : @(includesLastAsset)
+              });
 }
 
 RCT_EXPORT_METHOD(cleanCache:(RCTPromiseResolveBlock)resolve
@@ -147,30 +184,6 @@ RCT_EXPORT_METHOD(createAlbum:(NSString *)albumName
     }];
 }
 
-RCT_EXPORT_METHOD(getAssets:(NSDictionary *)params
-                  resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject)
-{
-
-    PHFetchResult<PHAsset *> *assetsFetchResult = [PHAssetsService getAssetsForParams:params];
-
-    NSString *startIndexParam = params[@"startIndex"];
-    NSString *endIndexParam = params[@"endIndex"];
-    BOOL includeMetaData = [RCTConvert BOOL:params[@"includeMetaData"]];
-
-
-    NSUInteger startIndex = [RCTConvert NSInteger:startIndexParam];
-    NSUInteger endIndex = endIndexParam != nil ? [RCTConvert NSInteger:endIndexParam] : (assetsFetchResult.count -1);
-
-
-    NSArray<PHAsset *> *assets = [PHAssetsService getAssetsForFetchResult:assetsFetchResult startIndex:startIndex endIndex:endIndex];
-    [self prepareAssetsForDisplayWithParams:params andAssets:assets];
-    BOOL includesLastAsset = endIndex >= (assetsFetchResult.count -1);
-    resolve(@{
-              @"assets" : [PHAssetsService assetsArrayToUriArray:assets andIncludeMetaData:includeMetaData],
-              @"includesLastAsset" : @(includesLastAsset)
-            });
-}
 
 RCT_EXPORT_METHOD(getAssetsMetaData:(NSArray<NSString *> *)arrayWithLocalIdentifiers
                   resolve:(RCTPromiseResolveBlock)resolve

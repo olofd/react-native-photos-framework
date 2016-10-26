@@ -1,4 +1,4 @@
-import NativeApi from './index';
+import NativeApi from '../index';
 export default class Asset {
     static scheme = "pk://";
     constructor(assetObj, options) {

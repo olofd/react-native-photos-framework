@@ -112,6 +112,11 @@ static id ObjectOrNull(id object)
     return uuid;
 }
 
+-(NSString *) cacheFetchResultWithUUID:(PHFetchResult *)fetchResult andObjectType:(Class)objectType andUUID:(NSString *)uuid {
+    [self.fetchResults setObject:[[RCTCachedFetchResult alloc] initWithFetchResult:fetchResult andObjectType:objectType] forKey:uuid];
+    return uuid;
+}
+
 -(RCTCachedFetchResult *) getFetchResultFromCacheWithuuid:(NSString *)uuid {
     return [self.fetchResults objectForKey:uuid];
 }

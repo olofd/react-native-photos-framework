@@ -16,8 +16,7 @@ RCT_EXPORT_MODULE()
   if (![PHAsset class]) {
     return NO;
   }
-  return [requestURL.scheme caseInsensitiveCompare:@"assets-library"] == NSOrderedSame ||
-    [requestURL.scheme caseInsensitiveCompare:@"pk"] == NSOrderedSame;
+  return [requestURL.scheme caseInsensitiveCompare:@"pk"] == NSOrderedSame;
 }
 
 - (RCTImageLoaderCancellationBlock)loadImageForURL:(NSURL *)imageURL

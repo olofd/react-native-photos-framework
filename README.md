@@ -106,8 +106,8 @@ uri : "pk://3D5E6260-2B63-472E-A38A-3B543E936E8C/L0/001"
     fetchOptions: {
       sortDescriptors : [
         {
-          key: 'localizedTitle',
-          ascending: true,
+          key: 'title',
+          ascending: true
         }
       ],
       includeHiddenAssets: false,

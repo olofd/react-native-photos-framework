@@ -10,6 +10,7 @@
 @implementation PHAssetsService
 
 +(PHFetchResult<PHAsset *> *) getAssetsForParams:(NSDictionary *)params  {
+    NSString *fetchId = params[@"fetchId"];
     NSString * cacheKey = [RCTConvert NSString:params[@"_cacheKey"]];
     NSString * albumLocalIdentifier = [RCTConvert NSString:params[@"albumLocalIdentifier"]];
     if(albumLocalIdentifier == nil){

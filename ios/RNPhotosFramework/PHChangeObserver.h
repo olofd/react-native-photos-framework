@@ -6,6 +6,7 @@
 @interface PHChangeObserver : NSObject<PHPhotoLibraryChangeObserver>
 + (PHChangeObserver *)sharedChangeObserver;
 -(NSString *) cacheFetchResultAndReturnUUID:(PHFetchResult *)fetchResult andObjectType:(Class)objectType;
+-(NSString *) cacheFetchResultWithUUID:(PHFetchResult *)fetchResult andObjectType:(Class)objectType andUUID:(NSString *)uuid;
 -(RCTCachedFetchResult *) getFetchResultFromCacheWithuuid:(NSString *)uuid;
 -(void) cleanCache;
 

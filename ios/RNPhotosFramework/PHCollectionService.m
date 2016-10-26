@@ -3,6 +3,8 @@
 #import "RCTConvert+RNPhotosFramework.h"
 #import "PHFetchOptionsService.h"
 #import "PHChangeObserver.h"
+#import "RCTConvert.h"
+#import "RCTConvert+RNPhotosFramework.h"
 @import Photos;
 @implementation PHCollectionService
 
@@ -101,9 +103,10 @@ static id ObjectOrNull(id object)
         {
             PHAssetCollection *phAssetCollection = (PHAssetCollection *)collection;
             NSMutableDictionary *albumDictionary = [NSMutableDictionary new];
-            NSString * typeString = params[@"type"];
-            NSString * subTypeString = params[@"subType"];
             
+            [albumDictionary setObject:[[RCTConvert PHAssetCollectionTypeValuesReversed] objectForKey:@([phAssetCollection assetCollectionType])] forKey:@"type"];
+            [albumDictionary setObject:[[RCTConvert PHAssetCollectionSubtypeValuesReversed] objectForKey:@([phAssetCollection assetCollectionSubtype])] forKey:@"subType"];
+
             [albumDictionary setObject:phAssetCollection.localizedTitle forKey:@"title"];
             [albumDictionary setObject:phAssetCollection.localIdentifier forKey:@"localIdentifier"];
             

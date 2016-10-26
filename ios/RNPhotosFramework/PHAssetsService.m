@@ -49,27 +49,32 @@
         PHAsset *asset =[assetsArray objectAtIndex:i];
         NSMutableDictionary *responseDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:[asset localIdentifier], @"localIdentifier", @([asset pixelWidth]), @"width", @([asset pixelHeight]), @"height", [reveredMediaTypes objectForKey:@([asset mediaType])], @"mediaType",nil];
         if(includeMetaData) {
-            [responseDict setObject:@([PHHelpers getTimeSince1970:[asset creationDate]]) forKey:@"creationDate"];
-            [responseDict setObject:@([PHHelpers getTimeSince1970:[asset modificationDate]])forKey:@"modificationDate"];
-            [responseDict setObject:[PHHelpers CLLocationToJson:[asset location]] forKey:@"location"];
-            [responseDict setObject:[PHHelpers nsOptionsToArray:[asset mediaSubtypes] andBitSize:32 andReversedEnumDict:[RCTConvert PHAssetMediaSubtypeValuesReversed]] forKey:@"mediaSubTypes"];
-            [responseDict setObject:@([asset isFavorite]) forKey:@"isFavorite"];
-            [responseDict setObject:@([asset isHidden]) forKey:@"isHidden"];
-            [responseDict setObject:[PHHelpers nsOptionsToValue:[asset sourceType] andBitSize:32 andReversedEnumDict:[RCTConvert PHAssetSourceTypeValuesReversed]] forKey:@"sourceType"];
-            NSString *burstIdentifier = [asset burstIdentifier];
-            if(burstIdentifier != nil) {
-                [responseDict setObject:burstIdentifier forKey:@"burstIdentifier"];
-                [responseDict setObject:@([asset representsBurst]) forKey:@"representsBurst"];
-                [responseDict setObject:[PHHelpers nsOptionsToArray:[asset burstSelectionTypes] andBitSize:32 andReversedEnumDict:[RCTConvert PHAssetBurstSelectionTypeValuesReversed]] forKey:@"burstSelectionTypes"];
-            }
-            if([asset mediaType] == PHAssetMediaTypeVideo || [asset mediaType] == PHAssetMediaTypeAudio) {
-                [responseDict setObject:@([asset duration]) forKey:@"duration"];
-            }
+            [self extendAssetDicWithAssetMetaData:responseDict andPHAsset:asset];
         }
         
         [uriArray addObject:responseDict];
     }
     return uriArray;
+}
+
++(NSMutableDictionary *)extendAssetDicWithAssetMetaData:(NSMutableDictionary *)dictToExtend andPHAsset:(PHAsset *)asset {
+    [dictToExtend setObject:@([PHHelpers getTimeSince1970:[asset creationDate]]) forKey:@"creationDate"];
+    [dictToExtend setObject:@([PHHelpers getTimeSince1970:[asset modificationDate]])forKey:@"modificationDate"];
+    [dictToExtend setObject:[PHHelpers CLLocationToJson:[asset location]] forKey:@"location"];
+    [dictToExtend setObject:[PHHelpers nsOptionsToArray:[asset mediaSubtypes] andBitSize:32 andReversedEnumDict:[RCTConvert PHAssetMediaSubtypeValuesReversed]] forKey:@"mediaSubTypes"];
+    [dictToExtend setObject:@([asset isFavorite]) forKey:@"isFavorite"];
+    [dictToExtend setObject:@([asset isHidden]) forKey:@"isHidden"];
+    [dictToExtend setObject:[PHHelpers nsOptionsToValue:[asset sourceType] andBitSize:32 andReversedEnumDict:[RCTConvert PHAssetSourceTypeValuesReversed]] forKey:@"sourceType"];
+    NSString *burstIdentifier = [asset burstIdentifier];
+    if(burstIdentifier != nil) {
+        [dictToExtend setObject:burstIdentifier forKey:@"burstIdentifier"];
+        [dictToExtend setObject:@([asset representsBurst]) forKey:@"representsBurst"];
+        [dictToExtend setObject:[PHHelpers nsOptionsToArray:[asset burstSelectionTypes] andBitSize:32 andReversedEnumDict:[RCTConvert PHAssetBurstSelectionTypeValuesReversed]] forKey:@"burstSelectionTypes"];
+    }
+    if([asset mediaType] == PHAssetMediaTypeVideo || [asset mediaType] == PHAssetMediaTypeAudio) {
+        [dictToExtend setObject:@([asset duration]) forKey:@"duration"];
+    }
+    return dictToExtend;
 }
 
 +(NSMutableArray<PHAsset *> *) getAssetsForFetchResult:(PHFetchResult *)assetsFetchResult startIndex:(NSUInteger)startIndex endIndex:(NSUInteger)endIndex {

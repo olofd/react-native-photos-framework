@@ -1,41 +1,41 @@
 {
-    "name": "react-native-photos-framework",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/olofd/react-native-photos-framework.git"
-    },
-    "version": "0.0.38",
-    "description": "Use Apples Photos Framework with react-native to fetch media from CameraRoll and iCloud",
-    "author": "Olof Dahlbom olof.dahlbom@me.com",
-    "nativePackage": true,
-    "license": "MIT",
-    "homepage": "https://github.com/olofd/react-native-photos-framework",
-    "keywords": [
-        "react-native",
-        "react-native-camera-roll",
-        "Photos Framework",
-        "iCloud",
-        "camera-roll",
-        "cameraroll",
-        "react",
-        "native",
-        "camera",
-        "photo",
-        "code"
-    ],
-    "files": [
-        "LICENSE",
-        "ios/",
-        "scr/",
-        "local-cli/",
-        "index.js",
-        "README.md",
-        "install.js"
-    ],
-    "dependencies": {},
-    "scripts": {
-        "update": "git add . && git commit -m \"Updated\" && npm version patch && git push --tags && git push origin master && npm publish",
-        "update-small": "git add . && git commit -m \"Updated\" && git push origin master",
-        "postinstall": "node install.js"
-    }
+  "name": "react-native-photos-framework",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/olofd/react-native-photos-framework.git"
+  },
+  "version": "0.0.39",
+  "description": "Use Apples Photos Framework with react-native to fetch media from CameraRoll and iCloud",
+  "author": "Olof Dahlbom olof.dahlbom@me.com",
+  "nativePackage": true,
+  "license": "MIT",
+  "homepage": "https://github.com/olofd/react-native-photos-framework",
+  "keywords": [
+    "react-native",
+    "react-native-camera-roll",
+    "Photos Framework",
+    "iCloud",
+    "camera-roll",
+    "cameraroll",
+    "react",
+    "native",
+    "camera",
+    "photo",
+    "code"
+  ],
+  "files": [
+    "LICENSE",
+    "ios/",
+    "scr/",
+    "local-cli/",
+    "index.js",
+    "README.md",
+    "install.js"
+  ],
+  "dependencies": {},
+  "scripts": {
+    "update": "git add . && git commit -m \"Updated\" && npm version patch && git push --tags && git push origin master && npm publish",
+    "update-small": "git add . && git commit -m \"Updated\" && git push origin master",
+    "postinstall": "node install.js"
+  }
 }

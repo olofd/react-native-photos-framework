@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import ImageItem from './ImageItem';
 import RNPhotosFramework from 'react-native-photos-framework';
+var simple_timer = require('simple-timer')
 
 class CameraRollPicker extends Component {
   constructor(props) {
@@ -42,15 +43,17 @@ class CameraRollPicker extends Component {
   }
 
   _fetch() {
+    simple_timer.start('fetch_timer');
     RNPhotosFramework.getAssets({
       fetchId : 'this-is-for-caching-purposes',
       startIndex : this.state.images.length,
-      endIndex : this.state.images.length +  100,
-      prepareForDisplay : {
-        width : 25,
-        height : 25
-      }
-    }).then((data) => this._appendImages(data), (e) => console.log(e));
+      endIndex : this.state.images.length + 400,
+
+    }).then((data) => {
+      simple_timer.stop('fetch_timer');
+      console.log('Fetch request took %s milliseconds.', simple_timer.get('fetch_timer').delta)
+      this._appendImages(data);
+    }, (e) => console.log(e));
   }
 
   _appendImages(data) {
@@ -95,6 +98,7 @@ class CameraRollPicker extends Component {
         removeClippedSubviews={removeClippedSubviews}
         renderFooter={this._renderFooterSpinner.bind(this)}
         onEndReached={this._onEndReached.bind(this)}
+        onEndReachedThreshold={2000}
         dataSource={dataSource}
         renderRow={rowData => this._renderRow(rowData)} />
     ) : (
@@ -262,9 +266,9 @@ CameraRollPicker.propTypes = {
 }
 
 CameraRollPicker.defaultProps = {
-  scrollRenderAheadDistance: 500,
+  scrollRenderAheadDistance: 800,
   initialListSize: 1,
-  pageSize: 3,
+  pageSize: 12,
   removeClippedSubviews: true,
   groupTypes: 'SavedPhotos',
   maximum: 15,

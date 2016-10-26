@@ -4,12 +4,16 @@
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
-    "test": "jest"
+    "test": "jest",
+    "link-all": "wml add ~/react-native-photos-framework/src ~/react-native-photos-framework/example/node_modules/react-native-photos-framework/src && wml start"
   },
   "dependencies": {
+    "babel": "^6.5.2",
+    "babel-plugin-module-alias": "^1.6.0",
     "react": "15.3.2",
     "react-native": "^0.35.0",
-    "react-native-photos-framework": "0.0.40"
+    "react-native-photos-framework": "0.0.40",
+    "simple-timer": "0.0.5"
   },
   "jest": {
     "preset": "jest-react-native"

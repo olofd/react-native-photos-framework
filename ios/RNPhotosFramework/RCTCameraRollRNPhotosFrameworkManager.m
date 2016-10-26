@@ -11,6 +11,7 @@
 #import "PHAssetsService.h"
 #import "PHCollectionService.h"
 #import "RCTCachedFetchResult.h"
+#import "RCTProfile.h"
 @import Photos;
 
 @implementation RCTCameraRollRNPhotosFrameworkManager
@@ -34,6 +35,7 @@ RCT_EXPORT_METHOD(getAssets:(NSDictionary *)params
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
+    RCT_PROFILE_BEGIN_EVENT(0, @"-[RCTCameraRollRNPhotosFrameworkManager getAssets", nil);
     NSString *fetchId = params[@"fetchId"];
     PHFetchResult<PHAsset *> *assetsFetchResult;
     if(fetchId != nil) {
@@ -64,6 +66,7 @@ RCT_EXPORT_METHOD(getAssets:(NSDictionary *)params
               @"assets" : [PHAssetsService assetsArrayToUriArray:assets andIncludeMetaData:includeMetaData],
               @"includesLastAsset" : @(includesLastAsset)
               });
+    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 }
 
 RCT_EXPORT_METHOD(cleanCache:(RCTPromiseResolveBlock)resolve
@@ -200,16 +203,20 @@ RCT_EXPORT_METHOD(getAssetsMetaData:(NSArray<NSString *> *)arrayWithLocalIdentif
 
 
 -(void) prepareAssetsForDisplayWithParams:(NSDictionary *)params andAssets:(NSArray<PHAsset *> *)assets {
-    CGSize prepareForSizeDisplay = [RCTConvert CGSize:params[@"prepareForSizeDisplay"]];
-    CGFloat prepareScale = [RCTConvert CGFloat:params[@"prepareScale"]];
-    PHCachingImageManager *cacheManager = [PHCachingImageManagerInstance sharedCachingManager];
-    
-    if(prepareForSizeDisplay.width != 0 && prepareForSizeDisplay.height != 0) {
-        if(prepareScale < 0.1) {
-            prepareScale = 2;
+    NSString *prepareProp = params[@"prepareForSizeDisplay"];
+    if(prepareProp != nil) {
+        CGSize prepareForSizeDisplay = [RCTConvert CGSize:params[@"prepareForSizeDisplay"]];
+        CGFloat prepareScale = [RCTConvert CGFloat:params[@"prepareScale"]];
+        PHCachingImageManager *cacheManager = [PHCachingImageManagerInstance sharedCachingManager];
+        
+        if(prepareForSizeDisplay.width != 0 && prepareForSizeDisplay.height != 0) {
+            if(prepareScale < 0.1) {
+                prepareScale = 2;
+            }
+            [cacheManager startCachingImagesForAssets:assets targetSize:CGSizeApplyAffineTransform(prepareForSizeDisplay, CGAffineTransformMakeScale(prepareScale, prepareScale)) contentMode:PHImageContentModeAspectFill options:nil];
         }
-        [cacheManager startCachingImagesForAssets:assets targetSize:CGSizeApplyAffineTransform(prepareForSizeDisplay, CGAffineTransformMakeScale(prepareScale, prepareScale)) contentMode:PHImageContentModeAspectFill options:nil];
     }
+
 }
 
 

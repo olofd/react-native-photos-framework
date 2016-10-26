@@ -6,19 +6,25 @@
 #import "PHHelpers.h"
 #import "RCTConvert.h"
 #import "RCTConvert+RNPhotosFramework.h"
+#import "RCTProfile.h"
+
 @import Photos;
 @implementation PHAssetsService
 
 +(PHFetchResult<PHAsset *> *) getAssetsForParams:(NSDictionary *)params  {
-    NSString *fetchId = params[@"fetchId"];
     NSString * cacheKey = [RCTConvert NSString:params[@"_cacheKey"]];
     NSString * albumLocalIdentifier = [RCTConvert NSString:params[@"albumLocalIdentifier"]];
     if(albumLocalIdentifier == nil){
         return [PHAssetsService getAssetsForParams:params andCacheKey:cacheKey];
     }
+    return [self getAssetsForParams:params andAlbumLocalIdentifier:albumLocalIdentifier];
+}
+
++(PHFetchResult<PHAsset *> *)getAssetsForParams:(NSDictionary *)params andAlbumLocalIdentifier:(NSString *)albumLocalIdentifier {
     PHFetchOptions *options = [PHFetchOptionsService getFetchOptionsFromParams:params];
     PHFetchResult<PHAssetCollection *> *collections = [PHAssetCollection fetchAssetCollectionsWithLocalIdentifiers:@[albumLocalIdentifier] options:nil];
-    return [PHAsset fetchAssetsInAssetCollection:collections.firstObject options:options];
+    PHFetchResult<PHAsset *> * assets = [PHAsset fetchAssetsInAssetCollection:collections.firstObject options:options];
+    return assets;
 }
 
 +(PHFetchResult<PHAsset *> *) getAssetsFromArrayOfLocalIdentifiers:(NSArray<NSString *> *)arrayWithLocalIdentifiers {
@@ -38,9 +44,11 @@
 }
 
 +(NSArray<NSDictionary *> *) assetsArrayToUriArray:(NSArray<PHAsset *> *)assetsArray andIncludeMetaData:(BOOL)includeMetaData {
+    RCT_PROFILE_BEGIN_EVENT(0, @"-[RCTCameraRollRNPhotosFrameworkManager assetsArrayToUriArray", nil);
+
     NSMutableArray *uriArray = [NSMutableArray arrayWithCapacity:assetsArray.count];
     NSDictionary *reveredMediaTypes = [RCTConvert PHAssetMediaTypeValuesReversed];
-    for(int i = 0;i < assetsArray.count;i++) {
+    for(int i = 0;i < assetsArray.count; i++) {
         PHAsset *asset =[assetsArray objectAtIndex:i];
         NSMutableDictionary *responseDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:[asset localIdentifier], @"localIdentifier", @([asset pixelWidth]), @"width", @([asset pixelHeight]), @"height", [reveredMediaTypes objectForKey:@([asset mediaType])], @"mediaType",nil];
         if(includeMetaData) {
@@ -49,6 +57,8 @@
         
         [uriArray addObject:responseDict];
     }
+    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
+
     return uriArray;
 }
 

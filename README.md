@@ -81,6 +81,7 @@ import RNPhotosFramework from 'react-native-photos-framework';
 | prepareScale | 2.0 | `number` | The scale to prepare the image in. |
 
 ###Example of asset response with `includeMetaData : true`
+~~~~
 creationDate : 1466766146
 duration : 17.647 (video)
 width : 1920
@@ -94,6 +95,7 @@ mediaType : "video"
 modificationDate : 1466766146
 sourceType : "userLibrary"
 uri : "pk://3D5E6260-2B63-472E-A38A-3B543E936E8C/L0/001"
+~~~~
 
 # Retrieving albums and enumerating their assets:
 ~~~~

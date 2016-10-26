@@ -66,7 +66,7 @@ import RNPhotosFramework from 'react-native-photos-framework';
       height: 91.5
     },
     prepareScale: 2
-  }).then((images) => console.log(images));
+  }).then((response) => console.log(response.assets));
 
 ~~~~
 
@@ -124,8 +124,8 @@ uri : "pk://3D5E6260-2B63-472E-A38A-3B543E936E8C/L0/001"
         height: 91.5
       },
       prepareScale: 2
-    }).then((assets) => {
-      console.log(assets, 'The assets in the first album');
+    }).then((response) => {
+      console.log(response.assets, 'The assets in the first album');
     });
   });
 ~~~~

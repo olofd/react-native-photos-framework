@@ -29,9 +29,8 @@ for fetchOptions. You can also read Apple's documentation around [PHFetchOptions
 
 | Prop  | Default  | Type | Description |
 | :------------ |:---------------:| :---------------:| :-----|
-| startIndex | 0 | `number` | startIndex-offset for fetching |
-| mediaTypes (Only for `getAssets`) | ['photo'] | `array<string>` | Defines what mediaType the asset should be. Array combined with OR-operator. eg. ['photo', 'video'] will return both photos and videos. Converted in Native to PHAssetMediaType. Accepted values: `photo`, `video`, `audio`, `unknown` |
-| mediaSubTypes (Only for `getAssets`) | [`none`] | `array<string>` | Defines what subtype the asset should be. Array combined with OR-operator. eg. ['photoPanorama', 'photoHDR'] will return both panorama and HDR-assets. Converted in Native to PHAssetMediaSubtype. Accepted enum-values: `none`, `photoPanorama`, `photoHDR`, `photoScreenshot`, `photoLive`, `videoStreamed`, `videoHighFrameRate`, `videoTimeLapse` (mediaTypes and mediaSubTypes are combined with AND-operator) |
+| mediaTypes (Only for `getAssets`) | - | `array<string>` | Defines what mediaType the asset should be. Array combined with OR-operator. eg. ['photo', 'video'] will return both photos and videos. Converted in Native to PHAssetMediaType. Accepted values: `photo`, `video`, `audio`, `unknown` |
+| mediaSubTypes (Only for `getAssets`) | - | `array<string>` | Defines what subtype the asset should be. Array combined with OR-operator. eg. ['photoPanorama', 'photoHDR'] will return both panorama and HDR-assets. Converted in Native to PHAssetMediaSubtype. Accepted enum-values: `none`, `photoPanorama`, `photoHDR`, `photoScreenshot`, `photoLive`, `videoStreamed`, `videoHighFrameRate`, `videoTimeLapse` (mediaTypes and mediaSubTypes are combined with AND-operator) |
 | sourceTypes (Only for `getAssets`) | - | `array<string>` | Defines where the asset should come from originally. Array combined with OR-operator. Converted in Native to PHAssetSourceType. Accepted enum-values: `none`, `userLibrary`, `cloudShared`, `itunesSynced`. |
 | includeHiddenAssets | false | `boolean` | A Boolean value that determines whether the fetch result includes assets marked as hidden. |
 | includeAllBurstAssets | false | `boolean` | A Boolean value that determines whether the fetch result includes all assets from burst photo sequences. |
@@ -81,6 +80,20 @@ import RNPhotosFramework from 'react-native-photos-framework';
 | prepareForSizeDisplay | - | `Rect(width, height)` | The size of the image you soon will display after running the query. This is highly optional and only there for optimizations of big lists. Prepares the images for display in Photos by using PHCachingImageManager |
 | prepareScale | 2.0 | `number` | The scale to prepare the image in. |
 
+###Example of asset response with `includeMetaData : true`
+creationDate : 1466766146
+duration : 17.647 (video)
+width : 1920
+height : 1080
+isFavorite : false
+isHidden : false
+localIdentifier : "3D5E6260-2B63-472E-A38A-3B543E936E8C/L0/001"
+location : Object
+mediaSubTypes : null
+mediaType : "video"
+modificationDate : 1466766146
+sourceType : "userLibrary"
+uri : "pk://3D5E6260-2B63-472E-A38A-3B543E936E8C/L0/001"
 
 # Retrieving albums and enumerating their assets:
 ~~~~

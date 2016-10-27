@@ -157,26 +157,39 @@ RCT_EXPORT_METHOD(getAlbumsMany:(NSArray *)params
     resolve(responseArray);
 }
 
-RCT_EXPORT_METHOD(getAlbumsByName:(NSDictionary *)params
+RCT_EXPORT_METHOD(getAlbumsByTitles:(NSDictionary *)params
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-    NSString * albumName = [RCTConvert NSString:params[@"albumName"]];
-    if(albumName == nil) {
-        reject(@"albumName cannot be null", nil, nil);
+    NSArray * albumTitles = [RCTConvert NSArray:params[@"albumTitles"]];
+    if(albumTitles == nil) {
+        reject(@"albumTitles cannot be null", nil, nil);
     }
-    PHFetchResult<PHAssetCollection *> * collections = [PHCollectionService getUserAlbumsTiteled:albumName withParams:params];
+    PHFetchResult<PHAssetCollection *> * collections = [PHCollectionService getUserAlbumsByTitles:albumTitles withParams:params];
     resolve([PHCollectionService generateCollectionResponseWithCollections:collections andParams:params]);
 }
 
-RCT_EXPORT_METHOD(createAlbum:(NSString *)albumName
+RCT_EXPORT_METHOD(createAlbums:(NSArray *)albumTitles
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-    if(albumName == nil) {
-        reject(@"albumName cannot be null", nil, nil);
+    if(albumTitles == nil) {
+        reject(@"input array with album-names array<string> cannot be null", nil, nil);
     }
-    [PHCollectionService createAlbumWithTitle:albumName andCompleteBLock:^(BOOL success, NSError * _Nullable error, NSString * _Nullable localIdentifier) {
+    
+    if(albumTitles.count == 0) {
+        resolve(@[]);
+    }
+    
+    [PHCollectionService createAlbumsWithTitles:albumTitles andCompleteBLock:^(BOOL success, NSError * _Nullable error, NSArray<NSString *> *localIdentifier) {
+        if(success) {
+            resolve(localIdentifier);
+        }else{
+            reject([NSString stringWithFormat:@"Error creating albumTitles %@", albumTitles], nil, error);
+        }
+    }];
+    
+    /*[PHCollectionService createAlbumWithTitle:albumName andCompleteBLock:^(BOOL success, NSError * _Nullable error, NSString * _Nullable localIdentifier) {
         if(success) {
             resolve(@{
                       @"localIdentifier" : localIdentifier
@@ -184,7 +197,7 @@ RCT_EXPORT_METHOD(createAlbum:(NSString *)albumName
         }else{
             reject([NSString stringWithFormat:@"Error creating album named %@", albumName], nil, error);
         }
-    }];
+    }];*/
 }
 
 

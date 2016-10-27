@@ -51,7 +51,7 @@ class CameraRollPicker extends Component {
 
     }).then((data) => {
       simple_timer.stop('fetch_timer');
-      console.log('Fetch request took %s milliseconds.', simple_timer.get('fetch_timer').delta)
+      console.log('react-native-photos-framework fetch request took %s milliseconds.', simple_timer.get('fetch_timer').delta)
       this._appendImages(data);
     }, (e) => console.log(e));
   }

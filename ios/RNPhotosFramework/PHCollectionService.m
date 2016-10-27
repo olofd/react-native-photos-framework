@@ -50,9 +50,9 @@ static id ObjectOrNull(id object)
     return topLevelUserCollections;
 }
 
-+(PHFetchResult<PHAssetCollection *> *)getUserAlbumsTiteled:(NSString *)title withParams:(NSDictionary *)params {
++(PHFetchResult<PHAssetCollection *> *)getUserAlbumsByTitles:(NSArray *)titles withParams:(NSDictionary *)params {
     PHFetchOptions *fetchOptions = [PHFetchOptionsService getFetchOptionsFromParams:params];
-    fetchOptions.predicate = [NSPredicate predicateWithFormat:@"title = %@", title];
+    fetchOptions.predicate = [NSPredicate predicateWithFormat:@"title in %@", titles];
     NSString * typeString = params[@"type"];
     NSString * subTypeString = params[@"subType"];
     PHAssetCollectionType type = [RCTConvert PHAssetCollectionType:typeString];
@@ -169,22 +169,23 @@ andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error, NSSt
     }
 }*/
 
-+(void) createAlbumWithTitle:(NSString *)title andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error, NSString *__nullable localIdentifier))completeBlock {
-    __block PHObjectPlaceholder *placeholder;
++(void) createAlbumsWithTitles:(NSArray *)titles andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error, NSArray<NSString *> * localIdentifier))completeBlock {
+    __block NSMutableArray<PHObjectPlaceholder *> *placeholders = [NSMutableArray arrayWithCapacity:titles.count];
     
     [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
         
-        PHAssetCollectionChangeRequest *createAlbum = [PHAssetCollectionChangeRequest creationRequestForAssetCollectionWithTitle:title];
-        placeholder = [createAlbum placeholderForCreatedAssetCollection];
-        
-    } completionHandler:^(BOOL success, NSError *error) {
-        PHAssetCollection *collection;
-        if (success)
-        {
-            PHFetchResult *collectionFetchResult = [PHAssetCollection fetchAssetCollectionsWithLocalIdentifiers:@[placeholder.localIdentifier] options:nil];
-            collection = collectionFetchResult.firstObject;
+        for(int i = 0; i < titles.count; i++) {
+            NSString *title = [titles objectAtIndex:i];
+            PHAssetCollectionChangeRequest *createAlbum = [PHAssetCollectionChangeRequest creationRequestForAssetCollectionWithTitle:title];
+            [placeholders addObject:[createAlbum placeholderForCreatedAssetCollection]];
         }
-        completeBlock(success, error, collection.localIdentifier);
+    } completionHandler:^(BOOL success, NSError *error) {
+        NSMutableArray *arrayWithLocalIdentifiers = [NSMutableArray arrayWithCapacity:placeholders.count];
+        for(int i = 0; i < placeholders.count; i++) {
+            PHObjectPlaceholder *placeHolder = [placeholders objectAtIndex:i];
+            [arrayWithLocalIdentifiers addObject:placeHolder.localIdentifier];
+        }
+        completeBlock(success, error, arrayWithLocalIdentifiers);
     }];
 }
 

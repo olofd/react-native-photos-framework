@@ -12,51 +12,50 @@ import {
   View
 } from 'react-native';
 
-import CameraRollPicker from './react-native-camera-roll-picker';
-
+import AlbumList from './album-list';
+import RNPhotosFramework from 'react-native-photos-framework';
+const TEST_ALBUM_ONE = 'RNPF-test-1';
+const TEST_ALBUM_TWO = 'RNPF-test-2';
 export default class Example extends Component {
   constructor(props) {
     super(props);
-
     this.state = {
-      num: 0,
-      selected: [],
+      num: 0
     };
   }
 
-  getSelectedImages(images, current) {
-    var num = images.length;
+  componentWillMount() {
+    //Start with creating 2 test-albums that we can work with:
+    //First Check if they already exist, if they do. clean up:
+  //  RNPhotosFramework.createAlbum(TEST_ALBUM_ONE);
+  //  RNPhotosFramework.createAlbum(TEST_ALBUM_TWO);
 
-    this.setState({
-      num: num,
-      selected: images,
+    this.testAlbumsExist().then((albums) => {
+      this.removeAlbums(albums);
     });
+  }
 
-    console.log(current);
-    console.log(this.state.selected);
+  removeAlbums(albums) {
+
+  }
+
+  testAlbumsExist() {
+    return RNPhotosFramework.getAlbumsByTitles([TEST_ALBUM_ONE, TEST_ALBUM_TWO]).then((fetchResult) => {
+      const albumsThatDoExit = [TEST_ALBUM_ONE, TEST_ALBUM_TWO].filter(testAlbumTitle => fetchResult.albums.some(album => album.title === testAlbumTitle));
+      const albumsThatDontExit = [TEST_ALBUM_ONE, TEST_ALBUM_TWO].filter(testAlbumTitle => !fetchResult.albums.some(album => album.title === testAlbumTitle));
+      if(albumsThatDontExit.length) {
+        return RNPhotosFramework.createAlbums(albumsThatDontExit).then((newAlbums) => {
+          return albumsThatDoExit.concat(newAlbums);
+        });
+      }
+      return fetchResult.albums;
+    });
   }
 
   render() {
     return (
       <View style={styles.container}>
-        <View style={styles.content}>
-          <Text style={styles.text}>
-            <Text style={styles.bold}> {this.state.num} </Text> images has been selected
-          </Text>
-        </View>
-        <CameraRollPicker
-          scrollRenderAheadDistance={500}
-          initialListSize={1}
-          pageSize={3}
-          removeClippedSubviews={false}
-          groupTypes='SavedPhotos'
-          batchSize={5}
-          maximum={3}
-          selected={this.state.selected}
-          assetType='Photos'
-          imagesPerRow={3}
-          imageMargin={5}
-          callback={this.getSelectedImages.bind(this)} />
+        <AlbumList></AlbumList>
       </View>
     );
   }
@@ -64,28 +63,8 @@ export default class Example extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#F6AE2D',
-  },
-  content: {
-    marginTop: 15,
-    height: 50,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-  },
-  text: {
-    fontSize: 16,
-    alignItems: 'center',
-    color: '#fff',
-  },
-  bold: {
-    fontWeight: 'bold',
-  },
-  info: {
-    fontSize: 12,
-  },
+    flex: 1
+  }
 });
 
 AppRegistry.registerComponent('Example', () => Example);

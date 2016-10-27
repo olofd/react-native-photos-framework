@@ -10,6 +10,8 @@ const RCTCameraRollRNPhotosFrameworkManager = NativeModules.CameraRollRNPhotosFr
 export const eventEmitter = new EventEmitter();
 const cleanCachePromise = RCTCameraRollRNPhotosFrameworkManager.cleanCache();
 
+//Main JS-implementation
+//Most methods are written to handle array of input operations.
 class CameraRollRNPhotosFramework {
 
   constructor() {
@@ -64,15 +66,33 @@ class CameraRollRNPhotosFramework {
     });
   }
 
-  getAlbumsByName(params) {
-    return RCTCameraRollRNPhotosFrameworkManager.getAlbumsByName(params).then((albumQueryResult) => {
+  getAlbumsByTitle(title) {
+    return this.getAlbumsWithParams({
+      albumTitles : [title]
+    });
+  }
+
+  getAlbumsByTitles(titles) {
+    return this.getAlbumsWithParams({
+      albumTitles : titles
+    });
+  }
+
+  //param should include property called albumTitles : array<string>
+  //But can also include things like fetchOptions and type/subtype.
+  getAlbumsWithParams(params) {
+    return RCTCameraRollRNPhotosFrameworkManager.getAlbumsByTitles(params).then((albumQueryResult) => {
       return new AlbumQueryResult(albumQueryResult, params, eventEmitter);
     });
   }
 
-  createAlbum(albumName) {
-    return RCTCameraRollRNPhotosFrameworkManager.createAlbum(albumName).then((albumObj) => {
-      return new Album(albumObj, undefined, eventEmitter);
+  createAlbum(albumTitle) {
+    return this.createAlbums([albumTitle]);
+  }
+
+  createAlbums(albumTitles) {
+    return RCTCameraRollRNPhotosFrameworkManager.createAlbums(albumTitles).then((albumLocalIdentifiers) => {
+      return albumLocalIdentifiers.map(newAlbumLocalIdentifier => new Album({localIdentifier : newAlbumLocalIdentifier}, undefined, eventEmitter));
     });
   }
 

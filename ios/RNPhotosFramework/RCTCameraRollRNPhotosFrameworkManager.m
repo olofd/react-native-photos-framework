@@ -188,17 +188,30 @@ RCT_EXPORT_METHOD(createAlbums:(NSArray *)albumTitles
             reject([NSString stringWithFormat:@"Error creating albumTitles %@", albumTitles], nil, error);
         }
     }];
-    
-    /*[PHCollectionService createAlbumWithTitle:albumName andCompleteBLock:^(BOOL success, NSError * _Nullable error, NSString * _Nullable localIdentifier) {
-        if(success) {
-            resolve(@{
-                      @"localIdentifier" : localIdentifier
-                    });
-        }else{
-            reject([NSString stringWithFormat:@"Error creating album named %@", albumName], nil, error);
-        }
-    }];*/
 }
+
+RCT_EXPORT_METHOD(deleteAlbums:(NSArray *)albumsLocalIdentifiers
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+    if(albumsLocalIdentifiers == nil) {
+        reject(@"input array with album-localIdentifiers array<string> cannot be null", nil, nil);
+    }
+    
+    if(albumsLocalIdentifiers.count == 0) {
+        resolve(@[]);
+    }
+    
+    [PHCollectionService deleteAlbumsWithLocalIdentifers:albumsLocalIdentifiers andCompleteBLock:^(BOOL success, NSError * _Nullable error) {
+        if(success) {
+            resolve(@{@"success" : @(success)});
+        }else{
+            reject(@"Error deleting albums", nil, error);
+        }
+    }];
+}
+
+
 
 
 RCT_EXPORT_METHOD(getAssetsMetaData:(NSArray<NSString *> *)arrayWithLocalIdentifiers

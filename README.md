@@ -159,7 +159,10 @@ The getAlbumsMany-api can take multiple queries (array<albumquery>) and return a
   });
 ~~~~
 
-Signature: RNPhotosFramework.createAlbum(albumName) : Promise<album>.
+Signature: RNPhotosFramework.createAlbum(albumTitle) : Promise<album>.
+There is also another multi-method you can use here:
+Signature: RNPhotosFramework.createAlbums(albumTitles) : Promise<album>.
+
 NOTE: Alums can have the same name. All resources in Photos are unique on their
 localIdentifier. You can use the bellow methods to tackle this:
 
@@ -169,6 +172,9 @@ localIdentifier. You can use the bellow methods to tackle this:
 ~~~~
 Signature: RNPhotosFramework.getAlbumsByTitle(albumTitle) : Promise<array<album>>.
 Many albums can have the same title. Returns all matching albums.
+There is also another multi-method you can use here:
+Signature: RNPhotosFramework.getAlbumsByTitles(albumTitles) : Promise<array<album>>.
+Signature: RNPhotosFramework.getAlbumsWithParams({albumTitles, ...otherThingLikeFetchOptionsOrType/SubType}) : Promise<array<album>>.
 
 ###getAlbumByLocalIdentifier and getAlbumByLocalIdentifiers
 ~~~~
@@ -205,12 +211,12 @@ If you have a image that you want to save to the library see createAsset.
 Signature: album.updateTitle(string) : Promise<status>.
 Change title on an album.
 
-###remove
+###delete
 ~~~~
-  album.remove().then((status) => {});
+  album.delete().then((status) => {});
 ~~~~
-Signature: album.remove() : Promise<status>.
-Remove an album.
+Signature: album.delete() : Promise<status>.
+Delete an album.
 
 ###getMetaData
 ~~~~

@@ -103,6 +103,10 @@ class CameraRollRNPhotosFramework {
   getAssetsMetaData(assetsLocalIdentifiers) {
     return RCTCameraRollRNPhotosFrameworkManager.getAssetsMetaData(assetsLocalIdentifiers);
   }
+
+  deleteAlbums(albums) {
+    return RCTCameraRollRNPhotosFrameworkManager.deleteAlbums(albums.map(album => album.localIdentifier));
+  }
 }
 
 export default new Proxy(new CameraRollRNPhotosFramework(), {

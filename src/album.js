@@ -51,6 +51,10 @@ export default class Album {
      });
   }
 
+  delete() {
+    return NativeApi.deleteAlbums([this]);
+  }
+
   onChange(changeHandler) {
     this._changeHandler = changeHandler;
     return () => this._changeHandler = undefined;

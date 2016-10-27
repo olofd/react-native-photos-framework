@@ -36,7 +36,7 @@ export default class Example extends Component {
   }
 
   removeAlbums(albums) {
-
+    return RNPhotosFramework.deleteAlbums(albums);
   }
 
   testAlbumsExist() {

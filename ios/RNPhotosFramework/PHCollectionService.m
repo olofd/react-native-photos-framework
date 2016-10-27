@@ -18,8 +18,7 @@ static id ObjectOrNull(id object)
     NSString * cacheKey = [RCTConvert NSString:params[@"_cacheKey"]];
     NSString * albumLocalIdentifier = [RCTConvert NSString:params[@"albumLocalIdentifier"]];
     if(albumLocalIdentifier) {
-        PHFetchOptions *options = [PHFetchOptionsService getFetchOptionsFromParams:params];
-        PHFetchResult<PHAssetCollection *> *collections = [PHAssetCollection fetchAssetCollectionsWithLocalIdentifiers:@[albumLocalIdentifier] options:options];
+        PHFetchResult<PHAssetCollection *> *collections = [PHAssetCollection fetchAssetCollectionsWithLocalIdentifiers:@[albumLocalIdentifier] options:nil];
         return collections.firstObject;
     }
     return [[[PHChangeObserver sharedChangeObserver] getFetchResultFromCacheWithuuid:cacheKey] fetchResult];
@@ -186,6 +185,15 @@ andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error, NSSt
             [arrayWithLocalIdentifiers addObject:placeHolder.localIdentifier];
         }
         completeBlock(success, error, arrayWithLocalIdentifiers);
+    }];
+}
+
++(void) deleteAlbumsWithLocalIdentifers:(NSMutableArray *)localIdentifiers andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error))completeBlock {
+    PHFetchResult<PHAssetCollection *> *collections = [PHAssetCollection fetchAssetCollectionsWithLocalIdentifiers:localIdentifiers options:nil];
+    [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+        [PHAssetCollectionChangeRequest deleteAssetCollections:collections];
+    } completionHandler:^(BOOL success, NSError *error) {
+        completeBlock(success, error);
     }];
 }
 

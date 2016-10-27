@@ -27,8 +27,8 @@ export default class Example extends Component {
   componentWillMount() {
     //Start with creating 2 test-albums that we can work with:
     //First Check if they already exist, if they do. clean up:
-  //  RNPhotosFramework.createAlbum(TEST_ALBUM_ONE);
-  //  RNPhotosFramework.createAlbum(TEST_ALBUM_TWO);
+    //RNPhotosFramework.createAlbum(TEST_ALBUM_ONE);
+    //RNPhotosFramework.createAlbum(TEST_ALBUM_TWO);
 
     this.testAlbumsExist().then((albums) => {
       this.removeAlbums(albums);

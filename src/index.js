@@ -1,4 +1,3 @@
-'use strict';
 import ReactPropTypes from 'react/lib/ReactPropTypes';
 import {NativeAppEventEmitter} from 'react-native';
 import {NativeModules} from 'react-native';
@@ -10,8 +9,8 @@ const RCTCameraRollRNPhotosFrameworkManager = NativeModules.CameraRollRNPhotosFr
 export const eventEmitter = new EventEmitter();
 const cleanCachePromise = RCTCameraRollRNPhotosFrameworkManager.cleanCache();
 
-//Main JS-implementation
-//Most methods are written to handle array of input operations.
+// Main JS-implementation Most methods are written to handle array of input
+// operations.
 class CameraRollRNPhotosFramework {
 
   constructor() {
@@ -48,8 +47,8 @@ class CameraRollRNPhotosFramework {
   getAssets(params) {
     return RCTCameraRollRNPhotosFrameworkManager.getAssets(params).then((assetsResponse) => {
       return {
-        assets : assetsResponse.assets.map(p => new Asset(p)),
-        includesLastAsset : assetsResponse.includesLastAsset
+        assets: assetsResponse.assets.map(p => new Asset(p)),
+        includesLastAsset: assetsResponse.includesLastAsset
       };
     });
   }
@@ -67,19 +66,15 @@ class CameraRollRNPhotosFramework {
   }
 
   getAlbumsByTitle(title) {
-    return this.getAlbumsWithParams({
-      albumTitles : [title]
-    });
+    return this.getAlbumsWithParams({albumTitles: [title]});
   }
 
   getAlbumsByTitles(titles) {
-    return this.getAlbumsWithParams({
-      albumTitles : titles
-    });
+    return this.getAlbumsWithParams({albumTitles: titles});
   }
 
-  //param should include property called albumTitles : array<string>
-  //But can also include things like fetchOptions and type/subtype.
+  // param should include property called albumTitles : array<string> But can also
+  // include things like fetchOptions and type/subtype.
   getAlbumsWithParams(params) {
     return RCTCameraRollRNPhotosFrameworkManager.getAlbumsByTitles(params).then((albumQueryResult) => {
       return new AlbumQueryResult(albumQueryResult, params, eventEmitter);
@@ -92,7 +87,9 @@ class CameraRollRNPhotosFramework {
 
   createAlbums(albumTitles) {
     return RCTCameraRollRNPhotosFrameworkManager.createAlbums(albumTitles).then((albumLocalIdentifiers) => {
-      return albumLocalIdentifiers.map(newAlbumLocalIdentifier => new Album({localIdentifier : newAlbumLocalIdentifier}, undefined, eventEmitter));
+      return albumLocalIdentifiers.map(newAlbumLocalIdentifier => new Album({
+        localIdentifier: newAlbumLocalIdentifier
+      }, undefined, eventEmitter));
     });
   }
 
@@ -110,7 +107,11 @@ class CameraRollRNPhotosFramework {
   }
 
   createImageAsset(imageAsset) {
-    return this.createImageAssets([imageAsset]);
+    return this.createImageAssets({images: [imageAsset]}).then((insertResult) => {
+      if (insertResult.localIdentifiers) {
+        return new Asset({localIdentifier: insertResult.localIdentifiers[0]});
+      }
+    });
   }
 
   createImageAssets(imageAssets) {
@@ -119,12 +120,10 @@ class CameraRollRNPhotosFramework {
 }
 
 export default new Proxy(new CameraRollRNPhotosFramework(), {
-  get: function(target, propKey, receiver) {
+  get: (target, propKey, receiver) => {
     const origMethod = target[propKey];
     return function(...args) {
-      return cleanCachePromise.then(() => {
-        return origMethod.apply(this, args);
-      });
+      return cleanCachePromise.then(() => origMethod.apply(this, args));
     };
   }
 });

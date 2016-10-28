@@ -249,7 +249,7 @@ RCT_EXPORT_METHOD(createImageAssets:(NSArray<PHSaveAssetRequest *> *)requests
     
     [self saveImages:requests andLocalIdentifers:[NSMutableArray arrayWithCapacity:requests.count] andCompleteBLock:^(BOOL success, NSError * _Nullable error, NSMutableArray<NSString *> *localIdentifiers) {
         if(localIdentifiers && localIdentifiers.count != 0) {
-            return resolve(@{@"localIdentifiers" : localIdentifiers, @"finnishedWithErrors" : @(success) });
+            return resolve(@{@"localIdentifiers" : localIdentifiers, @"finnishedWithErrors" : @((BOOL)!success) });
             return;
         }
         return reject(@"Error creating assets", nil, error);

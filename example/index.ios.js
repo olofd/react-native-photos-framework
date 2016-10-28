@@ -4,13 +4,8 @@
  * @flow
  */
 
-import React, { Component } from 'react';
-import {
-  AppRegistry,
-  StyleSheet,
-  Text,
-  View
-} from 'react-native';
+import React, {Component} from 'react';
+import {AppRegistry, StyleSheet, Text, View} from 'react-native';
 
 import AlbumList from './album-list';
 import RNPhotosFramework from 'react-native-photos-framework';
@@ -25,22 +20,28 @@ export default class Example extends Component {
   }
 
   componentWillMount() {
-    //Start with creating 2 test-albums that we can work with:
-    //First Check if they already exist, if they do. clean up:
-    //RNPhotosFramework.createAlbum(TEST_ALBUM_ONE);
-    //RNPhotosFramework.createAlbum(TEST_ALBUM_TWO);
+    // Start with creating 2 test-albums that we can work with: First Check if they
+    // already exist, if they do. clean up:
+    // RNPhotosFramework.createAlbum(TEST_ALBUM_ONE);
+    // RNPhotosFramework.createAlbum(TEST_ALBUM_TWO);
 
     return this.testAlbumsExist().then((albums) => {
-      return RNPhotosFramework.createImageAssets([{
-        uri : 'https://c1.staticflickr.com/6/5337/8940995208_5da979c52f.jpg'
-      }, {
-        uri : 'https://upload.wikimedia.org/wikipedia/commons/d/db/Patern_test.jpg'
-      }]).then((assets) => {
-        debugger;
+      return RNPhotosFramework.createImageAssets({
+        album : albums[0],
+        images: [
+          {
+            uri: 'https://c1.staticflickr.com/6/5337/8940995208_5da979c52f.jpg'
+          }, {
+            uri: 'https://upload.wikimedia.org/wikipedia/commons/d/db/Patern_test.jpg'
+          }
+        ]
+      }).then((assets) => {}, () => {
+        //ProgressCallback
+      }).then(() => {
+        //Complete
       });
     });
   }
-
 
   removeAlbums(albums) {
     return RNPhotosFramework.deleteAlbums(albums);
@@ -50,7 +51,7 @@ export default class Example extends Component {
     return RNPhotosFramework.getAlbumsByTitles([TEST_ALBUM_ONE, TEST_ALBUM_TWO]).then((fetchResult) => {
       const albumsThatDoExit = [TEST_ALBUM_ONE, TEST_ALBUM_TWO].filter(testAlbumTitle => fetchResult.albums.some(album => album.title === testAlbumTitle));
       const albumsThatDontExit = [TEST_ALBUM_ONE, TEST_ALBUM_TWO].filter(testAlbumTitle => !fetchResult.albums.some(album => album.title === testAlbumTitle));
-      if(albumsThatDontExit.length) {
+      if (albumsThatDontExit.length) {
         return RNPhotosFramework.createAlbums(albumsThatDontExit).then((newAlbums) => {
           return albumsThatDoExit.concat(newAlbums);
         });

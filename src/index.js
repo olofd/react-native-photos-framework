@@ -114,8 +114,12 @@ class CameraRollRNPhotosFramework {
     });
   }
 
-  createImageAssets(imageAssets) {
-    return RCTCameraRollRNPhotosFrameworkManager.createImageAssets(imageAssets);
+  createAssets(params) {
+    return RCTCameraRollRNPhotosFrameworkManager.createAssets({
+      images : params.images,
+      videos : params.videos,
+      albumLocalIdentifier : params.album ? params.album.localIdentifier : undefined
+    });
   }
 }
 

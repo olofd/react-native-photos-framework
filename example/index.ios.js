@@ -26,7 +26,7 @@ export default class Example extends Component {
     // RNPhotosFramework.createAlbum(TEST_ALBUM_TWO);
 
     return this.testAlbumsExist().then((albums) => {
-      return RNPhotosFramework.createImageAssets({
+      return RNPhotosFramework.createAssets({
         album : albums[0],
         images: [
           {

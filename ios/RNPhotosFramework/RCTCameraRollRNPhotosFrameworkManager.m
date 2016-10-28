@@ -242,12 +242,16 @@ RCT_EXPORT_METHOD(getAssetsMetaData:(NSArray<NSString *> *)arrayWithLocalIdentif
 
 }
 
-RCT_EXPORT_METHOD(createImageAssets:(NSArray<PHSaveAssetRequest *> *)requests
+RCT_EXPORT_METHOD(createAssets:(NSDictionary *)params
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
+    NSArray<PHSaveAssetRequest *> *images = [RCTConvert PHSaveAssetRequestArray:params[@"images"]];
+    NSArray<PHSaveAssetRequest *> *videos = [RCTConvert PHSaveAssetRequestArray:params[@"videos"]];
+    NSString *albumLocalIdentifier = [RCTConvert NSString:params[@"albumLocalIdentifer"]];
+    PHAssetCollection *collection = [PHCollectionService getAssetForLocalIdentifer:albumLocalIdentifier];
     
-    [self saveImages:requests andLocalIdentifers:[NSMutableArray arrayWithCapacity:requests.count] andCompleteBLock:^(BOOL success, NSError * _Nullable error, NSMutableArray<NSString *> *localIdentifiers) {
+    [self saveImages:images andLocalIdentifers:[NSMutableArray arrayWithCapacity:images.count] andCollection:collection andCompleteBLock:^(BOOL success, NSError * _Nullable error, NSMutableArray<NSString *> *localIdentifiers) {
         if(localIdentifiers && localIdentifiers.count != 0) {
             return resolve(@{@"localIdentifiers" : localIdentifiers, @"finnishedWithErrors" : @((BOOL)!success) });
             return;
@@ -257,7 +261,7 @@ RCT_EXPORT_METHOD(createImageAssets:(NSArray<PHSaveAssetRequest *> *)requests
     }];
 }
 
--(void) saveImages:(NSMutableArray<NSURLRequest *> *)requests andLocalIdentifers:(NSMutableArray<NSString *> *)localIdentifiers andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error, NSMutableArray<NSString *> * localIdentifiers))completeBlock {
+-(void) saveImages:(NSMutableArray<NSURLRequest *> *)requests andLocalIdentifers:(NSMutableArray<NSString *> *)localIdentifiers andCollection:(PHCollection *)collection andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error, NSMutableArray<NSString *> * localIdentifiers))completeBlock {
     
     if(requests.count == 0){
         return completeBlock(YES, nil, localIdentifiers);
@@ -266,17 +270,17 @@ RCT_EXPORT_METHOD(createImageAssets:(NSArray<PHSaveAssetRequest *> *)requests
     [requests removeObject:currentRequest];
     if(currentRequest != nil) {
         __weak RCTCameraRollRNPhotosFrameworkManager *weakSelf = self;
-        [self saveImage:currentRequest toCollection:nil andCompleteBLock:^(BOOL success, NSError * _Nullable error, NSString * _Nullable localIdentifier) {
+        [self saveImage:currentRequest toCollection:collection andCompleteBLock:^(BOOL success, NSError * _Nullable error, NSString * _Nullable localIdentifier) {
             if(success) {
                 [localIdentifiers addObject:localIdentifier];
-                return [weakSelf saveImages:requests andLocalIdentifers:localIdentifiers andCompleteBLock:completeBlock];
+                return [weakSelf saveImages:requests andLocalIdentifers:localIdentifiers andCollection:collection andCompleteBLock:completeBlock];
             }else {
                 return completeBlock(success, nil, localIdentifiers);
             }
 
         }];
     }else {
-       return [self saveImages:requests andLocalIdentifers:localIdentifiers andCompleteBLock:completeBlock];
+       return [self saveImages:requests andLocalIdentifers:localIdentifiers andCollection:collection andCompleteBLock:completeBlock];
     }
 
 }
@@ -295,7 +299,7 @@ RCT_EXPORT_METHOD(createImageAsset:(PHSaveAssetRequest *)request
 }
 
 -(void)saveImage:(PHSaveAssetRequest *)request
-    toCollection:(PHFetchResult<PHAssetCollection *> *)collection
+    toCollection:(PHCollection *)collection
 andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error, NSString *__nullable localIdentifier))completeBlock {
     if ([request.type isEqualToString:@"video"]) {
         // It's unclear if thread-safe
@@ -317,7 +321,7 @@ andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error, NSSt
                                              completeBlock(NO, loadError, nil);
                                              return;
                                          }
-                                         [PHCollectionService saveImage:loadedImage toAlbum:nil andCompleteBLock:completeBlock];
+                                         [PHCollectionService saveImage:loadedImage toAlbum:collection andCompleteBLock:completeBlock];
                                      }];
     }
 }

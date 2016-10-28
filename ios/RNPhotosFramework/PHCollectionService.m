@@ -20,10 +20,17 @@ static id ObjectOrNull(id object)
     NSString * cacheKey = [RCTConvert NSString:params[@"_cacheKey"]];
     NSString * albumLocalIdentifier = [RCTConvert NSString:params[@"albumLocalIdentifier"]];
     if(albumLocalIdentifier) {
-        PHFetchResult<PHAssetCollection *> *collections = [PHAssetCollection fetchAssetCollectionsWithLocalIdentifiers:@[albumLocalIdentifier] options:nil];
-        return collections.firstObject;
+        return [self getAssetForLocalIdentifer:albumLocalIdentifier];
     }
     return [[[PHChangeObserver sharedChangeObserver] getFetchResultFromCacheWithuuid:cacheKey] fetchResult];
+}
+
++(PHAssetCollection *) getAssetForLocalIdentifer:(NSString *)localIdentifier {
+    if(localIdentifier == nil) {
+        return nil;
+    }
+    PHFetchResult<PHAssetCollection *> *collections = [PHAssetCollection fetchAssetCollectionsWithLocalIdentifiers:@[localIdentifier] options:nil];
+    return collections.firstObject;
 }
 
 +(NSMutableDictionary *) getAlbums:(NSDictionary *)params {

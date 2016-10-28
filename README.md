@@ -17,7 +17,7 @@ NOTE: When running `npm install` this library will try to automatically add `NSP
 Check that it is there after the install or update it's value from the default:
 `Using photo library to select pictures`
 
-###2016-10-24 Under heavy development right now. Feel free to try out and file an issue if anything does not work as expected/documented.
+###2016-10-28 Under heavy development right now. Feel free to try out and file an issue if anything does not work as expected/documented. (On parental leave, so I'm working as quicky as she accepts =)
 
 
 ###### `fetchOptions`

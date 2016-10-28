@@ -12,6 +12,7 @@
 #import "PHCollectionService.h"
 #import "RCTCachedFetchResult.h"
 #import "RCTProfile.h"
+#import "PHSaveAssetRequest.h"
 @import Photos;
 
 @implementation RCTCameraRollRNPhotosFrameworkManager
@@ -69,6 +70,7 @@ RCT_EXPORT_METHOD(getAssets:(NSDictionary *)params
     RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 }
 
+
 RCT_EXPORT_METHOD(cleanCache:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
@@ -85,11 +87,10 @@ RCT_EXPORT_METHOD(updateAlbumTitle:(NSDictionary *)params
     PHAssetCollection *collection = [PHCollectionService getAssetCollectionForParams:params];
     NSString *newTitle = [RCTConvert NSString:params[@"newTitle"]];
     if(newTitle == nil) {
-        reject(@"You have to provide newTitle-prop to rename album", @{ @"success" : @(NO) }, nil);
+        return reject(@"You have to provide newTitle-prop to rename album", @{ @"success" : @(NO) }, nil);
     }
     if (![collection canPerformEditOperation:PHCollectionEditOperationRename]) {
-        reject(@"Can't PerformEditOperation", @{ @"success" : @(NO) }, nil);
-        return;
+        return reject(@"Can't PerformEditOperation", @{ @"success" : @(NO) }, nil);
     }
     
     [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
@@ -98,9 +99,9 @@ RCT_EXPORT_METHOD(updateAlbumTitle:(NSDictionary *)params
         
     } completionHandler:^(BOOL success, NSError *error) {
         if(success) {
-            resolve(@{ @"success" : @(success) });
+            return resolve(@{ @"success" : @(success) });
         }else {
-            reject(@"Error", @{ @"success" : @(success) }, nil);
+            return reject(@"Error", @{ @"success" : @(success) }, nil);
         }
     }];
 }
@@ -114,9 +115,9 @@ RCT_EXPORT_METHOD(addAssetsToAlbum:(NSDictionary *)params
     PHFetchResult<PHAsset *> *fetchedAssets = [PHAssetsService getAssetsFromArrayOfLocalIdentifiers:[RCTConvert NSArray:params[@"assets"]]];
     [PHCollectionService addAssets:fetchedAssets toAssetCollection:assetCollection andCompleteBLock:^(BOOL success, NSError * _Nullable error) {
         if(success) {
-            resolve(@{ @"success" : @(success) });
+            return resolve(@{ @"success" : @(success) });
         }else {
-            reject(@"Error", @{ @"success" : @(success) }, nil);
+            return reject(@"Error", @{ @"success" : @(success) }, nil);
         }
         
     }];
@@ -130,9 +131,9 @@ RCT_EXPORT_METHOD(removeAssetsFromAlbum:(NSDictionary *)params
     PHFetchResult<PHAsset *> *fetchedAssets = [PHAssetsService getAssetsFromArrayOfLocalIdentifiers:[RCTConvert NSArray:params[@"assets"]]];
     [PHCollectionService removeAssets:fetchedAssets fromAssetCollection:assetCollection andCompleteBLock:^(BOOL success, NSError * _Nullable error) {
         if(success) {
-            resolve(@{ @"success" : @(success) });
+            return resolve(@{ @"success" : @(success) });
         }else {
-            reject(@"Error", @{ @"success" : @(success) }, nil);
+            return reject(@"Error", @{ @"success" : @(success) }, nil);
         }
         
     }];
@@ -142,7 +143,7 @@ RCT_EXPORT_METHOD(getAlbums:(NSDictionary *)params
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-    resolve([PHCollectionService getAlbums:params]);
+    return resolve([PHCollectionService getAlbums:params]);
 }
 
 RCT_EXPORT_METHOD(getAlbumsMany:(NSArray *)params
@@ -154,7 +155,7 @@ RCT_EXPORT_METHOD(getAlbumsMany:(NSArray *)params
         NSDictionary *albumsQuery = [params objectAtIndex:i];
         [responseArray addObject:[PHCollectionService getAlbums:albumsQuery]];
     }
-    resolve(responseArray);
+    return resolve(responseArray);
 }
 
 RCT_EXPORT_METHOD(getAlbumsByTitles:(NSDictionary *)params
@@ -163,7 +164,7 @@ RCT_EXPORT_METHOD(getAlbumsByTitles:(NSDictionary *)params
 {
     NSArray * albumTitles = [RCTConvert NSArray:params[@"albumTitles"]];
     if(albumTitles == nil) {
-        reject(@"albumTitles cannot be null", nil, nil);
+        return reject(@"albumTitles cannot be null", nil, nil);
     }
     PHFetchResult<PHAssetCollection *> * collections = [PHCollectionService getUserAlbumsByTitles:albumTitles withParams:params];
     resolve([PHCollectionService generateCollectionResponseWithCollections:collections andParams:params]);
@@ -174,18 +175,18 @@ RCT_EXPORT_METHOD(createAlbums:(NSArray *)albumTitles
                   reject:(RCTPromiseRejectBlock)reject)
 {
     if(albumTitles == nil) {
-        reject(@"input array with album-names array<string> cannot be null", nil, nil);
+        return reject(@"input array with album-names array<string> cannot be null", nil, nil);
     }
     
     if(albumTitles.count == 0) {
-        resolve(@[]);
+        return resolve(@[]);
     }
     
     [PHCollectionService createAlbumsWithTitles:albumTitles andCompleteBLock:^(BOOL success, NSError * _Nullable error, NSArray<NSString *> *localIdentifier) {
         if(success) {
-            resolve(localIdentifier);
+            return resolve(localIdentifier);
         }else{
-            reject([NSString stringWithFormat:@"Error creating albumTitles %@", albumTitles], nil, error);
+            return reject([NSString stringWithFormat:@"Error creating albumTitles %@", albumTitles], nil, error);
         }
     }];
 }
@@ -195,24 +196,21 @@ RCT_EXPORT_METHOD(deleteAlbums:(NSArray *)albumsLocalIdentifiers
                   reject:(RCTPromiseRejectBlock)reject)
 {
     if(albumsLocalIdentifiers == nil) {
-        reject(@"input array with album-localIdentifiers array<string> cannot be null", nil, nil);
+        return reject(@"input array with album-localIdentifiers array<string> cannot be null", nil, nil);
     }
     
     if(albumsLocalIdentifiers.count == 0) {
-        resolve(@[]);
+        return resolve(@[]);
     }
     
     [PHCollectionService deleteAlbumsWithLocalIdentifers:albumsLocalIdentifiers andCompleteBLock:^(BOOL success, NSError * _Nullable error) {
         if(success) {
-            resolve(@{@"success" : @(success)});
+            return resolve(@{@"success" : @(success)});
         }else{
-            reject(@"Error deleting albums", nil, error);
+            return reject(@"Error deleting albums", nil, error);
         }
     }];
 }
-
-
-
 
 RCT_EXPORT_METHOD(getAssetsMetaData:(NSArray<NSString *> *)arrayWithLocalIdentifiers
                   resolve:(RCTPromiseResolveBlock)resolve
@@ -225,7 +223,6 @@ RCT_EXPORT_METHOD(getAssetsMetaData:(NSArray<NSString *> *)arrayWithLocalIdentif
     }];
     resolve(arrayWithMetaDataObjs);
 }
-
 
 
 -(void) prepareAssetsForDisplayWithParams:(NSDictionary *)params andAssets:(NSArray<PHAsset *> *)assets {
@@ -245,9 +242,84 @@ RCT_EXPORT_METHOD(getAssetsMetaData:(NSArray<NSString *> *)arrayWithLocalIdentif
 
 }
 
+RCT_EXPORT_METHOD(createImageAssets:(NSArray<PHSaveAssetRequest *> *)requests
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+    
+    [self saveImages:requests andLocalIdentifers:[NSMutableArray arrayWithCapacity:requests.count] andCompleteBLock:^(BOOL success, NSError * _Nullable error, NSMutableArray<NSString *> *localIdentifiers) {
+        if(localIdentifiers && localIdentifiers.count != 0) {
+            return resolve(@{@"localIdentifiers" : localIdentifiers, @"finnishedWithErrors" : @(success) });
+            return;
+        }
+        return reject(@"Error creating assets", nil, error);
 
+    }];
+}
 
+-(void) saveImages:(NSMutableArray<NSURLRequest *> *)requests andLocalIdentifers:(NSMutableArray<NSString *> *)localIdentifiers andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error, NSMutableArray<NSString *> * localIdentifiers))completeBlock {
+    
+    if(requests.count == 0){
+        return completeBlock(YES, nil, localIdentifiers);
+    }
+    PHSaveAssetRequest *currentRequest = [requests objectAtIndex:0];
+    [requests removeObject:currentRequest];
+    if(currentRequest != nil) {
+        __weak RCTCameraRollRNPhotosFrameworkManager *weakSelf = self;
+        [self saveImage:currentRequest toCollection:nil andCompleteBLock:^(BOOL success, NSError * _Nullable error, NSString * _Nullable localIdentifier) {
+            if(success) {
+                [localIdentifiers addObject:localIdentifier];
+                return [weakSelf saveImages:requests andLocalIdentifers:localIdentifiers andCompleteBLock:completeBlock];
+            }else {
+                return completeBlock(success, nil, localIdentifiers);
+            }
 
+        }];
+    }else {
+       return [self saveImages:requests andLocalIdentifers:localIdentifiers andCompleteBLock:completeBlock];
+    }
 
+}
+
+RCT_EXPORT_METHOD(createImageAsset:(PHSaveAssetRequest *)request
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+    [self saveImage:request toCollection:nil andCompleteBLock:^(BOOL success, NSError * _Nullable error, NSString * _Nullable localIdentifier) {
+        if(success) {
+            return resolve(@{ @"success" : @(success) });
+        }else {
+            return reject(@"Error", @{ @"success" : @(success) }, nil);
+        }
+    }];
+}
+
+-(void)saveImage:(PHSaveAssetRequest *)request
+    toCollection:(PHFetchResult<PHAssetCollection *> *)collection
+andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error, NSString *__nullable localIdentifier))completeBlock {
+    if ([request.type isEqualToString:@"video"]) {
+        // It's unclear if thread-safe
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [NSException raise:@"Not implementeted exception" format:@"Sry"];
+            
+        });
+    } else {
+
+        [_bridge.imageLoader loadImageWithURLRequest:request.uri
+                                 size:CGSizeZero
+                                scale:1
+                              clipped:YES
+                           resizeMode:RCTResizeModeStretch
+                        progressBlock:nil
+                     partialLoadBlock:nil
+                                     completionBlock:^(NSError *loadError, UIImage *loadedImage) {
+                                         if (loadError) {
+                                             completeBlock(NO, loadError, nil);
+                                             return;
+                                         }
+                                         [PHCollectionService saveImage:loadedImage toAlbum:nil andCompleteBLock:completeBlock];
+                                     }];
+    }
+}
 
 @end

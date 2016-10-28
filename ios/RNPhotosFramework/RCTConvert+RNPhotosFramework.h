@@ -1,4 +1,5 @@
 #import <Foundation/Foundation.h>
+#import "PHSaveAssetRequest.h"
 @import Photos;
 
 typedef NS_ENUM(NSInteger, RNPFAssetCountType) {
@@ -18,6 +19,8 @@ typedef NS_ENUM(NSInteger, RNPFAssetCountType) {
 + (NSArray<NSNumber *> *)PHAssetMediaTypes:(NSArray<NSString *> *)arrayWithMediaTypeStrings;
 +(NSMutableArray * ) PHAssetMediaSubtypes:(NSArray<NSString *> *)arrayWithSubMediaTypeStrings;
 +(int) PHAssetSourceTypes:(NSArray<NSString *> *)arrayWithSourceTypeStrings;
++(PHSaveAssetRequest *)PHSaveAssetRequest:(id)json;
++(NSArray<PHSaveAssetRequest *> *)PHSaveAssetRequestArray:(id)json;
 
 + (NSDictionary *)RNPFAssetCountTypeValuesReversed;
 + (NSDictionary *)PHAssetMediaTypeValuesReversed;

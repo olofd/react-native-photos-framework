@@ -30,10 +30,17 @@ export default class Example extends Component {
     //RNPhotosFramework.createAlbum(TEST_ALBUM_ONE);
     //RNPhotosFramework.createAlbum(TEST_ALBUM_TWO);
 
-    this.testAlbumsExist().then((albums) => {
-      this.removeAlbums(albums);
+    return this.testAlbumsExist().then((albums) => {
+      return RNPhotosFramework.createImageAssets([{
+        uri : 'https://c1.staticflickr.com/6/5337/8940995208_5da979c52f.jpg'
+      }, {
+        uri : 'https://upload.wikimedia.org/wikipedia/commons/d/db/Patern_test.jpg'
+      }]).then((assets) => {
+        debugger;
+      });
     });
   }
+
 
   removeAlbums(albums) {
     return RNPhotosFramework.deleteAlbums(albums);

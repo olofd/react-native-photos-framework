@@ -50,7 +50,7 @@
     NSDictionary *reveredMediaTypes = [RCTConvert PHAssetMediaTypeValuesReversed];
     for(int i = 0;i < assetsArray.count; i++) {
         PHAsset *asset =[assetsArray objectAtIndex:i];
-        NSMutableDictionary *responseDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:[asset localIdentifier], @"localIdentifier", @([asset pixelWidth]), @"width", @([asset pixelHeight]), @"height", [reveredMediaTypes objectForKey:@([asset mediaType])], @"mediaType",nil];
+        NSMutableDictionary *responseDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:[asset localIdentifier], @"localIdentifier", @([asset pixelWidth]), @"width", @([asset pixelHeight]), @"height", [reveredMediaTypes objectForKey:@([asset mediaType])], @"mediaType", nil];
         if(includeMetaData) {
             [self extendAssetDicWithAssetMetaData:responseDict andPHAsset:asset];
         }
@@ -97,5 +97,82 @@
     }];
     return assets;
 }
+
++(void)requestEditingMetadataWithCompletionBlock:(void(^)(NSDictionary<NSString *,id> * dict))completeBlock andAsset:(PHAsset *)asset{
+        PHContentEditingInputRequestOptions *editOptions = [[PHContentEditingInputRequestOptions alloc]init];
+        editOptions.networkAccessAllowed = YES;
+        [asset requestContentEditingInputWithOptions:editOptions completionHandler:^(PHContentEditingInput *contentEditingInput, NSDictionary *info) {
+            CIImage *image = [CIImage imageWithContentsOfURL:contentEditingInput.fullSizeImageURL];
+            completeBlock(image.properties);
+        }];
+}
+
+-(void)requestImageDataWithCompletionBlockAndAsset:(PHAsset *)asset {
+    PHImageRequestOptions * imageRequestOptions = [[PHImageRequestOptions alloc] init];
+    imageRequestOptions.networkAccessAllowed = YES;
+    [[PHImageManager defaultManager]
+     requestImageDataForAsset:asset
+     options:imageRequestOptions
+     resultHandler:^(NSData *imageData, NSString *dataUTI,
+                     UIImageOrientation orientation,
+                     NSDictionary *info)
+     {
+         NSLog(@"info = %@", info);
+         if ([info objectForKey:@"PHImageFileURLKey"]) {
+             // path looks like this -
+             // file:///var/mobile/Media/DCIM/###APPLE/IMG_####.JPG
+             NSURL *path = [info objectForKey:@"PHImageFileURLKey"];
+         }
+     }];
+}
+
++(void)updateLocation:(CLLocation*)location creationDate:(NSDate*)creationDate completionBlock:(void(^)(BOOL success))completionBlock andAsset:(PHAsset *)asset {
+    [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+        PHAssetChangeRequest *assetRequest = [PHAssetChangeRequest changeRequestForAsset:asset];
+        if(location) assetRequest.location = location;
+        if(creationDate) assetRequest.creationDate = creationDate;
+    } completionHandler:^(BOOL success, NSError *error) {
+        if(success){
+            completionBlock(YES);
+        } else {
+            completionBlock(NO);
+        }
+    }];
+}
+
+
+/*+(void)saveImageToCameraRoll:(UIImage*)image location:(CLLocation*)location completionBlock:(PHAssetAssetBoolBlock)completionBlock{
+    __block PHObjectPlaceholder *placeholderAsset = nil;
+    [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+        PHAssetChangeRequest *newAssetRequest = [PHAssetChangeRequest creationRequestForAssetFromImage:image];
+        newAssetRequest.location = location;
+        newAssetRequest.creationDate = [NSDate date];
+        placeholderAsset = newAssetRequest.placeholderForCreatedAsset;
+    } completionHandler:^(BOOL success, NSError *error) {
+        if(success){
+            PHAsset *asset = [self getAssetFromlocalIdentifier:placeholderAsset.localIdentifier];
+            completionBlock(asset, YES);
+        } else {
+            completionBlock(nil, NO);
+        }
+    }];
+}
+
++(void)saveVideoAtURL:(NSURL*)url location:(CLLocation*)location completionBlock:(PHAssetAssetBoolBlock)completionBlock{
+    __block PHObjectPlaceholder *placeholderAsset = nil;
+    [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+        PHAssetChangeRequest *newAssetRequest = [PHAssetChangeRequest creationRequestForAssetFromVideoAtFileURL:url];
+        newAssetRequest.location = location;
+        newAssetRequest.creationDate = [NSDate date];
+        placeholderAsset = newAssetRequest.placeholderForCreatedAsset;
+    } completionHandler:^(BOOL success, NSError *error) {
+        if(success){
+            PHAsset *asset = [self getAssetFromlocalIdentifier:placeholderAsset.localIdentifier];
+            completionBlock(asset, YES);
+        } else {
+            completionBlock(nil, NO);
+        }
+    }];
+}*/
 
 @end

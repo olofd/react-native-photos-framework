@@ -6,6 +6,8 @@
 #import "RCTConvert.h"
 #import "RCTConvert+RNPhotosFramework.h"
 #import "PHHelpers.h"
+#import "RCTImageLoader.h"
+
 @import Photos;
 @implementation PHCollectionService
 
@@ -141,32 +143,7 @@ static id ObjectOrNull(id object)
     return  [PHAsset fetchAssetsInAssetCollection:collection options:options];
 }
 
-/*+(void)saveImage:(NSURLRequest *)request
-            type:(NSString *)type
-    toCollection:(PHFetchResult<PHAssetCollection *> *)collection
-andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error, NSString *__nullable localIdentifier))completeBlock {
-    if ([type isEqualToString:@"video"]) {
-        // It's unclear if thread-safe
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [NSException raise:@"Not implementeted exception" format:@"Sry"];
-            
-        });
-    } else {
-        [_bridge.imageLoader loadImageWithURLRequest:request
-                                            callback:^(NSError *loadError, UIImage *loadedImage) {
-                                                if (loadError) {
-                                                    completeBlock(NO, loadError, nil);
-                                                    return;
-                                                }
-                                                // It's unclear if writeImageToSavedPhotosAlbum is thread-safe
-                                                dispatch_async(dispatch_get_main_queue(), ^{
-                                                    [self saveImage:loadedImage toAlbum:collection andCompleteBLock:^(BOOL success, NSError * _Nullable error, NSString * _Nullable localIdentifier) {
-                                                        completeBlock(success, error, localIdentifier);
-                                                    }];
-                                                });
-                                            }];
-    }
-}*/
+
 
 +(void) createAlbumsWithTitles:(NSArray *)titles andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error, NSArray<NSString *> * localIdentifier))completeBlock {
     __block NSMutableArray<PHObjectPlaceholder *> *placeholders = [NSMutableArray arrayWithCapacity:titles.count];
@@ -220,13 +197,15 @@ andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error, NSSt
 +(void) saveImage:(UIImage *)image toAlbum:(PHCollection *)album andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error, NSString *__nullable localIdentifier))completeBlock {
     __block PHObjectPlaceholder *placeholder;
     [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
-        PHFetchResult *photosAsset;
+    
         PHAssetChangeRequest *assetRequest = [PHAssetChangeRequest creationRequestForAssetFromImage:image];
         placeholder = [assetRequest placeholderForCreatedAsset];
-        photosAsset = [PHAsset fetchAssetsInAssetCollection:album options:nil];
-        PHAssetCollectionChangeRequest *albumChangeRequest = [PHAssetCollectionChangeRequest changeRequestForAssetCollection:album assets:photosAsset];
-        [albumChangeRequest addAssets:@[placeholder]];
         
+        if(album != nil) {
+            PHAssetCollectionChangeRequest *albumChangeRequest = [PHAssetCollectionChangeRequest changeRequestForAssetCollection:album];
+            [albumChangeRequest addAssets:@[placeholder]];
+            
+        }
     } completionHandler:^(BOOL success, NSError *error) {
         completeBlock(success, error, placeholder.localIdentifier);
     }];

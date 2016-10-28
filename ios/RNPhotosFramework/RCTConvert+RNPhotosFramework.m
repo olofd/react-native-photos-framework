@@ -1,12 +1,6 @@
-//
-//  RCTConvert+RNPhotosFramework.m
-//  RNPhotosFramework
-//
-//  Created by Olof Dahlbom on 2016-10-20.
-//  Copyright © 2016 Olof Dahlbom. All rights reserved.
-//
 #import "RCTConvert.h"
 #import "RCTConvert+RNPhotosFramework.h"
+#import "PHSaveAssetRequest.h"
 @import Photos;
 @implementation RCTConvert(ReactNativePhotosFramework)
 
@@ -150,6 +144,22 @@ RCT_ENUM_CONVERTER_WITH_REVERSED(PHAssetSourceType, (@{
         sourceTypes = sourceTypes | sourceType;
     }
     return sourceTypes;
+}
+
++(PHSaveAssetRequest *)PHSaveAssetRequest:(id)json {
+    PHSaveAssetRequest *assetRequest = [PHSaveAssetRequest new];
+    assetRequest.uri = [RCTConvert NSURLRequest:json[@"uri"]];
+    assetRequest.type = [RCTConvert NSString:json[@"type"]];
+    return assetRequest;
+}
+
++(NSArray<PHSaveAssetRequest *> *)PHSaveAssetRequestArray:(id)json {
+    NSArray *inputArray = [RCTConvert NSArray:json];
+    NSMutableArray *outputArray = [NSMutableArray arrayWithCapacity:inputArray.count];
+    for(int i = 0; i < inputArray.count; i++) {
+        [outputArray addObject:[self PHSaveAssetRequest:[inputArray objectAtIndex:i]]];
+    }
+    return outputArray;
 }
 
 @end

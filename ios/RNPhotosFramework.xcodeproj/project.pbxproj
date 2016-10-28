@@ -10,6 +10,7 @@
 		632F8C251DB75A4A007E83E1 /* PHCachingImageManagerInstance.m in Sources */ = {isa = PBXBuildFile; fileRef = 632F8C201DB75A4A007E83E1 /* PHCachingImageManagerInstance.m */; };
 		632F8C261DB75A4A007E83E1 /* RCTCameraRollRNPhotosFrameworkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 632F8C221DB75A4A007E83E1 /* RCTCameraRollRNPhotosFrameworkManager.m */; };
 		632F8C271DB75A4A007E83E1 /* RCTImageLoaderRNPhotosFramework.m in Sources */ = {isa = PBXBuildFile; fileRef = 632F8C241DB75A4A007E83E1 /* RCTImageLoaderRNPhotosFramework.m */; };
+		6342E0701DC346E300F7765E /* PHSaveAssetRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 6342E06F1DC346E300F7765E /* PHSaveAssetRequest.m */; };
 		639BE3591DB82A7C00A2BE6F /* RCTConvert+RNPhotosFramework.m in Sources */ = {isa = PBXBuildFile; fileRef = 639BE3581DB82A7C00A2BE6F /* RCTConvert+RNPhotosFramework.m */; };
 		639BE3661DBB902E00A2BE6F /* PHChangeObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 639BE3651DBB902E00A2BE6F /* PHChangeObserver.m */; };
 		63A33AA51DBE94350022B5FF /* RCTCachedFetchResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 63A33AA41DBE94350022B5FF /* RCTCachedFetchResult.m */; };
@@ -39,6 +40,8 @@
 		632F8C221DB75A4A007E83E1 /* RCTCameraRollRNPhotosFrameworkManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTCameraRollRNPhotosFrameworkManager.m; sourceTree = "<group>"; };
 		632F8C231DB75A4A007E83E1 /* RCTImageLoaderRNPhotosFramework.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTImageLoaderRNPhotosFramework.h; sourceTree = "<group>"; };
 		632F8C241DB75A4A007E83E1 /* RCTImageLoaderRNPhotosFramework.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageLoaderRNPhotosFramework.m; sourceTree = "<group>"; };
+		6342E06E1DC346E300F7765E /* PHSaveAssetRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHSaveAssetRequest.h; sourceTree = "<group>"; };
+		6342E06F1DC346E300F7765E /* PHSaveAssetRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHSaveAssetRequest.m; sourceTree = "<group>"; };
 		639BE3571DB82A7C00A2BE6F /* RCTConvert+RNPhotosFramework.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RCTConvert+RNPhotosFramework.h"; sourceTree = "<group>"; };
 		639BE3581DB82A7C00A2BE6F /* RCTConvert+RNPhotosFramework.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+RNPhotosFramework.m"; sourceTree = "<group>"; };
 		639BE3641DBB902E00A2BE6F /* PHChangeObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHChangeObserver.h; sourceTree = "<group>"; };
@@ -105,6 +108,8 @@
 				63A33AB01DBEA06C0022B5FF /* PHCollectionService.m */,
 				63C543461DC00BDA004BFE57 /* PHHelpers.h */,
 				63C543471DC00BDA004BFE57 /* PHHelpers.m */,
+				6342E06E1DC346E300F7765E /* PHSaveAssetRequest.h */,
+				6342E06F1DC346E300F7765E /* PHSaveAssetRequest.m */,
 			);
 			path = RNPhotosFramework;
 			sourceTree = "<group>";
@@ -174,6 +179,7 @@
 				639BE3591DB82A7C00A2BE6F /* RCTConvert+RNPhotosFramework.m in Sources */,
 				63C543481DC00BDA004BFE57 /* PHHelpers.m in Sources */,
 				632F8C261DB75A4A007E83E1 /* RCTCameraRollRNPhotosFrameworkManager.m in Sources */,
+				6342E0701DC346E300F7765E /* PHSaveAssetRequest.m in Sources */,
 				63A33AA81DBE9D3F0022B5FF /* PHAssetsService.m in Sources */,
 				632F8C271DB75A4A007E83E1 /* RCTImageLoaderRNPhotosFramework.m in Sources */,
 				639BE3661DBB902E00A2BE6F /* PHChangeObserver.m in Sources */,

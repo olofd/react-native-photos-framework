@@ -97,6 +97,7 @@ class CameraRollRNPhotosFramework {
   }
 
   updateAlbumTitle(params) {
+    //minimum params: {newTitle : 'x', albumLocalIdentifier : 'guid'}
     return RCTCameraRollRNPhotosFrameworkManager.updateAlbumTitle(params);
   }
 
@@ -106,6 +107,14 @@ class CameraRollRNPhotosFramework {
 
   deleteAlbums(albums) {
     return RCTCameraRollRNPhotosFrameworkManager.deleteAlbums(albums.map(album => album.localIdentifier));
+  }
+
+  createImageAsset(imageAsset) {
+    return this.createImageAssets([imageAsset]);
+  }
+
+  createImageAssets(imageAssets) {
+    return RCTCameraRollRNPhotosFrameworkManager.createImageAssets(imageAssets);
   }
 }
 

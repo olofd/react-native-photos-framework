@@ -56,28 +56,6 @@ RCT_EXPORT_METHOD(requestAuthorization:(RCTPromiseResolveBlock)resolve
 }
 
 
-/*
- [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
- 
- switch (status) {
- case PHAuthorizationStatusAuthorized:
- NSLog(@"PHAuthorizationStatusAuthorized");
- break;
- 
- case PHAuthorizationStatusDenied:
- NSLog(@"PHAuthorizationStatusDenied");
- break;
- case PHAuthorizationStatusNotDetermined:
- NSLog(@"PHAuthorizationStatusNotDetermined");
- break;
- case PHAuthorizationStatusRestricted:
- NSLog(@"PHAuthorizationStatusRestricted");
- break;
- }
- 
- }];
- */
-
 RCT_EXPORT_METHOD(getAssets:(NSDictionary *)params
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)

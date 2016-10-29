@@ -86,12 +86,12 @@
     
     NSMutableArray<PHAsset *> *assets = [NSMutableArray new];
     [assetsFetchResult enumerateObjectsUsingBlock:^(PHAsset *asset, NSUInteger index, BOOL *stop) {
+        if(index >= startIndex){
+            [assets addObject:asset];
+        }
         if(index >= endIndex){
             *stop = YES;
             return;
-        }
-        if(index >= startIndex){
-            [assets addObject:asset];
         }
         
     }];

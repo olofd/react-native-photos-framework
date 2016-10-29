@@ -19,9 +19,54 @@ Check that it is there after the install or update it's value from the default:
 
 ###2016-10-28 Under heavy development right now. Feel free to try out and file an issue if anything does not work as expected/documented. (On parental leave, so I'm working as quicky as she accepts =)
 
+##Library (Top level):
 
-###### `fetchOptions`
+##Static methods:
 
+###cleanCache
+~~~~
+  RNPhotosFramework.cleanCache().then(() => {
+  });
+~~~~
+
+Signature: RNPhotosFramework.cleanCache() : Promise.
+Cleans library caches. Will never have to be called.
+This framework handles this automatically.
+But if you experience some kind of issue, you can try calling it and see
+if the result differs.
+
+###authorizationStatus
+~~~~
+  RNPhotosFramework.authorizationStatus().then(() => {
+  });
+~~~~
+
+Signature: RNPhotosFramework.authorizationStatus() : Promise<{status : string, isAuthorized : boolean}>.
+Fetches the current authorization-status.
+NOTE: You can receive the following statuses :
+`notDetermined` //Before user has granted permission,
+`restricted` //User is restricted by policy, cannot use Photos,
+`denied` //User has denied permission,
+`authorized` //User has granted permission
+
+###requestAuthorization
+~~~~
+  RNPhotosFramework.requestAuthorization().then((statusObj) => {
+    if(statusObj.isAuthorized) {
+      ...start using the library.
+    }
+  });
+~~~~
+
+Signature: RNPhotosFramework.requestAuthorization() : Promise<{status : string, isAuthorized : boolean}>.
+This will prompt the user to grant access to the user library at first start.
+If you do not call this method explicitly before using any of the other functions in this library. The grant-access-dialog will appear for the user automatically at the next first function-call into the library. But only one function call can automatically
+trigger this dialog, so if another call comes into Photos Framework before the user has granted you access, that function-cal will fail. Therefore I urge you to call this method explicitly before you start using the rest of the library to not experience unexpected behaviour.
+NOTE: you do not have to first check the authorizationStatus before calling this. If the user has granted access before, this will just return authorized-status.
+NOTE: See available statuses in doc. about: `authorizationStatus`
+
+##Working with Content:
+##### `fetchOptions`
 fetchOptions is a query-object which can be sent both when fetching albums with
 `getAlbums` and when fetching assets with `getAssets`. Bellow you can see the available options
 for fetchOptions. You can also read Apple's documentation around [PHFetchOptions here](https://developer.apple.com/reference/photos/phfetchoptions).

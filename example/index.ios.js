@@ -50,10 +50,13 @@ export default class Example extends Component {
     // already exist, if they do. clean up:
     // RNPhotosFramework.createAlbum(TEST_ALBUM_ONE);
     // RNPhotosFramework.createAlbum(TEST_ALBUM_TWO);
+
     RNPhotosFramework.requestAuthorization().then((status) => {
       if(status.isAuthorized) {
         this.cleanUp().then(() => {
-          //this.readd();
+          this.readd().then(() => {
+            
+          });
         });
       }else {
         alert('Application is not authorized to use Photos Framework! Pleade check settings.');

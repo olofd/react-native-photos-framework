@@ -118,11 +118,26 @@ class CameraRollRNPhotosFramework {
     return RCTCameraRollRNPhotosFrameworkManager.deleteAlbums(albums.map(album => album.localIdentifier));
   }
 
+  createImageAsset(image) {
+    return this.createAssets({
+      images : [image]
+    }).then((result) => result[0]);
+  }
+
+  createVideoAsset(video) {
+    return this.createAssets({
+      videos : [video]
+    }).then((result) => result[1]);
+  }
+
   createAssets(params) {
     return RCTCameraRollRNPhotosFrameworkManager.createAssets({
       images : params.images,
       videos : params.videos,
-      albumLocalIdentifier : params.album ? params.album.localIdentifier : undefined
+      albumLocalIdentifier : params.album ? params.album.localIdentifier : undefined,
+      includeMetaData : params.includeMetaData
+    }).then((result) => {
+      return result.assets.map(asset => new Asset(asset, undefined, eventEmitter));
     });
   }
 }

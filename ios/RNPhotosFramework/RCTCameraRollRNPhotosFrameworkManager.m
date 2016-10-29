@@ -226,7 +226,7 @@ RCT_EXPORT_METHOD(deleteAssets:(NSArray *)localIdentifiers
     PHFetchResult<PHAsset *> * assets = [PHAssetsService getAssetsFromArrayOfLocalIdentifiers:localIdentifiers];
     [PHAssetsService deleteAssets:assets andCompleteBLock:^(BOOL success, NSError * _Nullable error, NSArray<NSString *> *localIdentifiers) {
         if(localIdentifiers && localIdentifiers.count != 0) {
-            return resolve(@{@"localIdentifiers" : localIdentifiers, @"finnishedWithErrors" : @((BOOL)!success) });
+            return resolve(@{@"localIdentifiers" : localIdentifiers, @"success" : @(success) });
         }
         return reject(@"Error removing assets", nil, error);
     }];
@@ -298,7 +298,9 @@ RCT_EXPORT_METHOD(createAssets:(NSDictionary *)params
     
     [self saveImages:images andLocalIdentifers:[NSMutableArray arrayWithCapacity:images.count] andCollection:collection andCompleteBLock:^(BOOL success, NSError * _Nullable error, NSMutableArray<NSString *> *localIdentifiers) {
         if(localIdentifiers && localIdentifiers.count != 0) {
-            return resolve(@{@"localIdentifiers" : localIdentifiers, @"finnishedWithErrors" : @((BOOL)!success) });
+            PHFetchResult<PHAsset *> *newAssets = [PHAssetsService getAssetsFromArrayOfLocalIdentifiers:localIdentifiers];
+            NSArray<NSDictionary *> *assetResponse = [PHAssetsService assetsArrayToUriArray:newAssets andIncludeMetaData:[RCTConvert BOOL:params[@"includeMetaData"]]];
+            return resolve(@{@"assets" : assetResponse, @"success" : @(success) });
         }
         return reject(@"Error creating assets", nil, error);
 

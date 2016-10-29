@@ -35,6 +35,7 @@ export default class Example extends Component {
   addTestImagesToAlbumTwo(album) {
     return RNPhotosFramework.createAssets({
       album: album,
+      includeMetaData : true,
       images: [
         {
           uri: 'https://c1.staticflickr.com/6/5337/8940995208_5da979c52f.jpg'
@@ -42,6 +43,8 @@ export default class Example extends Component {
           uri: 'https://upload.wikimedia.org/wikipedia/commons/d/db/Patern_test.jpg'
         }
       ]
+    }).then((assets) => {
+      return assets;
     });
   }
 
@@ -55,7 +58,7 @@ export default class Example extends Component {
       if(status.isAuthorized) {
         this.cleanUp().then(() => {
           this.readd().then(() => {
-            
+
           });
         });
       }else {
@@ -68,7 +71,7 @@ export default class Example extends Component {
     return this.testAlbumsExist().then((albums) => {
       return Promise.all([
         this.addTestImagesToAlbumOne(albums[0]),
-        this.addTestImagesToAlbumOne(albums[1])
+        this.addTestImagesToAlbumTwo(albums[1])
       ]).then((assets) => {}, (li) => {
         //ProgressCallback
       }).then(() => {

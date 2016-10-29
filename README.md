@@ -329,10 +329,47 @@ If you choose to use opportunistic here you will see a low-res-version of the im
 while the highQuality version of the resource is downloaded. NOTE: This library will call correct lifecycle callback's on your image-tag when this is used: the
 `<Image onPartialLoad={//Low-res-callback} onLoad={//High-res-callback} onProgress={//downloadCallback}>`
 
-##Observing library changes
+
+#Creating Assets:
+You can use this library to save images and videos to the users iCloud library.
+
+##Images/Photos
+Creating image-assets uses RN's ImageLoader-system behind the scenes and should therefore be able to accept/save any image/photo that you can display in RN.
+
+###Static methods:
+
+###createImageAsset
+~~~~
+  RCTCameraRollRNPhotosFrameworkManager.createImageAsset(imageWithUriProp);
+~~~~
+Signature: album.createImageAsset(params) : Promise<Asset>.
+Create a image-asset
+
+###createVideoAsset
+~~~~
+  RCTCameraRollRNPhotosFrameworkManager.createVideoAsset(videoWithUriProp);
+~~~~
+Signature: album.createVideoAsset(params) : Promise<Asset>.
+Create a image-asset
+
+###createAssets
+~~~~
+  RCTCameraRollRNPhotosFrameworkManager.createAssets({
+    images : [{ uri : 'https://some-uri-local-or-remote.jpg' }],
+    videos : [{ uri : 'https://some-uri-local-or-remote.jpg' }]
+    album : album //(OPTIONAL) some album that you want to add the asset to when it's been added to the library.
+    includeMetaData : true //The result of this function call will return new assets. should this have metadata on them? See docs of getAssets for more info.
+  });
+~~~~
+Signature: album.createAssets(params) : Promise<array<Asset>>.
+Base function for creating assets. Will return the successfully created new assets.
+If the function returns less Assets then you sent as input, the ones not returned did fail.
+
+
+#Observing library changes
 You can register listeners for library-change-detection on different levels of the api.
 
-###Library-level
+##Library-level
 You can detect globally if the library changed by:
 ~~~~
 RNPhotosFramework.onLibraryChange(() => {
@@ -341,7 +378,7 @@ RNPhotosFramework.onLibraryChange(() => {
 ~~~~
 No details provided
 
-###AlbumQueryResult-level
+##AlbumQueryResult-level
 You can register a listener that receives updates when any of the albums that result contains
 changes (Not if their assets change, only the Albums get those messages, see bellow).
 You currently receive the following events: `AlbumTitleChanged` (More to come).
@@ -352,7 +389,7 @@ albumQueryResult.onChange((details) => {
 ~~~~
 NOTE: If a change occures that affects one of the AlbumQueryResults albums that change will also be passed along to the album.
 
-###Album-level
+##Album-level
 On an album object you can do:
 ~~~~
 album.onChange((changeDetails) => {

@@ -16,11 +16,13 @@ typedef NS_ENUM(NSInteger, RNPFAssetCountType) {
 + (PHAssetCollectionType)PHAssetCollectionType:(id)json;
 + (PHAssetCollectionSubtype)PHAssetCollectionSubtype:(id)json;
 + (PHAssetSourceType)PHAssetSourceType:(id)json;
++ (PHAuthorizationStatus)PHAuthorizationStatus:(id)json;
+
 + (NSArray<NSNumber *> *)PHAssetMediaTypes:(NSArray<NSString *> *)arrayWithMediaTypeStrings;
-+(NSMutableArray * ) PHAssetMediaSubtypes:(NSArray<NSString *> *)arrayWithSubMediaTypeStrings;
-+(int) PHAssetSourceTypes:(NSArray<NSString *> *)arrayWithSourceTypeStrings;
-+(PHSaveAssetRequest *)PHSaveAssetRequest:(id)json;
-+(NSArray<PHSaveAssetRequest *> *)PHSaveAssetRequestArray:(id)json;
++ (NSMutableArray * ) PHAssetMediaSubtypes:(NSArray<NSString *> *)arrayWithSubMediaTypeStrings;
++ (int) PHAssetSourceTypes:(NSArray<NSString *> *)arrayWithSourceTypeStrings;
++ (PHSaveAssetRequest *)PHSaveAssetRequest:(id)json;
++ (NSArray<PHSaveAssetRequest *> *)PHSaveAssetRequestArray:(id)json;
 
 + (NSDictionary *)RNPFAssetCountTypeValuesReversed;
 + (NSDictionary *)PHAssetMediaTypeValuesReversed;
@@ -29,6 +31,9 @@ typedef NS_ENUM(NSInteger, RNPFAssetCountType) {
 + (NSDictionary *)PHAssetSourceTypeValuesReversed;
 + (NSDictionary *)PHAssetCollectionTypeValuesReversed;
 + (NSDictionary *)PHAssetCollectionSubtypeValuesReversed;
++ (NSDictionary *)PHAuthorizationStatusValuesReversed;
+
+
 
 
 

@@ -50,17 +50,24 @@ export default class Example extends Component {
     // already exist, if they do. clean up:
     // RNPhotosFramework.createAlbum(TEST_ALBUM_ONE);
     // RNPhotosFramework.createAlbum(TEST_ALBUM_TWO);
-    this.cleanUp().then(() => {
-      return this.testAlbumsExist().then((albums) => {
-        return Promise.all([
-          this.addTestImagesToAlbumOne(albums[0]),
-          this.addTestImagesToAlbumOne(albums[1])]
-        ).then((assets) => {}, (li) => {
-          debugger;
-          //ProgressCallback
-        }).then(() => {
-          //Complete
+    RNPhotosFramework.requestAuthorization().then((status) => {
+      if(status.isAuthorized) {
+        this.cleanUp().then(() => {
+          //this.readd();
         });
+      }
+    });
+  }
+
+  readd() {
+    return this.testAlbumsExist().then((albums) => {
+      return Promise.all([
+        this.addTestImagesToAlbumOne(albums[0]),
+        this.addTestImagesToAlbumOne(albums[1])
+      ]).then((assets) => {}, (li) => {
+        //ProgressCallback
+      }).then(() => {
+        //Complete
       });
     });
   }
@@ -70,15 +77,23 @@ export default class Example extends Component {
   }
 
   cleanUp() {
+    console.debug('Will search for test-albums');
     return RNPhotosFramework.getAlbumsByTitles([TEST_ALBUM_ONE, TEST_ALBUM_TWO]).then((fetchResult) => {
+      console.debug(`Found ${fetchResult.albums.length} test albums`);
       const albums = fetchResult.albums.filter(album => [TEST_ALBUM_ONE, TEST_ALBUM_TWO].some(testAlbum => testAlbum === album.title));
       const promises = albums.map(album => {
+        console.debug(`Fetching album ${album.title}'s assets`);
         return album.getAssets().then((assetResultObj) => {
+          console.debug(`Deleting album ${album.title}'s assets: ${assetResultObj.assets.length} assets`);
           return RNPhotosFramework.deleteAssets(assetResultObj.assets);
         });
       });
       return Promise.all(promises).then(() => {
-        return RNPhotosFramework.deleteAlbums(albums);
+        console.debug(`Deleting albums ${albums.length}`);
+        return RNPhotosFramework.deleteAlbums(albums).then((result) => {
+          console.debug('Cleanup comlete');
+          return result;
+        });
       });
     });
   }

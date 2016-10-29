@@ -28,6 +28,13 @@ return [RCTConvertEnumValue(#type, mapping, @(default), json) getter]; \
     return mapping;                                         \
 }
 
+RCT_ENUM_CONVERTER_WITH_REVERSED(PHAuthorizationStatus, (@{
+                                                           @"notDetermined" : @(PHAuthorizationStatusNotDetermined),
+                                                           @"restricted" : @(PHAuthorizationStatusRestricted),
+                                                           @"denied" : @(PHAuthorizationStatusDenied),
+                                                           @"authorized" : @(PHAuthorizationStatusAuthorized)
+                                                        }), PHAuthorizationStatusNotDetermined, integerValue)
+
 
 RCT_ENUM_CONVERTER_WITH_REVERSED(RNPFAssetCountType, (@{
                                                         // New values

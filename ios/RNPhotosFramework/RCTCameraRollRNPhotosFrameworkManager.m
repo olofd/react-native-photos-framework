@@ -13,6 +13,7 @@
 #import "RCTCachedFetchResult.h"
 #import "RCTProfile.h"
 #import "PHSaveAssetRequest.h"
+#import "PHHelpers.h"
 @import Photos;
 
 @implementation RCTCameraRollRNPhotosFrameworkManager
@@ -31,6 +32,51 @@ static id ObjectOrNull(id object)
 {
     return dispatch_queue_create("com.facebook.React.ReactNaticePhotosFramework", DISPATCH_QUEUE_SERIAL);
 }
+
+RCT_EXPORT_METHOD(authorizationStatus:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+    PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
+    resolve(@{
+              @"status" : [[RCTConvert PHAuthorizationStatusValuesReversed] objectForKey:@(status)],
+              @"isAuthorized" : @((BOOL)(status == PHAuthorizationStatusAuthorized))
+            });
+}
+
+RCT_EXPORT_METHOD(requestAuthorization:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+    [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+        
+        resolve(@{
+                  @"status" : [[RCTConvert PHAuthorizationStatusValuesReversed] objectForKey:@(status)],
+                  @"isAuthorized" : @((BOOL)(status == PHAuthorizationStatusAuthorized))
+                  });
+    }];
+}
+
+
+/*
+ [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+ 
+ switch (status) {
+ case PHAuthorizationStatusAuthorized:
+ NSLog(@"PHAuthorizationStatusAuthorized");
+ break;
+ 
+ case PHAuthorizationStatusDenied:
+ NSLog(@"PHAuthorizationStatusDenied");
+ break;
+ case PHAuthorizationStatusNotDetermined:
+ NSLog(@"PHAuthorizationStatusNotDetermined");
+ break;
+ case PHAuthorizationStatusRestricted:
+ NSLog(@"PHAuthorizationStatusRestricted");
+ break;
+ }
+ 
+ }];
+ */
 
 RCT_EXPORT_METHOD(getAssets:(NSDictionary *)params
                   resolve:(RCTPromiseResolveBlock)resolve

@@ -30,6 +30,14 @@ class CameraRollRNPhotosFramework {
     return RCTCameraRollRNPhotosFrameworkManager.cleanCache();
   }
 
+  authorizationStatus() {
+    return RCTCameraRollRNPhotosFrameworkManager.authorizationStatus();
+  }
+
+  requestAuthorization() {
+    return RCTCameraRollRNPhotosFrameworkManager.requestAuthorization();
+  }
+
   addAssetsToAlbum(params) {
     return RCTCameraRollRNPhotosFrameworkManager.addAssetsToAlbum(params);
   }
@@ -108,14 +116,6 @@ class CameraRollRNPhotosFramework {
 
   deleteAlbums(albums) {
     return RCTCameraRollRNPhotosFrameworkManager.deleteAlbums(albums.map(album => album.localIdentifier));
-  }
-
-  createImageAsset(imageAsset) {
-    return this.createImageAssets({images: [imageAsset]}).then((insertResult) => {
-      if (insertResult.localIdentifiers) {
-        return new Asset({localIdentifier: insertResult.localIdentifiers[0]});
-      }
-    });
   }
 
   createAssets(params) {

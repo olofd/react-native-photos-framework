@@ -55,6 +55,8 @@ export default class Example extends Component {
         this.cleanUp().then(() => {
           //this.readd();
         });
+      }else {
+        alert('Application is not authorized to use Photos Framework! Pleade check settings.');
       }
     });
   }

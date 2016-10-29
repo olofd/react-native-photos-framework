@@ -98,6 +98,22 @@
     return assets;
 }
 
++(void)deleteAssets:(NSArray<PHAsset *> *)assetsToDelete andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error, NSArray<NSString *> * localIdentifiers))completeBlock {
+    __block NSMutableArray<NSString *> *deletedAssetsLocalIdentifers = [NSMutableArray arrayWithCapacity:assetsToDelete.count];
+    [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+        for(int i = 0; i< assetsToDelete.count; i++) {
+            PHAsset *assetToDelete = [assetsToDelete objectAtIndex:i];
+            BOOL req = [assetToDelete canPerformEditOperation:PHAssetEditOperationDelete];
+            if (req) {
+                [deletedAssetsLocalIdentifers addObject:assetToDelete.localIdentifier];
+                [PHAssetChangeRequest deleteAssets:@[assetToDelete]];
+            }
+        }
+    } completionHandler:^(BOOL success, NSError *error) {
+        completeBlock(success, error, deletedAssetsLocalIdentifers);
+    }];
+}
+
 +(void)requestEditingMetadataWithCompletionBlock:(void(^)(NSDictionary<NSString *,id> * dict))completeBlock andAsset:(PHAsset *)asset{
         PHContentEditingInputRequestOptions *editOptions = [[PHContentEditingInputRequestOptions alloc]init];
         editOptions.networkAccessAllowed = YES;

@@ -102,6 +102,10 @@ class CameraRollRNPhotosFramework {
     return RCTCameraRollRNPhotosFrameworkManager.getAssetsMetaData(assetsLocalIdentifiers);
   }
 
+  deleteAssets(assets) {
+    return RCTCameraRollRNPhotosFrameworkManager.deleteAssets(assets.map(asset => asset.localIdentifier));
+  }
+
   deleteAlbums(albums) {
     return RCTCameraRollRNPhotosFrameworkManager.deleteAlbums(albums.map(album => album.localIdentifier));
   }

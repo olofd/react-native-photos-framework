@@ -191,6 +191,24 @@ RCT_EXPORT_METHOD(createAlbums:(NSArray *)albumTitles
     }];
 }
 
+
+RCT_EXPORT_METHOD(deleteAssets:(NSArray *)localIdentifiers
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+    if(localIdentifiers == nil || localIdentifiers.count == 0) {
+        return resolve(@{@"localIdentifiers" : @[], @"success" : @((BOOL)true)});
+    }
+    PHFetchResult<PHAsset *> * assets = [PHAssetsService getAssetsFromArrayOfLocalIdentifiers:localIdentifiers];
+    [PHAssetsService deleteAssets:assets andCompleteBLock:^(BOOL success, NSError * _Nullable error, NSArray<NSString *> *localIdentifiers) {
+        if(localIdentifiers && localIdentifiers.count != 0) {
+            return resolve(@{@"localIdentifiers" : localIdentifiers, @"finnishedWithErrors" : @((BOOL)!success) });
+        }
+        return reject(@"Error removing assets", nil, error);
+    }];
+    
+}
+
 RCT_EXPORT_METHOD(deleteAlbums:(NSArray *)albumsLocalIdentifiers
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
@@ -248,13 +266,15 @@ RCT_EXPORT_METHOD(createAssets:(NSDictionary *)params
 {
     NSArray<PHSaveAssetRequest *> *images = [RCTConvert PHSaveAssetRequestArray:params[@"images"]];
     NSArray<PHSaveAssetRequest *> *videos = [RCTConvert PHSaveAssetRequestArray:params[@"videos"]];
-    NSString *albumLocalIdentifier = [RCTConvert NSString:params[@"albumLocalIdentifer"]];
+    if((images == nil || images.count == 0) && (videos == nil || videos.count == 0)) {
+        return resolve(@{@"localIdentifiers" : @[], @"success" : @((BOOL)true)});
+    }
+    NSString *albumLocalIdentifier = [RCTConvert NSString:params[@"albumLocalIdentifier"]];
     PHAssetCollection *collection = [PHCollectionService getAssetForLocalIdentifer:albumLocalIdentifier];
     
     [self saveImages:images andLocalIdentifers:[NSMutableArray arrayWithCapacity:images.count] andCollection:collection andCompleteBLock:^(BOOL success, NSError * _Nullable error, NSMutableArray<NSString *> *localIdentifiers) {
         if(localIdentifiers && localIdentifiers.count != 0) {
             return resolve(@{@"localIdentifiers" : localIdentifiers, @"finnishedWithErrors" : @((BOOL)!success) });
-            return;
         }
         return reject(@"Error creating assets", nil, error);
 

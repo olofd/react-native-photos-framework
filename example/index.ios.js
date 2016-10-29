@@ -19,32 +19,68 @@ export default class Example extends Component {
     };
   }
 
+  addTestImagesToAlbumOne(album) {
+    return RNPhotosFramework.createAssets({
+      album: album,
+      images: [
+        {
+          uri: 'https://c1.staticflickr.com/6/5337/8940995208_5da979c52f.jpg'
+        }, {
+          uri: 'https://upload.wikimedia.org/wikipedia/commons/d/db/Patern_test.jpg'
+        }
+      ]
+    });
+  }
+
+  addTestImagesToAlbumTwo(album) {
+    return RNPhotosFramework.createAssets({
+      album: album,
+      images: [
+        {
+          uri: 'https://c1.staticflickr.com/6/5337/8940995208_5da979c52f.jpg'
+        }, {
+          uri: 'https://upload.wikimedia.org/wikipedia/commons/d/db/Patern_test.jpg'
+        }
+      ]
+    });
+  }
+
   componentWillMount() {
     // Start with creating 2 test-albums that we can work with: First Check if they
     // already exist, if they do. clean up:
     // RNPhotosFramework.createAlbum(TEST_ALBUM_ONE);
     // RNPhotosFramework.createAlbum(TEST_ALBUM_TWO);
-
-    return this.testAlbumsExist().then((albums) => {
-      return RNPhotosFramework.createAssets({
-        album : albums[0],
-        images: [
-          {
-            uri: 'https://c1.staticflickr.com/6/5337/8940995208_5da979c52f.jpg'
-          }, {
-            uri: 'https://upload.wikimedia.org/wikipedia/commons/d/db/Patern_test.jpg'
-          }
-        ]
-      }).then((assets) => {}, () => {
-        //ProgressCallback
-      }).then(() => {
-        //Complete
+    this.cleanUp().then(() => {
+      return this.testAlbumsExist().then((albums) => {
+        return Promise.all([
+          this.addTestImagesToAlbumOne(albums[0]),
+          this.addTestImagesToAlbumOne(albums[1])]
+        ).then((assets) => {}, (li) => {
+          debugger;
+          //ProgressCallback
+        }).then(() => {
+          //Complete
+        });
       });
     });
   }
 
   removeAlbums(albums) {
     return RNPhotosFramework.deleteAlbums(albums);
+  }
+
+  cleanUp() {
+    return RNPhotosFramework.getAlbumsByTitles([TEST_ALBUM_ONE, TEST_ALBUM_TWO]).then((fetchResult) => {
+      const albums = fetchResult.albums.filter(album => [TEST_ALBUM_ONE, TEST_ALBUM_TWO].some(testAlbum => testAlbum === album.title));
+      const promises = albums.map(album => {
+        return album.getAssets().then((assetResultObj) => {
+          return RNPhotosFramework.deleteAssets(assetResultObj.assets);
+        });
+      });
+      return Promise.all(promises).then(() => {
+        return RNPhotosFramework.deleteAlbums(albums);
+      });
+    });
   }
 
   testAlbumsExist() {

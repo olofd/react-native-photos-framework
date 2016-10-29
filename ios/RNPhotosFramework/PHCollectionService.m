@@ -152,7 +152,7 @@ static id ObjectOrNull(id object)
 
 
 
-+(void) createAlbumsWithTitles:(NSArray *)titles andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error, NSArray<NSString *> * localIdentifier))completeBlock {
++(void) createAlbumsWithTitles:(NSArray *)titles andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error, NSArray<NSString *> * localIdentifiers))completeBlock {
     __block NSMutableArray<PHObjectPlaceholder *> *placeholders = [NSMutableArray arrayWithCapacity:titles.count];
     
     [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{

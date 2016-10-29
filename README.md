@@ -17,8 +17,6 @@ NOTE: When running `npm install` this library will try to automatically add `NSP
 Check that it is there after the install or update it's value from the default:
 `Using photo library to select pictures`
 
-###2016-10-28 Under heavy development right now. Feel free to try out and file an issue if anything does not work as expected/documented. (On parental leave, so I'm working as quicky as she accepts =)
-
 ##Library (Top level):
 
 ##Static methods:
@@ -329,7 +327,6 @@ If you choose to use opportunistic here you will see a low-res-version of the im
 while the highQuality version of the resource is downloaded. NOTE: This library will call correct lifecycle callback's on your image-tag when this is used: the
 `<Image onPartialLoad={//Low-res-callback} onLoad={//High-res-callback} onProgress={//downloadCallback}>`
 
-
 #Creating Assets:
 You can use this library to save images and videos to the users iCloud library.
 
@@ -411,5 +408,3 @@ The changeDetails for albums contains the following props:
 NOTE: You will have to decide for yourself if you want to do a full reload of the album or rearrange the assets you have in JS-memory according to the information in the changeDetails.
 
 All of these change events is for information. This library will provide a way of getting new immutable collections out of the changes so you can rerender efficiently.
-
-documentation in progress...

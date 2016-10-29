@@ -63,5 +63,7 @@ export default class Asset {
         return new Asset(this._assetObj, options);
     }
 
-
+    delete() {
+      return NativeApi.deleteAssets([this.localIdentifier]);
+    }
 }

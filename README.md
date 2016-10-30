@@ -195,6 +195,17 @@ The getAlbumsMany-api can take multiple queries (array<albumquery>) and return a
 
 ##Static methods:
 
+###Base methods:
+~~~~
+//Fetches albums for params. See above
+RNPhotosFramework.getAlbums(params)
+//Fetches many queries
+RNPhotosFramework.getAlbumsMany([params, params...]);
+//Prebuilt query for fetching the most typical albums:
+//Camera-Roll, User-albums and user-shared-albums.
+RNPhotosFramework.getAlbumsCommon(params)
+~~~~
+
 ###createAlbum
 ~~~~
   RNPhotosFramework.createAlbum('test-album').then((album) => {

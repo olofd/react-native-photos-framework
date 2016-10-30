@@ -4,6 +4,8 @@ import AlbumList from './album-list';
 import RNPhotosFramework from 'react-native-photos-framework';
 const TEST_ALBUM_ONE = 'RNPF-test-1';
 const TEST_ALBUM_TWO = 'RNPF-test-2';
+var simple_timer = require('simple-timer')
+
 
 export default class Example extends Component {
   constructor(props) {
@@ -44,10 +46,13 @@ export default class Example extends Component {
   }
 
   componentWillMount() {
-    RNPhotosFramework.getAlbums({
+    simple_timer.start('first_album_fetch');
+    RNPhotosFramework.getAlbumsCommon({
       includeMetaData : true,
       previewAssets : 1
     }).then((albumsFetchResult) => {
+      simple_timer.stop('first_album_fetch');
+      console.debug('react-native-photos-framework albums request took %s milliseconds.', simple_timer.get('first_album_fetch').delta)
       this.setState({albumsFetchResult : albumsFetchResult});
     });
   }

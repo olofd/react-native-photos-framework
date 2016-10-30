@@ -61,16 +61,39 @@ class CameraRollRNPhotosFramework {
     });
   }
 
+  getAlbumsCommon(params) {
+    return this._getAlbumsManyRaw([
+      Object.assign({
+        type : 'smartAlbum',
+        subType : 'smartAlbumUserLibrary'
+      }, params),
+      Object.assign({}, params),
+      Object.assign({
+        type : 'album',
+        subType : 'albumMyPhotoStream'
+      }, params)
+    ]).then((albumQueryResultList) => {
+      return new AlbumQueryResult({
+        _cacheKeys : albumQueryResultList.map(aqr => aqr._cacheKey),
+        albums : albumQueryResultList.reduce((array, item) => { array.push(...item.albums); return array; }, [])
+      }, params, eventEmitter);
+    });
+  }
+
   getAlbums(params) {
-    return RCTCameraRollRNPhotosFrameworkManager.getAlbums(params).then((queryResult) => {
-      return new AlbumQueryResult(queryResult, params, eventEmitter);
+    return this.getAlbumsMany(params).then((queryResults) => {
+      return queryResults[0];
     });
   }
 
   getAlbumsMany(params) {
-    return RCTCameraRollRNPhotosFrameworkManager.getAlbumsMany(params).then((albumQueryResultList) => {
+    return this._getAlbumsManyRaw(params).then((albumQueryResultList) => {
       return albumQueryResultList.map((collection, index) => new AlbumQueryResult(collection, params[index], eventEmitter));
     });
+  }
+
+  _getAlbumsManyRaw(params) {
+    return RCTCameraRollRNPhotosFrameworkManager.getAlbumsMany(params);
   }
 
   getAlbumsByTitle(title) {
@@ -140,6 +163,7 @@ class CameraRollRNPhotosFramework {
       return result.assets.map(asset => new Asset(asset, undefined, eventEmitter));
     });
   }
+
 }
 
 export default new Proxy(new CameraRollRNPhotosFramework(), {

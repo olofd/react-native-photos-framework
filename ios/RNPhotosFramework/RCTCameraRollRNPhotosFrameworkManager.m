@@ -159,7 +159,7 @@ RCT_EXPORT_METHOD(removeAssetsFromAlbum:(NSDictionary *)params
         }else {
             return reject(@"Error", @{ @"success" : @(success) }, nil);
         }
-        
+
     }];
 }
 

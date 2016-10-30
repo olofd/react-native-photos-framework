@@ -47,20 +47,20 @@ static id ObjectOrNull(id object)
     }
     PHAssetCollectionType type = [RCTConvert PHAssetCollectionType:typeString];
     PHAssetCollectionSubtype subType = [RCTConvert PHAssetCollectionSubtype:subTypeString];
-    PHFetchOptions *options = [PHFetchOptionsService getFetchOptionsFromParams:params];
+    PHFetchOptions *options = [PHFetchOptionsService getCollectionFetchOptionsFromParams:params];
     PHFetchResult<PHAssetCollection *> *albums = [PHAssetCollection fetchAssetCollectionsWithType:type subtype:subType options:options];
     return albums;
 }
 
 +(PHFetchResult<PHAssetCollection *> *)getTopUserAlbums:(NSDictionary *)params
 {
-    PHFetchOptions *options = [PHFetchOptionsService getFetchOptionsFromParams:params];
+    PHFetchOptions *options = [PHFetchOptionsService getCollectionFetchOptionsFromParams:params];
     PHFetchResult<PHAssetCollection *> *topLevelUserCollections = [PHCollectionList fetchTopLevelUserCollectionsWithOptions:options];
     return topLevelUserCollections;
 }
 
 +(PHFetchResult<PHAssetCollection *> *)getUserAlbumsByTitles:(NSArray *)titles withParams:(NSDictionary *)params {
-    PHFetchOptions *fetchOptions = [PHFetchOptionsService getFetchOptionsFromParams:params];
+    PHFetchOptions *fetchOptions = [PHFetchOptionsService getCollectionFetchOptionsFromParams:params];
     fetchOptions.predicate = [NSPredicate predicateWithFormat:@"title in %@", titles];
     NSString * typeString = params[@"type"];
     NSString * subTypeString = params[@"subType"];
@@ -116,9 +116,16 @@ static id ObjectOrNull(id object)
         {
             PHAssetCollection *phAssetCollection = (PHAssetCollection *)collection;
             NSMutableDictionary *albumDictionary = [NSMutableDictionary new];
-            
-            [albumDictionary setObject:[[RCTConvert PHAssetCollectionTypeValuesReversed] objectForKey:@([phAssetCollection assetCollectionType])] forKey:@"type"];
-            [albumDictionary setObject:[[RCTConvert PHAssetCollectionSubtypeValuesReversed] objectForKey:@([phAssetCollection assetCollectionSubtype])] forKey:@"subType"];
+            PHAssetCollectionType albumType = [phAssetCollection assetCollectionType];
+            PHAssetCollectionSubtype subType = [phAssetCollection assetCollectionSubtype];
+            [albumDictionary setObject:[[RCTConvert PHAssetCollectionTypeValuesReversed] objectForKey:@(albumType)] forKey:@"type"];
+            if(subType == 1000000201) {
+                //Some kind of undocumented value here for recentlyDeleted
+                //Found references to this when i Googled.
+              [albumDictionary setObject:@"recentlyDeleted" forKey:@"subType"];
+            }else {
+               [albumDictionary setObject:[[RCTConvert PHAssetCollectionSubtypeValuesReversed] objectForKey:@(subType)] forKey:@"subType"];
+            }
 
             [albumDictionary setObject:phAssetCollection.localizedTitle forKey:@"title"];
             [albumDictionary setObject:phAssetCollection.localIdentifier forKey:@"localIdentifier"];
@@ -151,7 +158,12 @@ static id ObjectOrNull(id object)
                 
             }
             if(countType == RNPFAssetCountTypeEstimated) {
-                [albumDictionary setObject:@([phAssetCollection estimatedAssetCount]) forKey:@"assetCount"];
+                NSUInteger estimatedAssetCount = [phAssetCollection estimatedAssetCount];
+                if(NSNotFound == estimatedAssetCount) {
+                    [albumDictionary setObject:@(-1) forKey:@"assetCount"];
+                }else {
+                    [albumDictionary setObject:@(estimatedAssetCount) forKey:@"assetCount"];
+                }
             }
             
             [albumsArray addObject:albumDictionary];
@@ -162,10 +174,9 @@ static id ObjectOrNull(id object)
 }
 
 +(PHFetchResult<PHAsset *> *) getAssetForCollection:(PHAssetCollection *)collection andFetchParams:(NSDictionary *)params {
-    PHFetchOptions *options = [PHFetchOptionsService getFetchOptionsFromParams:params];
+    PHFetchOptions *options = [PHFetchOptionsService getAssetFetchOptionsFromParams:params];
     return  [PHAsset fetchAssetsInAssetCollection:collection options:options];
 }
-
 
 
 +(void) createAlbumsWithTitles:(NSArray *)titles andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error, NSArray<NSString *> * localIdentifiers))completeBlock {

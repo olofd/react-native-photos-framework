@@ -4,12 +4,7 @@
 @import Photos;
 @implementation PHFetchOptionsService
 
-+(PHFetchOptions *)getFetchOptionsFromParams:(NSDictionary *)outerParams {
-    if(outerParams == nil) {
-        return nil;
-    }
-    NSDictionary *params = [RCTConvert NSDictionary:outerParams[@"fetchOptions"]];
-    PHFetchOptions *options = [[PHFetchOptions alloc] init];
++(PHFetchOptions *)getCommonFetchOptionsFromParams:(NSDictionary *)params andFetchOptions:(PHFetchOptions *)options {
     options.includeAssetSourceTypes = [RCTConvert PHAssetSourceTypes:params[@"sourceTypes"]];
     options.includeHiddenAssets = [RCTConvert BOOL:params[@"includeHiddenAssets"]];
     options.includeAllBurstAssets = [RCTConvert BOOL:params[@"includeAllBurstAssets"]];
@@ -17,7 +12,33 @@
     options.wantsIncrementalChangeDetails = [RCTConvert BOOL:params[@"wantsIncrementalChangeDetails"]];
     options.predicate = [PHFetchOptionsService getPredicate:params];
     options.sortDescriptors = [self getSortDescriptorsFromParams:params];
-    
+    return options;
+}
+
++(PHFetchOptions *)getAssetFetchOptionsFromParams:(NSDictionary *)outerParams {
+    if(outerParams == nil) {
+        return nil;
+    }
+    NSDictionary *params = [RCTConvert NSDictionary:outerParams[@"fetchOptions"]];
+    PHFetchOptions *options = [[PHFetchOptions alloc] init];
+    options = [self getCommonFetchOptionsFromParams:params andFetchOptions:options];
+    if(options.sortDescriptors == nil || options.sortDescriptors.count == 0) {
+        options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
+    }
+    return options;
+}
+
++(PHFetchOptions *)getCollectionFetchOptionsFromParams:(NSDictionary *)outerParams {
+    if(outerParams == nil) {
+        return nil;
+    }
+    NSDictionary *params = [RCTConvert NSDictionary:outerParams[@"fetchOptions"]];
+    BOOL excludeEmptyAlbums = [RCTConvert BOOL:params[@"excludeEmptyAlbums"]];
+    PHFetchOptions *options = [[PHFetchOptions alloc] init];
+    options = [self getCommonFetchOptionsFromParams:params andFetchOptions:options];
+    if(options.sortDescriptors == nil || options.sortDescriptors.count == 0) {
+        options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"title" ascending:YES]];
+    }
     return options;
 }
 

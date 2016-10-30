@@ -5,6 +5,7 @@ import Asset from './asset';
 import Album from './album';
 import AlbumQueryResult from './album-query-result';
 import EventEmitter from '../../react-native/Libraries/EventEmitter/EventEmitter';
+import commonSort from './common-sort';
 const RCTCameraRollRNPhotosFrameworkManager = NativeModules.CameraRollRNPhotosFrameworkManager;
 export const eventEmitter = new EventEmitter();
 const cleanCachePromise = RCTCameraRollRNPhotosFrameworkManager.cleanCache();
@@ -47,47 +48,59 @@ class CameraRollRNPhotosFramework {
   }
 
   getAssets(params) {
-    return RCTCameraRollRNPhotosFrameworkManager.getAssets(params).then((assets) => {
-      return assets.map(p => new Asset(p));
-    });
+    return RCTCameraRollRNPhotosFrameworkManager
+      .getAssets(params)
+      .then((assets) => {
+        return assets.map(p => new Asset(p));
+      });
   }
 
   getAssets(params) {
-    return RCTCameraRollRNPhotosFrameworkManager.getAssets(params).then((assetsResponse) => {
-      return {
-        assets: assetsResponse.assets.map(p => new Asset(p)),
-        includesLastAsset: assetsResponse.includesLastAsset
-      };
-    });
+    return RCTCameraRollRNPhotosFrameworkManager
+      .getAssets(params)
+      .then((assetsResponse) => {
+        return {
+          assets: assetsResponse
+            .assets
+            .map(p => new Asset(p)),
+          includesLastAsset: assetsResponse.includesLastAsset
+        };
+      });
   }
 
   getAlbumsCommon(params) {
     return this.getAlbumsMany([
       Object.assign({
-        type : 'smartAlbum',
-        subType : 'smartAlbumUserLibrary'
+        type: 'smartAlbum',
+        subType: 'any'
       }, params),
-      Object.assign({}, params),
       Object.assign({
-        type : 'album',
-        subType : 'albumMyPhotoStream'
-      }, params)
-    ], true);
+        type: 'album',
+        subType: 'any'
+      }, params),
+    ], true).then((albumQueryResult) => {
+        albumQueryResult.sortAlbumsByTypeObject(commonSort, 'smartAlbum');
+        return albumQueryResult;
+    });
   }
 
   getAlbums(params) {
-    return this.getAlbumsMany(params).then((queryResults) => {
-      return queryResults[0];
-    });
+    return this
+      .getAlbumsMany(params)
+      .then((queryResults) => {
+        return queryResults[0];
+      });
   }
 
   getAlbumsMany(params, asSingleQueryResult) {
-    return this._getAlbumsManyRaw(params).then((albumQueryResultList) => {
-      if(asSingleQueryResult) {
-        return this.asSingleQueryResult(albumQueryResultList, params, eventEmitter);
-      }
-      return albumQueryResultList.map((collection, index) => new AlbumQueryResult(collection, params[index], eventEmitter));
-    });
+    return this
+      ._getAlbumsManyRaw(params)
+      .then((albumQueryResultList) => {
+        if (asSingleQueryResult) {
+          return this.asSingleQueryResult(albumQueryResultList, params, eventEmitter);
+        }
+        return albumQueryResultList.map((collection, index) => new AlbumQueryResult(collection, params[index], eventEmitter));
+      });
   }
 
   _getAlbumsManyRaw(params) {
@@ -105,9 +118,11 @@ class CameraRollRNPhotosFramework {
   // param should include property called albumTitles : array<string> But can also
   // include things like fetchOptions and type/subtype.
   getAlbumsWithParams(params) {
-    return RCTCameraRollRNPhotosFrameworkManager.getAlbumsByTitles(params).then((albumQueryResult) => {
-      return new AlbumQueryResult(albumQueryResult, params, eventEmitter);
-    });
+    return RCTCameraRollRNPhotosFrameworkManager
+      .getAlbumsByTitles(params)
+      .then((albumQueryResult) => {
+        return new AlbumQueryResult(albumQueryResult, params, eventEmitter);
+      });
   }
 
   createAlbum(albumTitle) {
@@ -115,11 +130,13 @@ class CameraRollRNPhotosFramework {
   }
 
   createAlbums(albumTitles) {
-    return RCTCameraRollRNPhotosFrameworkManager.createAlbums(albumTitles).then((albumLocalIdentifiers) => {
-      return albumLocalIdentifiers.map(newAlbumLocalIdentifier => new Album({
-        localIdentifier: newAlbumLocalIdentifier
-      }, undefined, eventEmitter));
-    });
+    return RCTCameraRollRNPhotosFrameworkManager
+      .createAlbums(albumTitles)
+      .then((albumLocalIdentifiers) => {
+        return albumLocalIdentifiers.map(newAlbumLocalIdentifier => new Album({
+          localIdentifier: newAlbumLocalIdentifier
+        }, undefined, eventEmitter));
+      });
   }
 
   updateAlbumTitle(params) {
@@ -140,36 +157,42 @@ class CameraRollRNPhotosFramework {
   }
 
   createImageAsset(image) {
-    return this.createAssets({
-      images : [image]
-    }).then((result) => result[0]);
+    return this
+      .createAssets({images: [image]})
+      .then((result) => result[0]);
   }
 
   createVideoAsset(video) {
-    return this.createAssets({
-      videos : [video]
-    }).then((result) => result[1]);
+    return this
+      .createAssets({videos: [video]})
+      .then((result) => result[1]);
   }
 
   createAssets(params) {
-    return RCTCameraRollRNPhotosFrameworkManager.createAssets({
-      images : params.images,
-      videos : params.videos,
-      albumLocalIdentifier : params.album ? params.album.localIdentifier : undefined,
-      includeMetaData : params.includeMetaData
-    }).then((result) => {
-      return result.assets.map(asset => new Asset(asset, undefined, eventEmitter));
-    });
+    return RCTCameraRollRNPhotosFrameworkManager
+      .createAssets({
+      images: params.images,
+      videos: params.videos,
+      albumLocalIdentifier: params.album
+        ? params.album.localIdentifier
+        : undefined,
+      includeMetaData: params.includeMetaData
+    })
+      .then((result) => {
+        return result
+          .assets
+          .map(asset => new Asset(asset, undefined, eventEmitter));
+      });
   }
 
   asSingleQueryResult(albumQueryResultList, params, eventEmitter) {
     return new AlbumQueryResult({
-      _cacheKeys : albumQueryResultList.map(aqr => aqr._cacheKey),
-      albums : albumQueryResultList.reduce((array, item) => {
+      _cacheKeys: albumQueryResultList.map(aqr => aqr._cacheKey),
+      albums: albumQueryResultList.reduce((array, item) => {
         array.push(...item.albums);
         return array;
       }, [])
-    }, params, eventEmitter);
+    }, params, eventEmitter); 
   }
 
 }
@@ -177,8 +200,11 @@ class CameraRollRNPhotosFramework {
 export default new Proxy(new CameraRollRNPhotosFramework(), {
   get: (target, propKey, receiver) => {
     const origMethod = target[propKey];
-    return function(...args) {
+    return function (...args) {
       return cleanCachePromise.then(() => origMethod.apply(this, args));
-    };
+    }
   }
 });
+
+
+//Sort:

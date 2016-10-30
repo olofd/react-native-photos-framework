@@ -21,7 +21,7 @@
 }
 
 +(PHFetchResult<PHAsset *> *)getAssetsForParams:(NSDictionary *)params andAlbumLocalIdentifier:(NSString *)albumLocalIdentifier {
-    PHFetchOptions *options = [PHFetchOptionsService getFetchOptionsFromParams:params];
+    PHFetchOptions *options = [PHFetchOptionsService getAssetFetchOptionsFromParams:params];
     PHFetchResult<PHAssetCollection *> *collections = [PHAssetCollection fetchAssetCollectionsWithLocalIdentifiers:@[albumLocalIdentifier] options:nil];
     PHFetchResult<PHAsset *> * assets = [PHAsset fetchAssetsInAssetCollection:collections.firstObject options:options];
     return assets;
@@ -39,7 +39,7 @@
 }
 
 +(PHFetchResult<PHAsset *> *) getAllAssetsForParams:(NSDictionary *)params {
-    PHFetchOptions *options = [PHFetchOptionsService getFetchOptionsFromParams:params];
+    PHFetchOptions *options = [PHFetchOptionsService getAssetFetchOptionsFromParams:params];
     return [PHAsset fetchAssetsWithOptions:options];
 }
 

@@ -1,11 +1,20 @@
 import NativeApi from './index';
+import Asset from './asset';
 export default class Album {
 
   constructor(obj, fetchOptions, eventEmitter) {
     this._fetchOptions = fetchOptions;
     Object.assign(this, obj);
+    if (this.previewAssets) {
+      this.previewAssets = this
+        .previewAssets
+        .map((assetNativeObj) => new Asset(assetNativeObj));
+      if (this.previewAssets.length) {
+        this.previewAsset = this.previewAssets[0];
+      }
+    }
     eventEmitter.addListener('onObjectChange', (changeDetails) => {
-      if(changeDetails._cacheKey === this._cacheKey) {
+      if (changeDetails._cacheKey === this._cacheKey) {
         this._emitChange(changeDetails);
       }
     });
@@ -14,9 +23,9 @@ export default class Album {
   getAssets(params) {
     return NativeApi.getAssets({
       ...params,
-       _cacheKey : this._cacheKey,
-       albumLocalIdentifier : this.localIdentifier
-     });
+      _cacheKey: this._cacheKey,
+      albumLocalIdentifier: this.localIdentifier
+    });
   }
 
   addAssetToAlbum(asset) {
@@ -25,10 +34,10 @@ export default class Album {
 
   addAssetsToAlbum(assets) {
     return NativeApi.addAssetsToAlbum({
-       assets : assets.map(asset => asset.localIdentifier),
-       _cacheKey : this._cacheKey,
-       albumLocalIdentifier : this.localIdentifier
-     });
+      assets: assets.map(asset => asset.localIdentifier),
+      _cacheKey: this._cacheKey,
+      albumLocalIdentifier: this.localIdentifier
+    });
   }
 
   removeAssetFromAlbum(asset) {
@@ -37,18 +46,14 @@ export default class Album {
 
   removeAssetsFromAlbum(assets) {
     return NativeApi.removeAssetsFromAlbum({
-       assets : assets.map(asset => asset.localIdentifier),
-       _cacheKey : this._cacheKey,
-       albumLocalIdentifier : this.localIdentifier
-     });
+      assets: assets.map(asset => asset.localIdentifier),
+      _cacheKey: this._cacheKey,
+      albumLocalIdentifier: this.localIdentifier
+    });
   }
 
   updateTitle(newTitle) {
-    return NativeApi.updateAlbumTitle({
-       newTitle : newTitle,
-       _cacheKey : this._cacheKey,
-       albumLocalIdentifier : this.localIdentifier
-     });
+    return NativeApi.updateAlbumTitle({newTitle: newTitle, _cacheKey: this._cacheKey, albumLocalIdentifier: this.localIdentifier});
   }
 
   delete() {

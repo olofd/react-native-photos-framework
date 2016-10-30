@@ -200,7 +200,8 @@ The getAlbumsMany-api can take multiple queries (array<albumquery>) and return a
 //Fetches albums for params. See above
 RNPhotosFramework.getAlbums(params)
 //Fetches many queries
-RNPhotosFramework.getAlbumsMany([params, params...]);
+//asSingleQueryResult : boolean. if true, will return response as one single response.
+RNPhotosFramework.getAlbumsMany([params, params...], asSingleQueryResult);
 //Prebuilt query for fetching the most typical albums:
 //Camera-Roll, User-albums and user-shared-albums.
 RNPhotosFramework.getAlbumsCommon(params)

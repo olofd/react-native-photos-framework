@@ -62,7 +62,7 @@ class CameraRollRNPhotosFramework {
   }
 
   getAlbumsCommon(params) {
-    return this._getAlbumsManyRaw([
+    return this.getAlbumsMany([
       Object.assign({
         type : 'smartAlbum',
         subType : 'smartAlbumUserLibrary'
@@ -72,12 +72,7 @@ class CameraRollRNPhotosFramework {
         type : 'album',
         subType : 'albumMyPhotoStream'
       }, params)
-    ]).then((albumQueryResultList) => {
-      return new AlbumQueryResult({
-        _cacheKeys : albumQueryResultList.map(aqr => aqr._cacheKey),
-        albums : albumQueryResultList.reduce((array, item) => { array.push(...item.albums); return array; }, [])
-      }, params, eventEmitter);
-    });
+    ], true);
   }
 
   getAlbums(params) {
@@ -86,8 +81,11 @@ class CameraRollRNPhotosFramework {
     });
   }
 
-  getAlbumsMany(params) {
+  getAlbumsMany(params, asSingleQueryResult) {
     return this._getAlbumsManyRaw(params).then((albumQueryResultList) => {
+      if(asSingleQueryResult) {
+        return this.asSingleQueryResult(albumQueryResultList, params, eventEmitter);
+      }
       return albumQueryResultList.map((collection, index) => new AlbumQueryResult(collection, params[index], eventEmitter));
     });
   }
@@ -162,6 +160,16 @@ class CameraRollRNPhotosFramework {
     }).then((result) => {
       return result.assets.map(asset => new Asset(asset, undefined, eventEmitter));
     });
+  }
+
+  asSingleQueryResult(albumQueryResultList, params, eventEmitter) {
+    return new AlbumQueryResult({
+      _cacheKeys : albumQueryResultList.map(aqr => aqr._cacheKey),
+      albums : albumQueryResultList.reduce((array, item) => {
+        array.push(...item.albums);
+        return array;
+      }, [])
+    }, params, eventEmitter);
   }
 
 }

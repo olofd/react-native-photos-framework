@@ -3,9 +3,8 @@
 @import Photos;
 
 typedef NS_ENUM(NSInteger, RNPFAssetCountType) {
-    RNPFAssetCountTypeNone = 1,
-    RNPFAssetCountTypeEstimated = 2,
-    RNPFAssetCountTypeExact = 3,
+    RNPFAssetCountTypeEstimated = 1,
+    RNPFAssetCountTypeExact = 2,
 };
 
 @interface RCTConvert(ReactNativePhotosFramework)

@@ -1,21 +1,16 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- * @flow
- */
-
 import React, {Component} from 'react';
 import {AppRegistry, StyleSheet, Text, View} from 'react-native';
-
 import AlbumList from './album-list';
 import RNPhotosFramework from 'react-native-photos-framework';
 const TEST_ALBUM_ONE = 'RNPF-test-1';
 const TEST_ALBUM_TWO = 'RNPF-test-2';
+
 export default class Example extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      num: 0
+      num: 0,
+      albumsFetchResult : {}
     };
   }
 
@@ -49,11 +44,15 @@ export default class Example extends Component {
   }
 
   componentWillMount() {
-    // Start with creating 2 test-albums that we can work with: First Check if they
-    // already exist, if they do. clean up:
-    // RNPhotosFramework.createAlbum(TEST_ALBUM_ONE);
-    // RNPhotosFramework.createAlbum(TEST_ALBUM_TWO);
+    RNPhotosFramework.getAlbums({
+      includeMetaData : true,
+      previewAssets : 1
+    }).then((albumsFetchResult) => {
+      this.setState({albumsFetchResult : albumsFetchResult});
+    });
+  }
 
+  _componentWillMount() {
     RNPhotosFramework.requestAuthorization().then((status) => {
       if(status.isAuthorized) {
         this.cleanUp().then(() => {
@@ -122,7 +121,7 @@ export default class Example extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <AlbumList></AlbumList>
+        <AlbumList albums={this.state.albumsFetchResult.albums}></AlbumList>
       </View>
     );
   }

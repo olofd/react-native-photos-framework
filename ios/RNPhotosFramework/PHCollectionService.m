@@ -7,6 +7,7 @@
 #import "RCTConvert+RNPhotosFramework.h"
 #import "PHHelpers.h"
 #import "RCTImageLoader.h"
+#import "PHAssetsService.h"
 
 @import Photos;
 @implementation PHCollectionService
@@ -87,23 +88,27 @@ static id ObjectOrNull(id object)
 
 +(NSMutableDictionary *)generateAlbumsResponseFromParams:(NSDictionary *)params andAlbums:(PHFetchResult<PHAssetCollection *> *)albums andCacheAssets:(BOOL)cacheAssets {
     
-    NSMutableDictionary *collectionDictionary = [NSMutableDictionary new];
-    NSString * typeString = params[@"type"];
-    NSString * subTypeString = params[@"subType"];
-    
-    if(typeString != nil && subTypeString != nil) {
-        if(typeString == nil) {
-            typeString = @"album";
-        }
-        if(subTypeString == nil) {
-            subTypeString = @"any";
-        }
-        [collectionDictionary setObject:typeString forKey:@"type"];
-        [collectionDictionary setObject:subTypeString forKey:@"subType"];
-    }
-    
     RNPFAssetCountType countType = [RCTConvert RNPFAssetCountType:params[@"assetCount"]];
+    int numberOfPreviewAssets = [RCTConvert int:params[@"previewAssets"]];
+    NSMutableDictionary *collectionDictionary = [NSMutableDictionary new];
     NSMutableArray *albumsArray = [NSMutableArray arrayWithCapacity:albums.count];
+    
+    NSDictionary *paramsToUse = params;
+    if(!cacheAssets && countType == RNPFAssetCountTypeEstimated && numberOfPreviewAssets > 0) {
+        //We are going to fetch only for preview items.
+        //Let's set a fetchLimit.
+        NSMutableDictionary *mutableParams = [params mutableCopy];
+        NSDictionary *fetchOptions = [RCTConvert NSDictionary:mutableParams[@"fetchOptions"]];
+        NSMutableDictionary *mutFetchOptions;
+        if(fetchOptions) {
+            mutFetchOptions = [fetchOptions mutableCopy];
+            [mutFetchOptions setObject:@(numberOfPreviewAssets) forKey:@"fetchLimit"];
+        }else {
+            mutFetchOptions = [NSMutableDictionary dictionaryWithObject:@(numberOfPreviewAssets) forKey:@"fetchLimit"];
+        }
+        [mutableParams setObject:mutFetchOptions forKey:@"fetchOptions"];
+        paramsToUse = mutableParams;
+    }
     
     for(PHCollection *collection in albums)
     {
@@ -126,15 +131,26 @@ static id ObjectOrNull(id object)
                 [albumDictionary setObject:ObjectOrNull(phAssetCollection.localizedLocationNames) forKey:@"localizedLocationNames"];
             }
 
-            if(cacheAssets || countType == RNPFAssetCountTypeExact) {
-                PHFetchResult<PHAsset *> * assets = [PHCollectionService getAssetForCollection:collection andFetchParams:params];
-                [albumDictionary setObject:@(assets.count) forKey:@"assetCount"];
+            if(cacheAssets || numberOfPreviewAssets > 0 || countType == RNPFAssetCountTypeExact) {
+
+                PHFetchResult<PHAsset *> * assets = [PHCollectionService getAssetForCollection:collection andFetchParams:paramsToUse];
+
                 if(cacheAssets) {
                     NSString *uuid = [[PHChangeObserver sharedChangeObserver] cacheFetchResultAndReturnUUID:assets andObjectType:[PHAsset class]];
                     [albumDictionary setObject:uuid forKey:@"_cacheKey"];
                 }
                 
-            }else if(countType == RNPFAssetCountTypeEstimated) {
+                if(countType == RNPFAssetCountTypeExact) {
+                    [albumDictionary setObject:@(assets.count) forKey:@"assetCount"];
+                }
+                
+                if(numberOfPreviewAssets > 0) {
+                   NSArray<NSDictionary *> *previewAssets = [PHAssetsService assetsArrayToUriArray:[PHAssetsService getAssetsForFetchResult:assets startIndex:0 endIndex:numberOfPreviewAssets] andIncludeMetaData:NO];
+                    [albumDictionary setObject:previewAssets forKey:@"previewAssets"];
+                }
+                
+            }
+            if(countType == RNPFAssetCountTypeEstimated) {
                 [albumDictionary setObject:@([phAssetCollection estimatedAssetCount]) forKey:@"assetCount"];
             }
             

@@ -38,10 +38,9 @@ RCT_ENUM_CONVERTER_WITH_REVERSED(PHAuthorizationStatus, (@{
 
 RCT_ENUM_CONVERTER_WITH_REVERSED(RNPFAssetCountType, (@{
                                                         // New values
-                                                        @"none": @(RNPFAssetCountTypeNone),
                                                         @"estimated": @(RNPFAssetCountTypeEstimated),
                                                         @"exact": @(RNPFAssetCountTypeExact)
-                                                        }), RNPFAssetCountTypeNone, integerValue)
+                                                        }), RNPFAssetCountTypeEstimated, integerValue)
 
 RCT_ENUM_CONVERTER_WITH_REVERSED(PHAssetBurstSelectionType, (@{
                                                         // New values

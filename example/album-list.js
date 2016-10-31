@@ -5,8 +5,12 @@ import {
   Text,
   Image,
   ListView,
-  TouchableOpacity
+  TouchableOpacity,
+  Dimensions
 } from 'react-native'
+import RNPhotosFramework from 'react-native-photos-framework';
+import {Actions} from 'react-native-router-flux'
+var simple_timer = require('simple-timer');
 
 export default class AlbumList extends Component {
 
@@ -20,12 +24,37 @@ export default class AlbumList extends Component {
   }
 
   componentWillMount() {
-    this.albumPropsToListView(this.props);
+    simple_timer.start('first_album_fetch');
+    RNPhotosFramework
+      .requestAuthorization()
+      .then((status) => {
+        RNPhotosFramework
+          .getAlbumsCommon({
+          assetCount: 'exact',
+          includeMetaData: true,
+          previewAssets: 2,
+          sortDescriptors: [
+            {
+              key: 'title',
+              ascending: false
+            }
+          ]
+        })
+          .then((albumsFetchResult) => {
+            simple_timer.stop('first_album_fetch');
+            console.debug('react-native-photos-framework albums request took %s milliseconds.', simple_timer.get('first_album_fetch').delta)
+            this.setState({albumsFetchResult: albumsFetchResult});
+            this.albumPropsToListView();
+          });
+      });
+
+    var {width} = Dimensions.get('window');
+    const imagesPerRow = 2;
+    const imageMargin = 10;
+    this._imageSize = (width - (imagesPerRow + 1) * imageMargin) / imagesPerRow;
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.albumPropsToListView(nextProps);
-  }
+  componentWillReceiveProps(nextProps) {}
 
   chunk(arr, len) {
     var chunks = [],
@@ -38,27 +67,37 @@ export default class AlbumList extends Component {
   }
 
   albumPropsToListView(props) {
-    if (props.albums) {
+    if (this.state.albumsFetchResult.albums) {
       this.setState({
         dataSource: this
           .state
           .dataSource
-          .cloneWithRows(this.chunk(props.albums, 2))
+          .cloneWithRows(this.chunk(this.state.albumsFetchResult.albums, 2))
       });
     }
   }
 
+  onAlbumPress(album) {
+    console.log(album.title);
+    Actions.cameraRollPicker({album : album, title : album.title});
+  }
+
   _renderAlbum(album, index) {
     return (
-    <TouchableOpacity style={styles.listColumn} key={index}>
+      <TouchableOpacity style={styles.listColumn} key={index} onPress={this.onAlbumPress.bind(this, album)}>
         {album.previewAsset
           ? <Image
               source={{
               uri: album.previewAsset.image.uri,
-              width: 150,
-              height: 150
+              width: this._imageSize,
+              height: this._imageSize
             }}></Image>
-          : null}
+          : <View
+            style={{
+            backgroundColor: '#D6D6D6',
+            width: this._imageSize,
+            height: this._imageSize
+          }}></View>}
         <Text>{album.title}</Text>
         <Text>{album.assetCount}</Text>
       </TouchableOpacity>
@@ -70,7 +109,7 @@ export default class AlbumList extends Component {
       <View style={styles.listRow}>
         {albums.map((album, index) => this._renderAlbum(album, index))}
       </View>
-  
+
     );
   }
 
@@ -92,12 +131,14 @@ export default class AlbumList extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop : 20
+    paddingTop: 20,
+    marginTop: 50
   },
   listRow: {
-   flexDirection : 'row'
+    flexDirection: 'row',
+    paddingLeft: 5
   },
-  listColumn : {
-    padding : 10
+  listColumn: {
+    padding: 5
   }
 })

@@ -38,6 +38,7 @@ export default class ReactNativeCameraRollPicker extends Component {
           </Text>
         </View>
         <CameraRollPicker
+          album={this.props.album}
           removeClippedSubviews={true}
           groupTypes='SavedPhotos'
           batchSize={5}

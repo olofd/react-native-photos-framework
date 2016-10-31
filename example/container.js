@@ -3,14 +3,12 @@ import React, {Component} from 'react';
 import {AppRegistry, StyleSheet, Text, View} from 'react-native';
 import AlbumList from './album-list';
 import RNPhotosFramework from 'react-native-photos-framework';
-var simple_timer = require('simple-timer');
 import {Scene, Router} from 'react-native-router-flux';
-import Container from './container';
 const TEST_ALBUM_ONE = 'RNPF-test-1';
 const TEST_ALBUM_TWO = 'RNPF-test-2';
-import CameraRollPicker from './react-native-camera-roll-picker';
+var simple_timer = require('simple-timer')
 
-export default class Example extends Component {
+export default class Container extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -48,7 +46,26 @@ export default class Example extends Component {
     });
   }
 
- 
+  componentWillMount() {
+    simple_timer.start('first_album_fetch');
+    RNPhotosFramework
+      .getAlbumsCommon({
+      assetCount: 'exact',
+      includeMetaData: true,
+      previewAssets: 2,
+      sortDescriptors: [
+        {
+          key: 'title',
+          ascending: false
+        }
+      ]
+    })
+      .then((albumsFetchResult) => {
+        simple_timer.stop('first_album_fetch');
+        console.debug('react-native-photos-framework albums request took %s milliseconds.', simple_timer.get('first_album_fetch').delta)
+        this.setState({albumsFetchResult: albumsFetchResult});
+      });
+  }
 
   _componentWillMount() {
     RNPhotosFramework
@@ -140,14 +157,18 @@ export default class Example extends Component {
     return (
       <Router>
         <Scene key="root">
-          <Scene key="albumList" component={AlbumList} title="Album"/>
-          <Scene key="cameraRollPicker" component={CameraRollPicker} title="Bilder"/>
+          <Scene key="albumList" component={AlbumList} title="Album" albums={this.state.albumsFetchResult.albums}/>
+
         </Scene>
       </Router>
     );
   }
 
   _render() {
+    /*
+              <Scene key="register" component={Register} title="Register"/>
+          <Scene key="home" component={Home}/>
+    */
     return (
       <View style={styles.container}>
         <AlbumList albums={this.state.albumsFetchResult.albums}></AlbumList>
@@ -162,4 +183,3 @@ const styles = StyleSheet.create({
   }
 });
 
-AppRegistry.registerComponent('Example', () => Example);

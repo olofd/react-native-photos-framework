@@ -19,12 +19,10 @@ export default class ReactNativeCameraRollPicker extends Component {
 
   getSelectedImages(images, current) {
     var num = images.length;
-
     this.setState({
       num: num,
       selected: images,
     });
-
     console.log(current);
     console.log(this.state.selected);
   }
@@ -32,11 +30,6 @@ export default class ReactNativeCameraRollPicker extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <View style={styles.content}>
-          <Text style={styles.text}>
-            <Text style={styles.bold}> {this.state.num} </Text> images has been selected
-          </Text>
-        </View>
         <CameraRollPicker
           album={this.props.album}
           removeClippedSubviews={true}
@@ -57,6 +50,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F6AE2D',
+    marginTop : 65
   },
   content: {
     marginTop: 15,

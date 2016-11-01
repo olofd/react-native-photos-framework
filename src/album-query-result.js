@@ -1,47 +1,66 @@
 import Album from './album';
-export default class AlbumQueryResult {
+import commonSort from './common-sort';
+import AlbumQueryResultBase from './album-query-result-base';
+
+export default class AlbumQueryResult extends AlbumQueryResultBase {
     constructor(obj, fetchParams, eventEmitter) {
+        super();
+        this.eventEmitter = eventEmitter;
         this._fetchParams = fetchParams || {};
         Object.assign(this, obj);
-        if (this._cacheKey && !Array.isArray(this._cacheKey)) {
-            this._cacheKeys = [this._cacheKey];
-        }
         this._albumNativeObjs = this.albums;
         this.albums = this
             ._albumNativeObjs
             .map(albumObj => new Album(albumObj, this._fetchParams.fetchOptions, eventEmitter));
         eventEmitter.addListener('onObjectChange', (changeDetails) => {
-            if (this._cacheKeys.indexOf(changeDetails._cacheKey) !== -1 && this._changeHandler) {
-                this._changeHandler(changeDetails);
+            if (this._cacheKey === changeDetails._cacheKey) {
+                this._changeHandler && this._changeHandler(changeDetails, this);
                 if (changeDetails.albumLocalIdentifier) {
                     const albumThatChanged = this
                         .albums
                         .find(album => album.localIdentifier === changeDetails.albumLocalIdentifier);
-                    albumThatChanged._emitChange(changeDetails);
+                    albumThatChanged && albumThatChanged._emitChange(changeDetails, albumThatChanged);
                 }
             }
         });
     }
 
-    sortAlbumsByTypeObject(typeArray) {
-        this.albums
-            .sort((albumOne, albumTwo) => {
-                let albumOneWeight = this.getSortWeigth(albumOne, typeArray);
-                let albumTwoWeight = this.getSortWeigth(albumTwo, typeArray);
-                return albumOneWeight > albumTwoWeight ? -1 : albumOneWeight === albumTwoWeight ? albumOne.title.localeCompare(albumTwo.title) : 1;
-            });
-    }
-
-    getSortWeigth(albumObj, typeArray) {
-        return typeArray.reduce((weight, typeObj, index) => {
-            if (typeObj.type === albumObj.type && typeObj.subType == albumObj.subType) {
-                weight = typeArray.length - index;
+    applyChangeDetails(changeDetails) {
+        this.updateHandler(changeDetails.insertedObjects, (updatedObj, i, arr) => {
+            this
+                .albums
+                .splice(updatedObj.index, 0, new Album(updatedObj.album, this._fetchParams.fetchOptions, this.eventEmitter));
+        });
+        this.updateHandler(changeDetails.removedObjects, (updatedObj, i, arr) => {
+            this
+                .albums
+                .splice(updatedObj.index, 1);
+        });
+        if (changeDetails.moves) {
+            let tempObj = {};
+            for (let i = 0; i < changeDetails.moves.length; i = (i + 2)) {
+                const fromIndex = changeDetails.moves[i];
+                const toIndex = changeDetails.moves[i + 1];
+                const fromObj = tempObj[fromIndex] || this.albums[fromIndex];
+                tempObj[toIndex] = this.albums[toIndex];
+                this.albums[toIndex] = fromObj;
             }
-            return weight;
-        }, 0);
+            this
+                .albums
+                .forEach(x => console.log(x.title));
+        }
+
+        this.updateHandler(changeDetails.changedObjects, (updatedObj, i, arr) => {
+            this.albums[updatedObj.index] = new Album(updatedObj.album, this._fetchParams.fetchOptions, this.eventEmitter);
+        });
     }
 
-    onChange(changeHandler) {
-        this._changeHandler = changeHandler;
+    updateHandler(arr, cb) {
+        if (arr) {
+            for (let i = 0; i < arr.length; i++) {
+                const updatedObj = arr[i];
+                cb(updatedObj, i, arr);
+            }
+        }
     }
 }

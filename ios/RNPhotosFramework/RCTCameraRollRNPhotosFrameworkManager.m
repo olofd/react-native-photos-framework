@@ -61,20 +61,8 @@ RCT_EXPORT_METHOD(getAssets:(NSDictionary *)params
                   reject:(RCTPromiseRejectBlock)reject)
 {
     RCT_PROFILE_BEGIN_EVENT(0, @"-[RCTCameraRollRNPhotosFrameworkManager getAssets", nil);
-    NSString *fetchId = params[@"fetchId"];
-    PHFetchResult<PHAsset *> *assetsFetchResult;
-    if(fetchId != nil) {
-        RCTCachedFetchResult *cachedFetchResult = [[PHChangeObserver sharedChangeObserver] getFetchResultFromCacheWithuuid:fetchId];
-        if(cachedFetchResult != nil) {
-            assetsFetchResult = cachedFetchResult.fetchResult;
-        }
-    }
-    if(assetsFetchResult == nil) {
-        assetsFetchResult = [PHAssetsService getAssetsForParams:params];
-        if(fetchId != nil) {
-            [[PHChangeObserver sharedChangeObserver] cacheFetchResultWithUUID:assetsFetchResult andObjectType:[PHAsset class] andUUID:fetchId];
-        }
-    }
+    
+    PHFetchResult<PHAsset *> *assetsFetchResult = [PHAssetsService getAssetsForParams:params];
     
     NSString *startIndexParam = params[@"startIndex"];
     NSString *endIndexParam = params[@"endIndex"];
@@ -82,7 +70,6 @@ RCT_EXPORT_METHOD(getAssets:(NSDictionary *)params
     
     NSUInteger startIndex = [RCTConvert NSInteger:startIndexParam];
     NSUInteger endIndex = endIndexParam != nil ? [RCTConvert NSInteger:endIndexParam] : (assetsFetchResult.count -1);
-    
     
     NSArray<PHAsset *> *assets = [PHAssetsService getAssetsForFetchResult:assetsFetchResult startIndex:startIndex endIndex:endIndex];
     [self prepareAssetsForDisplayWithParams:params andAssets:assets];
@@ -170,6 +157,16 @@ RCT_EXPORT_METHOD(getAlbums:(NSDictionary *)params
     return resolve([PHCollectionService getAlbums:params]);
 }
 
+RCT_EXPORT_METHOD(stopTracking:(NSString *)cacheKey
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+    if(cacheKey != nil) {
+        [[PHChangeObserver sharedChangeObserver] removeFetchResultFromCacheWithUUID:cacheKey];
+    }
+    return resolve(@{@"success" : @(YES)});
+}
+
 RCT_EXPORT_METHOD(getAlbumsMany:(NSArray *)params
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
@@ -206,9 +203,11 @@ RCT_EXPORT_METHOD(createAlbums:(NSArray *)albumTitles
         return resolve(@[]);
     }
     
-    [PHCollectionService createAlbumsWithTitles:albumTitles andCompleteBLock:^(BOOL success, NSError * _Nullable error, NSArray<NSString *> *localIdentifier) {
+    [PHCollectionService createAlbumsWithTitles:albumTitles andCompleteBLock:^(BOOL success, NSError * _Nullable error, NSArray<NSString *> *localIdentifiers) {
         if(success) {
-            return resolve(localIdentifier);
+            PHFetchResult<PHAssetCollection *> *collections = [PHCollectionService getAlbumsWithLocalIdentifiers:localIdentifiers andParams:nil];
+          NSMutableDictionary *response = [PHCollectionService generateCollectionResponseWithCollections:collections andParams:[NSDictionary dictionaryWithObjectsAndKeys:@"true", @"noCache", nil]];
+            return resolve([response objectForKey:@"albums"]);
         }else{
             return reject([NSString stringWithFormat:@"Error creating albumTitles %@", albumTitles], nil, error);
         }

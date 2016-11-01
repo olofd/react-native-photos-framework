@@ -9,12 +9,13 @@
 #import "RCTCachedFetchResult.h"
 
 @implementation RCTCachedFetchResult
-- (instancetype)initWithFetchResult:(PHFetchResult *)fetcHResult andObjectType:(Class)objectType
+- (instancetype)initWithFetchResult:(PHFetchResult *)fetcHResult andObjectType:(Class)objectType andOriginalFetchParams:(NSDictionary *)params
 {
     self = [super init];
     if (self) {
         self.fetchResult = fetcHResult;
         self.objectType = objectType;
+        self.originalFetchParams = params;
     }
     return self;
 }

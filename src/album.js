@@ -1,5 +1,6 @@
 import NativeApi from './index';
 import Asset from './asset';
+import uuidGenerator from './uuid-generator';
 export default class Album {
 
   constructor(obj, fetchOptions, eventEmitter) {
@@ -20,7 +21,46 @@ export default class Album {
     });
   }
 
-  getAssets(params) {
+  deleteContentPermitted() {
+    return this._canPerformOperation(0);
+  }
+
+  removeContentPermitted() {
+    return this._canPerformOperation(1);
+  }
+
+  addContentPermitted() {
+    return this._canPerformOperation(2);
+  }
+
+  createContentPermitted() {
+    return this._canPerformOperation(3);
+  }
+
+  reArrangeContentPermitted() {
+    return this._canPerformOperation(4);
+  }
+
+  deletePermitted() {
+    return this._canPerformOperation(5);
+  }
+
+  renamePermitted() {
+    return this._canPerformOperation(6);
+  }
+
+  _canPerformOperation(index) {
+    return this.permittedOperations && this.permittedOperations[index];
+  }
+
+  stopTrackingAssets() {
+    return NativeApi.stopTracking(this._cacheKey);
+  }
+
+  getAssets(params, trackAssets) {
+    if (trackAssets && !this._cacheKey) {
+      this._cacheKey = uuidGenerator();
+    }
     return NativeApi.getAssets({
       ...params,
       _cacheKey: this._cacheKey,
@@ -28,11 +68,11 @@ export default class Album {
     });
   }
 
-  addAssetToAlbum(asset) {
-    return this.addAssetsToAlbum([asset]);
+  addAsset(asset) {
+    return this.addAssets([asset]);
   }
 
-  addAssetsToAlbum(assets) {
+  addAssets(assets) {
     return NativeApi.addAssetsToAlbum({
       assets: assets.map(asset => asset.localIdentifier),
       _cacheKey: this._cacheKey,
@@ -40,11 +80,11 @@ export default class Album {
     });
   }
 
-  removeAssetFromAlbum(asset) {
-    return this.removeAssetsFromAlbum([asset]);
+  removeAsset(asset) {
+    return this.removeAssets([asset]);
   }
 
-  removeAssetsFromAlbum(assets) {
+  removeAssets(assets) {
     return NativeApi.removeAssetsFromAlbum({
       assets: assets.map(asset => asset.localIdentifier),
       _cacheKey: this._cacheKey,

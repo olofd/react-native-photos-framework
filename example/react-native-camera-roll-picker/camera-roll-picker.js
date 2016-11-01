@@ -57,6 +57,10 @@ class CameraRollPicker extends Component {
     }
   }
 
+  componentWillUnmount() {
+    this.props.album.stopTrackingAssets();
+  }
+
   _fetch(reset, nextProps) {
     let props = nextProps || this.props;
     console.log(props.album.title);
@@ -66,7 +70,7 @@ class CameraRollPicker extends Component {
       .getAssets({
         startIndex: this.state.images.length,
         endIndex: this.state.images.length + 400
-      })
+      }, true)
       .then((data) => {
         simple_timer.stop('fetch_timer');
         console.log('react-native-photos-framework fetch request took %s milliseconds.', simple_timer.get('fetch_timer').delta)

@@ -14,28 +14,39 @@
 +(PHFetchResult<PHAsset *> *) getAssetsForParams:(NSDictionary *)params  {
     NSString * cacheKey = [RCTConvert NSString:params[@"_cacheKey"]];
     NSString * albumLocalIdentifier = [RCTConvert NSString:params[@"albumLocalIdentifier"]];
-    if(albumLocalIdentifier == nil){
-        return [PHAssetsService getAssetsForParams:params andCacheKey:cacheKey];
+    
+    if(cacheKey != nil) {
+        RCTCachedFetchResult *cachedResultSet = [[PHChangeObserver sharedChangeObserver] getFetchResultFromCacheWithuuid:cacheKey];
+        if(cachedResultSet != nil) {
+            return [cachedResultSet fetchResult];
+        }
     }
-    return [self getAssetsForParams:params andAlbumLocalIdentifier:albumLocalIdentifier];
+    
+    PHFetchResult<PHAsset *> *fetchResult;
+    if(albumLocalIdentifier != nil) {
+        fetchResult = [self getAssetsForParams:params andAlbumLocalIdentifier:albumLocalIdentifier];
+    }
+    if(fetchResult == nil) {
+        fetchResult = [PHAssetsService getAllAssetsForParams:params];
+    }
+    
+    if(cacheKey != nil && fetchResult != nil) {
+        [[PHChangeObserver sharedChangeObserver] cacheFetchResultWithUUID:fetchResult andObjectType:[PHAsset class] andUUID:cacheKey andOrginalFetchParams:params];
+    }
+
+    return fetchResult;
 }
 
 +(PHFetchResult<PHAsset *> *)getAssetsForParams:(NSDictionary *)params andAlbumLocalIdentifier:(NSString *)albumLocalIdentifier {
     PHFetchOptions *options = [PHFetchOptionsService getAssetFetchOptionsFromParams:params];
     PHFetchResult<PHAssetCollection *> *collections = [PHAssetCollection fetchAssetCollectionsWithLocalIdentifiers:@[albumLocalIdentifier] options:nil];
+    
     PHFetchResult<PHAsset *> * assets = [PHAsset fetchAssetsInAssetCollection:collections.firstObject options:options];
     return assets;
 }
 
 +(PHFetchResult<PHAsset *> *) getAssetsFromArrayOfLocalIdentifiers:(NSArray<NSString *> *)arrayWithLocalIdentifiers {
     return [PHAsset fetchAssetsWithLocalIdentifiers:arrayWithLocalIdentifiers options:nil];
-}
-
-+(PHFetchResult<PHAsset *> *) getAssetsForParams:(NSDictionary *)params andCacheKey:(NSString *)cacheKey  {
-    if(cacheKey == nil) {
-        return [PHAssetsService getAllAssetsForParams:params];
-    }
-    return [[[PHChangeObserver sharedChangeObserver] getFetchResultFromCacheWithuuid:cacheKey] fetchResult];
 }
 
 +(PHFetchResult<PHAsset *> *) getAllAssetsForParams:(NSDictionary *)params {

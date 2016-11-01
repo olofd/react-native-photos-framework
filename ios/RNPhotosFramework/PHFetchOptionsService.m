@@ -9,7 +9,11 @@
     options.includeHiddenAssets = [RCTConvert BOOL:params[@"includeHiddenAssets"]];
     options.includeAllBurstAssets = [RCTConvert BOOL:params[@"includeAllBurstAssets"]];
     options.fetchLimit = [RCTConvert int:params[@"fetchLimit"]];
-    options.wantsIncrementalChangeDetails = [RCTConvert BOOL:params[@"wantsIncrementalChangeDetails"]];
+    options.wantsIncrementalChangeDetails = YES;
+    BOOL disableChangeTracking = [RCTConvert BOOL:params[@"disableChangeTracking"]];
+    if(disableChangeTracking) {
+        options.wantsIncrementalChangeDetails = NO;
+    }
     options.predicate = [PHFetchOptionsService getPredicate:params];
     options.sortDescriptors = [self getSortDescriptorsFromParams:params];
     return options;

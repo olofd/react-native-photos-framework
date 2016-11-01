@@ -34,6 +34,11 @@ static id ObjectOrNull(id object)
     return collections.firstObject;
 }
 
++(PHFetchResult<PHAssetCollection *> *)getAlbumsWithLocalIdentifiers:(NSArray<NSString *> *)localIdentifiers andParams:(NSDictionary *)params{
+    PHFetchOptions *fetchOptions = [PHFetchOptionsService getCollectionFetchOptionsFromParams:params];
+    return [PHAssetCollection fetchAssetCollectionsWithLocalIdentifiers:localIdentifiers options:fetchOptions];
+}
+
 +(NSMutableDictionary *) getAlbums:(NSDictionary *)params {
     PHFetchResult<PHAssetCollection *> *albums = [PHCollectionService getAlbumsWithParams:params];
     return [PHCollectionService generateCollectionResponseWithCollections:albums andParams:params];
@@ -80,7 +85,7 @@ static id ObjectOrNull(id object)
     
     NSMutableDictionary *multipleAlbumsResponse = [PHCollectionService generateAlbumsResponseFromParams:params andAlbums:collections andCacheAssets:preCacheAssets];
     if(shouldCache) {
-        NSString *uuid = [[PHChangeObserver sharedChangeObserver] cacheFetchResultAndReturnUUID:collections andObjectType:[PHAssetCollection class]];
+        NSString *uuid = [[PHChangeObserver sharedChangeObserver] cacheFetchResultAndReturnUUID:collections andObjectType:[PHAssetCollection class] andOrginalFetchParams:params];
         [multipleAlbumsResponse setObject:uuid forKey:@"_cacheKey"];
     }
     return multipleAlbumsResponse;
@@ -90,6 +95,8 @@ static id ObjectOrNull(id object)
     
     RNPFAssetCountType countType = [RCTConvert RNPFAssetCountType:params[@"assetCount"]];
     int numberOfPreviewAssets = [RCTConvert int:params[@"previewAssets"]];
+    BOOL includeMetaData = [RCTConvert BOOL:params[@"includeMetaData"]];
+    
     NSMutableDictionary *collectionDictionary = [NSMutableDictionary new];
     NSMutableArray *albumsArray = [NSMutableArray arrayWithCapacity:albums.count];
     
@@ -114,6 +121,17 @@ static id ObjectOrNull(id object)
     {
         if ([collection isKindOfClass:[PHAssetCollection class]])
         {
+            NSMutableDictionary *albumDictionary = [self generateAlbumResponseFromCollection:collection numberOfPreviewAssets:numberOfPreviewAssets countType:countType includeMetaData:includeMetaData cacheAssets:cacheAssets assetFetchParams:paramsToUse];
+            
+            [albumsArray addObject:albumDictionary];
+        }
+    }
+    [collectionDictionary setObject:albumsArray forKey:@"albums"];
+    return collectionDictionary;
+}
+
++ (NSMutableDictionary *)generateAlbumResponseFromCollection:(PHCollection *)collection numberOfPreviewAssets:(int)numberOfPreviewAssets countType:(RNPFAssetCountType)countType includeMetaData:(BOOL)includeMetaData cacheAssets:(BOOL)cacheAssets assetFetchParams:(NSDictionary *)assetFetchParams {
+    
             PHAssetCollection *phAssetCollection = (PHAssetCollection *)collection;
             NSMutableDictionary *albumDictionary = [NSMutableDictionary new];
             PHAssetCollectionType albumType = [phAssetCollection assetCollectionType];
@@ -130,7 +148,6 @@ static id ObjectOrNull(id object)
             [albumDictionary setObject:phAssetCollection.localizedTitle forKey:@"title"];
             [albumDictionary setObject:phAssetCollection.localIdentifier forKey:@"localIdentifier"];
             
-            BOOL * includeMetaData =  [RCTConvert BOOL:params[@"includeMetaData"]];
             if(includeMetaData) {
                 [albumDictionary setObject:@([PHHelpers getTimeSince1970:phAssetCollection.startDate])forKey:@"startDate"];
                 [albumDictionary setObject:@([PHHelpers getTimeSince1970:phAssetCollection.endDate]) forKey:@"endDate"];
@@ -140,10 +157,10 @@ static id ObjectOrNull(id object)
 
             if(cacheAssets || numberOfPreviewAssets > 0 || countType == RNPFAssetCountTypeExact) {
 
-                PHFetchResult<PHAsset *> * assets = [PHCollectionService getAssetForCollection:collection andFetchParams:paramsToUse];
+                PHFetchResult<PHAsset *> * assets = [PHCollectionService getAssetForCollection:collection andFetchParams:assetFetchParams];
 
                 if(cacheAssets) {
-                    NSString *uuid = [[PHChangeObserver sharedChangeObserver] cacheFetchResultAndReturnUUID:assets andObjectType:[PHAsset class]];
+                    NSString *uuid = [[PHChangeObserver sharedChangeObserver] cacheFetchResultAndReturnUUID:assets andObjectType:[PHAsset class] andOrginalFetchParams:assetFetchParams];
                     [albumDictionary setObject:uuid forKey:@"_cacheKey"];
                 }
                 
@@ -165,12 +182,12 @@ static id ObjectOrNull(id object)
                     [albumDictionary setObject:@(estimatedAssetCount) forKey:@"assetCount"];
                 }
             }
-            
-            [albumsArray addObject:albumDictionary];
-        }
+    NSMutableArray *permittedOperations = [NSMutableArray arrayWithCapacity:7];
+    for(int i = 1; i <= 7; i++) {
+        [permittedOperations addObject:@([collection canPerformEditOperation:i])];
     }
-    [collectionDictionary setObject:albumsArray forKey:@"albums"];
-    return collectionDictionary;
+    [albumDictionary setObject:permittedOperations forKey:@"permittedOperations"];
+  return albumDictionary;
 }
 
 +(PHFetchResult<PHAsset *> *) getAssetForCollection:(PHAssetCollection *)collection andFetchParams:(NSDictionary *)params {

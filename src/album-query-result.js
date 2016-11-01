@@ -1,7 +1,7 @@
 import Album from './album';
 import commonSort from './common-sort';
 import AlbumQueryResultBase from './album-query-result-base';
-
+import changeObserverHandler from './change-observer-handler';
 export default class AlbumQueryResult extends AlbumQueryResultBase {
     constructor(obj, fetchParams, eventEmitter) {
         super();
@@ -26,41 +26,9 @@ export default class AlbumQueryResult extends AlbumQueryResultBase {
     }
 
     applyChangeDetails(changeDetails) {
-        this.updateHandler(changeDetails.insertedObjects, (updatedObj, i, arr) => {
-            this
-                .albums
-                .splice(updatedObj.index, 0, new Album(updatedObj.album, this._fetchParams.fetchOptions, this.eventEmitter));
+        this.albums = changeObserverHandler(changeDetails, this.albums, (nativeObj) => {
+            return new Album(nativeObj, this._fetchParams.fetchOptions, this.eventEmitter);
         });
-        this.updateHandler(changeDetails.removedObjects, (updatedObj, i, arr) => {
-            this
-                .albums
-                .splice(updatedObj.index, 1);
-        });
-        if (changeDetails.moves) {
-            let tempObj = {};
-            for (let i = 0; i < changeDetails.moves.length; i = (i + 2)) {
-                const fromIndex = changeDetails.moves[i];
-                const toIndex = changeDetails.moves[i + 1];
-                const fromObj = tempObj[fromIndex] || this.albums[fromIndex];
-                tempObj[toIndex] = this.albums[toIndex];
-                this.albums[toIndex] = fromObj;
-            }
-            this
-                .albums
-                .forEach(x => console.log(x.title));
-        }
-
-        this.updateHandler(changeDetails.changedObjects, (updatedObj, i, arr) => {
-            this.albums[updatedObj.index] = new Album(updatedObj.album, this._fetchParams.fetchOptions, this.eventEmitter);
-        });
-    }
-
-    updateHandler(arr, cb) {
-        if (arr) {
-            for (let i = 0; i < arr.length; i++) {
-                const updatedObj = arr[i];
-                cb(updatedObj, i, arr);
-            }
-        }
+        return this.albums;
     }
 }

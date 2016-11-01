@@ -1,6 +1,8 @@
 import NativeApi from './index';
 import Asset from './asset';
 import uuidGenerator from './uuid-generator';
+import changeObserverHandler from './change-observer-handler';
+
 export default class Album {
 
   constructor(obj, fetchOptions, eventEmitter) {
@@ -16,7 +18,14 @@ export default class Album {
     }
     eventEmitter.addListener('onObjectChange', (changeDetails) => {
       if (changeDetails._cacheKey === this._cacheKey) {
-        this._emitChange(changeDetails);
+        this._emitChange(changeDetails, (assetArray) => {
+          if (assetArray) {
+            return changeObserverHandler(changeDetails, assetArray, (nativeObj) => {
+              return new Asset(nativeObj);
+            });
+          }
+          return assetArray;
+        }, undefined, this);
       }
     });
   }
@@ -105,7 +114,7 @@ export default class Album {
     return () => this._changeHandler = undefined;
   }
 
-  _emitChange(changeDetails) {
-    this._changeHandler && this._changeHandler(changeDetails);
+  _emitChange(...args) {
+    this._changeHandler && this._changeHandler(...args);
   }
 }

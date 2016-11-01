@@ -28,10 +28,6 @@ class CameraRollPicker extends Component {
     };
   }
 
-  componentWillMount() {
-    this.fetch();
-  }
-
   componentWillReceiveProps(nextProps) {
     this.setState({selected: nextProps.selected});
     if (nextProps.album !== this.props.album) {
@@ -57,8 +53,27 @@ class CameraRollPicker extends Component {
     }
   }
 
+  componentWillMount() {
+    this.fetch();
+    this
+      .props
+      .album
+      .onChange((changeDetails, update, unsubscribe) => {
+        this.state.images = update(this.state.images);
+        this.state.dataSource = this
+          .state
+          .dataSource
+          .cloneWithRows(this._nEveryRow(this.state.images, this.props.imagesPerRow));
+        console.log(this.state.images);
+        this.setState({images: this.state.images, dataSource : this.state.dataSource});
+      });
+  }
+
   componentWillUnmount() {
-    this.props.album.stopTrackingAssets();
+    this
+      .props
+      .album
+      .stopTrackingAssets();
   }
 
   _fetch(reset, nextProps) {

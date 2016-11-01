@@ -60,7 +60,7 @@
     NSMutableArray *uriArray = [NSMutableArray arrayWithCapacity:assetsArray.count];
     NSDictionary *reveredMediaTypes = [RCTConvert PHAssetMediaTypeValuesReversed];
     for(int i = 0;i < assetsArray.count; i++) {
-        PHAsset *asset =[assetsArray objectAtIndex:i];
+        PHAsset *asset = [assetsArray objectAtIndex:i];
         NSMutableDictionary *responseDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:[asset localIdentifier], @"localIdentifier", @([asset pixelWidth]), @"width", @([asset pixelHeight]), @"height", [reveredMediaTypes objectForKey:@([asset mediaType])], @"mediaType", nil];
         if(includeMetaData) {
             [self extendAssetDicWithAssetMetaData:responseDict andPHAsset:asset];

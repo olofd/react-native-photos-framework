@@ -4,6 +4,7 @@
 #import "RCTEventDispatcher.h"
 #import "RCTCachedFetchResult.h"
 #import "PHCollectionService.h"
+#import "PHAssetsService.h"
 @implementation PHChangeObserver
 
 static id ObjectOrNull(id object)
@@ -117,8 +118,17 @@ static id ObjectOrNull(id object)
                         objectAtIndex:0];
                         [insertedObjects addObject:@{
                                                     @"index" : [insertedIndexes objectAtIndex:i],
-                                                    @"album" : insertedObject
+                                                    @"obj" : insertedObject
                                                     }];
+                    }
+                    
+                    if([object isKindOfClass:[PHAsset class]]) {
+                        PHAsset *asset = (PHAsset *)object;
+                        NSMutableDictionary *insertedObject = [[PHAssetsService assetsArrayToUriArray:@[object] andIncludeMetaData:[RCTConvert BOOL:cachedFetchResult.originalFetchParams[@"includeMetaData"]]] objectAtIndex:0];
+                        [insertedObjects addObject:@{
+                                                     @"index" : [insertedIndexes objectAtIndex:i],
+                                                     @"obj" : insertedObject
+                                                     }];
                     }
                 }
                 
@@ -131,10 +141,20 @@ static id ObjectOrNull(id object)
                         NSMutableDictionary *changedObject = [[[PHCollectionService generateAlbumsResponseFromParams:cachedFetchResult.originalFetchParams andAlbums:@[collection] andCacheAssets:NO] objectForKey:@"albums"] objectAtIndex:0];
                         [changedObjects addObject:@{
                                                     @"index" : [changedIndexes objectAtIndex:i],
-                                                    @"album" : changedObject
+                                                    @"obj" : changedObject
                                                     }];
                         
                     }
+                    
+                    if([object isKindOfClass:[PHAsset class]]) {
+                        PHAsset *asset = (PHAsset *)object;
+                        NSMutableDictionary *changedObject = [[PHAssetsService assetsArrayToUriArray:@[object] andIncludeMetaData:[RCTConvert BOOL:cachedFetchResult.originalFetchParams[@"includeMetaData"]]] objectAtIndex:0];
+                        [changedObjects addObject:@{
+                                                     @"index" : [changedIndexes objectAtIndex:i],
+                                                     @"obj" : changedObject
+                                                     }];
+                    }
+                    
                 }
                 NSMutableArray *moves = [NSNull null];
                 if(changeDetails.hasMoves) {

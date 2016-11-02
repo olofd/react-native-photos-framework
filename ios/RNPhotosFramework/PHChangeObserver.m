@@ -36,40 +36,6 @@ static id ObjectOrNull(id object)
     [[PHPhotoLibrary sharedPhotoLibrary] registerChangeObserver:self];
     self.fetchResults = [[NSMutableDictionary alloc] init];
 }
-/*
--(void)handleFetchResultChangeForCollectionChange:(PHFetchResult<PHAssetCollection *> *)fetchResult andChangeInstance:(PHChange *)changeInstance andBridge:(RCTBridge *)bridge  {
-    
-    
-    [fetchResult enumerateObjectsUsingBlock:^(PHObject *  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        PHObjectChangeDetails *objDetails = [changeInstance changeDetailsForObject:obj];
-        if(objDetails != nil) {
-            PHAssetCollection *before = (PHAssetCollection *)[objDetails objectBeforeChanges];
-            PHAssetCollection *after = (PHAssetCollection *)[objDetails objectAfterChanges];
-            if(before && after) {
-                NSString *oldTitle = [before localizedTitle];
-                NSString *newTitle = [after localizedTitle];
-                
-                if(![oldTitle isEqualToString:newTitle]) {
-                    NSString *localIdentifier = [after localIdentifier];
-                    [bridge.eventDispatcher sendAppEventWithName:@"RNPFObjectChange"
-                                                            body:@{
-                                                                   @"_cacheKey": uuid,
-                                                                   @"albumLocalIdentifier" : localIdentifier,
-                                                                   @"type" : @"AlbumTitleChange",
-                                                                   @"newTitle" : newTitle
-                                                                   }];
-                }
-                
-                
-            }
-        }
-    }];
-}
- */
-
--(void)handleFetchResultChangeForCollectionChange:(PHFetchResult<PHAssetCollection *> *)fetchResult andChangeDetails:(PHFetchResultChangeDetails *)chnageDetails andBridge:(RCTBridge *)bridge {
-    
-}
 
 - (void)photoLibraryDidChange:(PHChange *)changeInstance {
     if(changeInstance != nil) {
@@ -83,16 +49,6 @@ static id ObjectOrNull(id object)
             
             PHFetchResultChangeDetails *changeDetails = [changeInstance changeDetailsForFetchResult:cachedFetchResult.fetchResult];
             
-            if(changeDetails != nil) {
-                if(cachedFetchResult.objectType == [PHAssetCollection class]) {
-                  //  [self handleFetchResultChangeForCollectionChange:cachedFetchResult.fetchResult andChangeDetails:changeDetails andBridge:bridge];
-                }
-                
-                if(cachedFetchResult.objectType == [PHAsset class]) {
-                    
-                }
-            }
-  
 
             if(changeDetails != nil) {
                 NSMutableArray *removedLocalIdentifiers = [NSMutableArray arrayWithCapacity:changeDetails.removedObjects.count];

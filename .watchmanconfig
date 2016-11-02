@@ -7,3 +7,8 @@
 
 
 123
+
+
+ffmpeg -i ~/Desktop/Untitled.mov -s 304x540 -pix_fmt rgb24 -r 15 -f gif - | gifsicle --optimize=4 --delay=4 > ~/Desktop/out.gif
+
+cp ~/Desktop/out.gif ~/Dropbox/Public/screenshots/Screencast-`date +"%Y.%m.%d-%H.%M"`.gif

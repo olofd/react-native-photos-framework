@@ -1,4 +1,8 @@
 # react-native-photos-framework
+
+###Example project
+![](https://www.dropbox.com/s/9gkpjwz7ivvm9rm/Screencast-2016.11.02-12.23.gif?dl=0)
+
 ###Description
 Load photos/videos and more from CameraRoll and iCloud.
 Uses Apples photos framework.

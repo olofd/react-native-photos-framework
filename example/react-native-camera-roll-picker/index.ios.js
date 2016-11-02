@@ -170,7 +170,7 @@ export default class ReactNativeCameraRollPicker extends Component {
   downloadDialog() {
     AlertIOS.alert('Add media', 'Select what to add:', [
       {
-        text: '10 random photos',
+        text: '5 random photos',
         onPress: this
           .downloadTenRandom
           .bind(this)

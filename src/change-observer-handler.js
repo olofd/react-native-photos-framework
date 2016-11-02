@@ -10,7 +10,6 @@ function updateHandler(arr, cb) {
 export default function (changeDetails, arr, createNewObjFunc) {
     //This function is constructed from Apple's documentation on how to handle
     //incremental changes.
-
     let lastIndex = (arr.length - 1);
     updateHandler(changeDetails.removedObjects, (updatedObj) => {
         if (updatedObj.index <= lastIndex) {
@@ -21,7 +20,7 @@ export default function (changeDetails, arr, createNewObjFunc) {
 
     lastIndex = (arr.length - 1);
     updateHandler(changeDetails.insertedObjects, (updatedObj) => {
-        if (updatedObj.index <= lastIndex) {
+        if (updatedObj.index <= (lastIndex + 1)) {
             arr.splice(updatedObj.index, 0, createNewObjFunc(updatedObj.obj));
             lastIndex = (arr.length - 1);
         }

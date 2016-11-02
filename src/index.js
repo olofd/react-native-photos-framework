@@ -60,15 +60,17 @@ class CameraRollRNPhotosFramework {
       });
   }
 
-  getAlbumsCommon(params) {
-    return this.getAlbumsMany([/*Object.assign({
+  getAlbumsCommon(params, asSingleQueryResult) {
+    return this.getAlbumsMany([
+      Object.assign({
         type: 'smartAlbum',
         subType: 'any'
-      }, params),*/
+      }, params),
       Object.assign({
         type: 'album',
         subType: 'any'
-      }, params)], true).then((albumQueryResult) => {
+      }, params)
+    ], asSingleQueryResult).then((albumQueryResult) => {
       return albumQueryResult;
     });
   }

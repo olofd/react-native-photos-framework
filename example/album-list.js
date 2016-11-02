@@ -98,19 +98,21 @@ export default class AlbumList extends Component {
     RNPhotosFramework
       .requestAuthorization()
       .then((status) => {
-        RNPhotosFramework
-          .getAlbumsCommon({assetCount: 'exact', includeMetaData: true, previewAssets: 2})
-          .then((albumsFetchResult) => {
-            albumsFetchResult.onChange((changeDetails, update, unsubscribe) => {
-              const newAlbumFetchResult = update();
-              this.setState({albumsFetchResult: newAlbumFetchResult});
-              this.albumPropsToListView();
-            });
-            simple_timer.stop('first_album_fetch');
-            console.debug('react-native-photos-framework albums request took %s milliseconds.', simple_timer.get('first_album_fetch').delta)
-            this.setState({albumsFetchResult: albumsFetchResult});
+        RNPhotosFramework.getAlbumsCommon({
+          assetCount: 'exact',
+          includeMetaData: true,
+          previewAssets: 2
+        }, true).then((albumsFetchResult) => {
+          albumsFetchResult.onChange((changeDetails, update, unsubscribe) => {
+            const newAlbumFetchResult = update();
+            this.setState({albumsFetchResult: newAlbumFetchResult});
             this.albumPropsToListView();
           });
+          simple_timer.stop('first_album_fetch');
+          console.debug('react-native-photos-framework albums request took %s milliseconds.', simple_timer.get('first_album_fetch').delta)
+          this.setState({albumsFetchResult: albumsFetchResult});
+          this.albumPropsToListView();
+        });
       });
 
     var {width} = Dimensions.get('window');
@@ -156,7 +158,7 @@ export default class AlbumList extends Component {
       chunks.push(arr.slice(i, i += len));
     }
     return chunks;
-  } 
+  }
 
   albumPropsToListView(props) {
     if (this.state.albumsFetchResult && this.state.albumsFetchResult.albums) {
@@ -218,7 +220,9 @@ export default class AlbumList extends Component {
   }
 
   renderTextField(editable, album, rowIndex, columnIndex) {
-    const value = album.pendingTitle !== undefined ? album.pendingTitle : album.title;
+    const value = album.pendingTitle !== undefined
+      ? album.pendingTitle
+      : album.title;
     if (editable && this.props.edit) {
       const key = rowIndex.toString() + columnIndex.toString();
       return (
@@ -292,8 +296,8 @@ const styles = StyleSheet.create({
   },
   titleText: {
     paddingVertical: 10,
-    height : 28,
-    lineHeight : 13,
+    height: 28,
+    lineHeight: 13,
     fontSize: 15
   },
   assetCount: {

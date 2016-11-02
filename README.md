@@ -1,6 +1,7 @@
 # react-native-photos-framework
 
 ###Example project
+####NOTE: This is not a GUI-component. The example project just shows off some of the the capabilities of this API.
 ![](https://dl.dropboxusercontent.com/content_link/PXQhOkglmVKy9TwHtnhCeXLa8Rx8FEPJoPSGO72pqF9hnXirWlI4lp2nUbhxD9bY/file?raw=1&dl=0&duc_id=rnvAl7eADia2bm8sc56mQIUsSxTfPIIrSB5uzorTyh91jKdepeoN5lKPDqqiZ2JJ&size=2048x1536&size_mode=3)
 
 ###Description

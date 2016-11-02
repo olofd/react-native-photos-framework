@@ -2,7 +2,7 @@
 
 ###Example project
 ####NOTE: This is not a GUI-component, it's an API. The example project just shows off some of the the capabilities of this API.
-![](https://lh4.googleusercontent.com/o0Is0Pg30un8bouf_49AFVLetrxdNHI82GVEFPT6vBFy84WKaNPy8WMGl7dvocSwm8vYMo9C2dMLlJI=w2136-h1106)
+![](http://i.giphy.com/3o6Ztqdc8OF3FAgAiQ.gif)
 
 ###Description
 Load photos/videos and more from CameraRoll and iCloud.

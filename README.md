@@ -2,7 +2,7 @@
 
 ###Example project
 ####NOTE: This is not a GUI-component, it's an API. The example project just shows off some of the the capabilities of this API.
-![](https://dl.dropboxusercontent.com/content_link/PXQhOkglmVKy9TwHtnhCeXLa8Rx8FEPJoPSGO72pqF9hnXirWlI4lp2nUbhxD9bY/file?raw=1&dl=0&duc_id=rnvAl7eADia2bm8sc56mQIUsSxTfPIIrSB5uzorTyh91jKdepeoN5lKPDqqiZ2JJ&size=2048x1536&size_mode=3)
+![](https://lh4.googleusercontent.com/o0Is0Pg30un8bouf_49AFVLetrxdNHI82GVEFPT6vBFy84WKaNPy8WMGl7dvocSwm8vYMo9C2dMLlJI=w2136-h1106)
 
 ###Description
 Load photos/videos and more from CameraRoll and iCloud.

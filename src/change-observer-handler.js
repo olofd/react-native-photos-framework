@@ -2,18 +2,32 @@ function updateHandler(arr, cb) {
     if (arr) {
         for (let i = 0; i < arr.length; i++) {
             const updatedObj = arr[i];
-            cb(updatedObj, i, arr);
+            cb(updatedObj);
         }
     }
 }
 
 export default function (changeDetails, arr, createNewObjFunc) {
-    updateHandler(changeDetails.insertedObjects, (updatedObj, i) => {
-        arr.splice(updatedObj.index, 0, createNewObjFunc(updatedObj.obj));
+    //This function is constructed from Apple's documentation on how to handle
+    //incremental changes.
+
+    let lastIndex = (arr.length - 1);
+    updateHandler(changeDetails.removedObjects, (updatedObj) => {
+        if (updatedObj.index <= lastIndex) {
+            arr[updatedObj.index] = undefined;
+        }
     });
-    updateHandler(changeDetails.removedObjects, (updatedObj, i) => {
-        arr.splice(updatedObj.index, 1);
+    arr = arr.filter(obj => (obj !== undefined));
+
+    lastIndex = (arr.length - 1);
+    updateHandler(changeDetails.insertedObjects, (updatedObj) => {
+        if (updatedObj.index <= lastIndex) {
+            arr.splice(updatedObj.index, 0, createNewObjFunc(updatedObj.obj));
+            lastIndex = (arr.length - 1);
+        }
     });
+
+    //Moves will only happen if you update a property that affects the sortorder.
     if (changeDetails.moves) {
         let tempObj = {};
         for (let i = 0; i < changeDetails.moves.length; i = (i + 2)) {
@@ -25,8 +39,11 @@ export default function (changeDetails, arr, createNewObjFunc) {
         }
     }
 
-    updateHandler(changeDetails.changedObjects, (updatedObj, i) => {
-        arr[updatedObj.index] = createNewObjFunc(updatedObj.obj);
+    lastIndex = (arr.length - 1);
+    updateHandler(changeDetails.changedObjects, (updatedObj) => {
+        if (updatedObj.index <= lastIndex) {
+            arr[updatedObj.index] = createNewObjFunc(updatedObj.obj);
+        }
     });
     return arr;
 }

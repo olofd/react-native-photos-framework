@@ -65,7 +65,7 @@ class CameraRollPicker extends Component {
           .dataSource
           .cloneWithRows(this._nEveryRow(this.state.images, this.props.imagesPerRow));
         console.log(this.state.images);
-        this.setState({images: this.state.images, dataSource : this.state.dataSource});
+        this.setState({images: this.state.images, dataSource: this.state.dataSource});
       });
   }
 
@@ -84,7 +84,16 @@ class CameraRollPicker extends Component {
       .album
       .getAssets({
         startIndex: this.state.images.length,
-        endIndex: this.state.images.length + 400
+        endIndex: this.state.images.length + 200,
+        fetchOptions: {
+          sortDescriptors: [
+            {
+              key: 'pixelWidth',
+              ascending: false
+            }
+          ]
+        }
+
       }, true)
       .then((data) => {
         simple_timer.stop('fetch_timer');
@@ -218,7 +227,7 @@ class CameraRollPicker extends Component {
 
   _onEndReached() {
     if (!this.state.noMore) {
-      this.fetch();
+       this.fetch();
     }
   }
 

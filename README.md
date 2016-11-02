@@ -1,7 +1,7 @@
 # react-native-photos-framework
 
 ###Example project
-![](https://www.dropbox.com/s/9gkpjwz7ivvm9rm/Screencast-2016.11.02-12.23.gif#)
+![](https://dl.dropboxusercontent.com/content_link/PXQhOkglmVKy9TwHtnhCeXLa8Rx8FEPJoPSGO72pqF9hnXirWlI4lp2nUbhxD9bY/file?raw=1&dl=0&duc_id=rnvAl7eADia2bm8sc56mQIUsSxTfPIIrSB5uzorTyh91jKdepeoN5lKPDqqiZ2JJ&size=2048x1536&size_mode=3)
 
 ###Description
 Load photos/videos and more from CameraRoll and iCloud.

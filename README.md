@@ -26,18 +26,6 @@ Check that it is there after the install or update it's value from the default:
 
 ##Static methods:
 
-###cleanCache
-~~~~
-  RNPhotosFramework.cleanCache().then(() => {
-  });
-~~~~
-
-Signature: RNPhotosFramework.cleanCache() : Promise.
-Cleans library caches. Will never have to be called.
-This framework handles this automatically.
-But if you experience some kind of issue, you can try calling it and see
-if the result differs.
-
 ###authorizationStatus
 ~~~~
   RNPhotosFramework.authorizationStatus().then(() => {
@@ -63,15 +51,15 @@ NOTE: You can receive the following statuses :
 
 Signature: RNPhotosFramework.requestAuthorization() : Promise<{status : string, isAuthorized : boolean}>.
 This will prompt the user to grant access to the user library at first start.
-If you do not call this method explicitly before using any of the other functions in this library. The grant-access-dialog will appear for the user automatically at the next first function-call into the library. But only one function call can automatically
-trigger this dialog, so if another call comes into Photos Framework before the user has granted you access, that function-cal will fail. Therefore I urge you to call this method explicitly before you start using the rest of the library to not experience unexpected behaviour.
-NOTE: you do not have to first check the authorizationStatus before calling this. If the user has granted access before, this will just return authorized-status.
+If you do not call this method explicitly before using any of the other functions in this library, the grant-access-dialog will appear for the user automatically at the first function-call into the library. But only one function-call can automatically
+trigger this dialog, so if another call comes into Photos Framework before the user has granted you access, that function-call will fail. Therefore I urge you to call this method explicitly before you start using the rest of the library to not experience unexpected behaviour.
+NOTE: You do not have to first check the authorizationStatus before calling this. If the user has granted access before, this will just return authorized-status.
 NOTE: See available statuses in doc. about: `authorizationStatus`
 
 ##Working with Content:
 ##### `fetchOptions`
 fetchOptions is a query-object which can be sent both when fetching albums with
-`getAlbums` and when fetching assets with `getAssets`. Bellow you can see the available options
+`getAlbums` and when fetching assets with `getAssets`. Below you can see the available options
 for fetchOptions. You can also read Apple's documentation around [PHFetchOptions here](https://developer.apple.com/reference/photos/phfetchoptions).
 (Many of the args map one-to-one with native data structures.)
 
@@ -90,8 +78,9 @@ for fetchOptions. You can also read Apple's documentation around [PHFetchOptions
 import RNPhotosFramework from 'react-native-photos-framework';
 
   RNPhotosFramework.getAssets({
+    //Example props below. Many optional.
     // You can call this function multiple times providing startIndex and endIndex as
-    // pagination
+    // pagination.
     startIndex: 0,
     endIndex: 100,
 
@@ -106,14 +95,7 @@ import RNPhotosFramework from 'react-native-photos-framework';
           ascending: true,
         }
       ]
-    },
-
-    //Start loading images into memory with these displayOptions (Not required)
-    prepareForSizeDisplay: {
-      width: 91.5,
-      height: 91.5
-    },
-    prepareScale: 2
+    }
   }).then((response) => console.log(response.assets));
 
 ~~~~
@@ -127,6 +109,7 @@ import RNPhotosFramework from 'react-native-photos-framework';
 | includeMetaData | false | `boolean` | Include a lot of meta data about the asset (See bellow). You can also choose to get this metaData at a later point by calling asset.getMetaData (See bellow) |
 | prepareForSizeDisplay | - | `Rect(width, height)` | The size of the image you soon will display after running the query. This is highly optional and only there for optimizations of big lists. Prepares the images for display in Photos by using PHCachingImageManager |
 | prepareScale | 2.0 | `number` | The scale to prepare the image in. |
+| fetchOptions | - | `object` | See above. |
 
 ###Example of asset response with `includeMetaData : true`
 ~~~~
@@ -167,11 +150,10 @@ uri : "pk://3D5E6260-2B63-472E-A38A-3B543E936E8C/L0/001"
       //The fetch-options from the outer query will apply 	here, if we get
       startIndex: 0,
       endIndex: 10,
-      prepareForSizeDisplay: {
-        width: 91.5,
-        height: 91.5
-      },
-      prepareScale: 2
+      //When you say 'trackAssets' for an albums assets.
+      //The will be cached and change-tracking will start.
+      //Call album.stopTrackingAssets() to stop this. ex. on componentDidUnmount
+      trackAssets : true
     }).then((response) => {
       console.log(response.assets, 'The assets in the first album');
     });
@@ -399,8 +381,9 @@ You can register a listener that receives updates when any of the albums that re
 changes (Not if their assets change, only the Albums get those messages, see bellow).
 You currently receive the following events: `AlbumTitleChanged` (More to come).
 ~~~~
-albumQueryResult.onChange((details) => {
-  console.log(details);
+albumsFetchResult.onChange((changeDetails, update, unsubscribe) => {
+    const newAlbumFetchResult = update();
+    this.setState({albumsFetchResult: newAlbumFetchResult});
 });
 ~~~~
 NOTE: If a change occures that affects one of the AlbumQueryResults albums that change will also be passed along to the album.

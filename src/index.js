@@ -21,6 +21,19 @@ class CameraRollRNPhotosFramework {
     var subscription = NativeAppEventEmitter.addListener('RNPFLibraryChange', (changeDetails) => {
       eventEmitter.emit('onLibraryChange', changeDetails);
     });
+
+    const methodNames = (
+      Object.getOwnPropertyNames(CameraRollRNPhotosFramework.prototype)
+        .filter(method => typeof method === 'function')
+        .filter(method => method !== 'constructor' && method !== 'cleanCache')
+    );
+
+    methodNames.forEach(methodName => {
+      const originalMethod = this[methodName];
+      this[methodName] = function (...args) {
+        return cleanCachePromise.then(() => originalMethod.apply(this, args));
+      }
+    });
   }
 
   onLibraryChange(cb) {
@@ -189,13 +202,6 @@ class CameraRollRNPhotosFramework {
 
 }
 
-export default new Proxy(new CameraRollRNPhotosFramework(), {
-  get: (target, propKey, receiver) => {
-    const origMethod = target[propKey];
-    return function (...args) {
-      return cleanCachePromise.then(() => origMethod.apply(this, args));
-    }
-  }
-});
+export default new CameraRollRNPhotosFramework();;
 
 //Sort:

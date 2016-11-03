@@ -59,7 +59,7 @@ export default class Asset {
         return str.join("&");
     }
 
-    widthOptions(options) {
+    withOptions(options) {
         return new Asset(this._assetObj, options);
     }
 

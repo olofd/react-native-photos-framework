@@ -65,7 +65,7 @@ for fetchOptions. You can also read Apple's documentation around [PHFetchOptions
 
 | Prop  | Default  | Type | Description |
 | :------------ |:---------------:| :---------------:| :-----|
-| mediaTypes (Only for `getAssets`) | - | `array<string>` | Defines what mediaType the asset should be. Array combined with OR-operator. eg. ['photo', 'video'] will return both photos and videos. Converted in Native to PHAssetMediaType. Accepted values: `photo`, `video`, `audio`, `unknown` |
+| mediaTypes (Only for `getAssets`) | - | `array<string>` | Defines what mediaType the asset should be. Array combined with OR-operator. eg. ['image', 'video'] will return both photos and videos. Converted in Native to PHAssetMediaType. Accepted values: `image`, `video`, `audio`, `unknown` |
 | mediaSubTypes (Only for `getAssets`) | - | `array<string>` | Defines what subtype the asset should be. Array combined with OR-operator. eg. ['photoPanorama', 'photoHDR'] will return both panorama and HDR-assets. Converted in Native to PHAssetMediaSubtype. Accepted enum-values: `none`, `photoPanorama`, `photoHDR`, `photoScreenshot`, `photoLive`, `videoStreamed`, `videoHighFrameRate`, `videoTimeLapse` (mediaTypes and mediaSubTypes are combined with AND-operator) |
 | sourceTypes (Only for `getAssets`) | - | `array<string>` | Defines where the asset should come from originally. Array combined with OR-operator. Converted in Native to PHAssetSourceType. Accepted enum-values: `none`, `userLibrary`, `cloudShared`, `itunesSynced`. |
 | includeHiddenAssets | false | `boolean` | A Boolean value that determines whether the fetch result includes assets marked as hidden. |
@@ -84,11 +84,11 @@ import RNPhotosFramework from 'react-native-photos-framework';
     startIndex: 0,
     endIndex: 100,
 
-    // Media types you wish to display. See table bellow for possible options. Where
-    // is the image located? See table bellow for possible options.
-    sourceTypes: ['userLibrary'],
-
     fetchOptions : {
+      // Media types you wish to display. See table bellow for possible options. Where
+      // is the image located? See table bellow for possible options.
+      sourceTypes: ['userLibrary'],
+
       sortDescriptors : [
         {
           key: 'creationDate',

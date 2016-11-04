@@ -8,7 +8,6 @@ import AlbumQueryResultCollection from './album-query-result-collection';
 import EventEmitter from '../../react-native/Libraries/EventEmitter/EventEmitter';
 const RCTCameraRollRNPhotosFrameworkManager = NativeModules.CameraRollRNPhotosFrameworkManager;
 export const eventEmitter = new EventEmitter();
-const cleanCachePromise = RCTCameraRollRNPhotosFrameworkManager.cleanCache();
 
 // Main JS-implementation Most methods are written to handle array of input
 // operations.
@@ -22,17 +21,22 @@ class CameraRollRNPhotosFramework {
       eventEmitter.emit('onLibraryChange', changeDetails);
     });
 
+    //We need to make sure we clean cache in native before any calls
+    //go into RNPF. This is important when running in DEV because we reastart
+    //often in RN. (Live reload).
+    const methodsWithoutCacheCleanBlock = ['constructor', 'cleanCache', 'authorizationStatus', 'requestAuthorization'];
     const methodNames = (
       Object.getOwnPropertyNames(CameraRollRNPhotosFramework.prototype)
-        .filter(method => typeof method === 'function')
-        .filter(method => method !== 'constructor' && method !== 'cleanCache')
+        .filter(method => methodsWithoutCacheCleanBlock.indexOf(method) === -1)
     );
-
     methodNames.forEach(methodName => {
       const originalMethod = this[methodName];
       this[methodName] = function (...args) {
-        return cleanCachePromise.then(() => originalMethod.apply(this, args));
-      }
+        if(!this.cleanCachePromise) {
+          this.cleanCachePromise = RCTCameraRollRNPhotosFrameworkManager.cleanCache();
+        }
+        return this.cleanCachePromise.then(() => originalMethod.apply(this, args));
+      }.bind(this);
     });
   }
 
@@ -202,6 +206,4 @@ class CameraRollRNPhotosFramework {
 
 }
 
-export default new CameraRollRNPhotosFramework();;
-
-//Sort:
+export default new CameraRollRNPhotosFramework();

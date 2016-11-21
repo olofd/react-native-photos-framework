@@ -86,9 +86,10 @@ class CameraRollPicker extends Component {
         startIndex: this.state.images.length,
         endIndex: this.state.images.length + 200,
         fetchOptions: {
+          includeHiddenAssets : true,
           sortDescriptors: [
             {
-              key: 'pixelWidth',
+              key: 'creationDate',
               ascending: false
             }
           ]

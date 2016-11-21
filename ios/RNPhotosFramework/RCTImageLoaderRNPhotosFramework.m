@@ -37,8 +37,13 @@ RCT_EXPORT_MODULE()
     assetID = [imageURL absoluteString];
     results = [PHAsset fetchAssetsWithALAssetURLs:@[imageURL] options:nil];
   } else {
+      PHFetchOptions *fetchOptions = [[PHFetchOptions alloc] init];
+      [fetchOptions setIncludeHiddenAssets:YES];
+      [fetchOptions setIncludeAllBurstAssets:YES];
+      [fetchOptions setWantsIncrementalChangeDetails:NO];
     assetID = [imageURL.absoluteString substringFromIndex:@"pk://".length];
-    results = [PHAsset fetchAssetsWithLocalIdentifiers:@[assetID] options:nil];
+      
+    results = [PHAsset fetchAssetsWithLocalIdentifiers:@[assetID] options:fetchOptions];
   }
   if (results.count == 0) {
     NSString *errorText = [NSString stringWithFormat:@"Failed to fetch PHAsset with local identifier %@ with no error message.", assetID];

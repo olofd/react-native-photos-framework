@@ -64,7 +64,6 @@ class CameraRollPicker extends Component {
           .state
           .dataSource
           .cloneWithRows(this._nEveryRow(this.state.images, this.props.imagesPerRow));
-        console.log(this.state.images);
         this.setState({images: this.state.images, dataSource: this.state.dataSource});
       });
   }
@@ -78,7 +77,6 @@ class CameraRollPicker extends Component {
 
   _fetch(reset, nextProps) {
     let props = nextProps || this.props;
-    console.log(props.album.title);
     simple_timer.start('fetch_timer');
     props
       .album

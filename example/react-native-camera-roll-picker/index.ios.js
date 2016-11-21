@@ -83,7 +83,6 @@ export default class ReactNativeCameraRollPicker extends Component {
   }
 
   renderRightButton(edit, hasSelectedMedia) {
-    console.log('has selected', hasSelectedMedia);
     return (
       <View style={{
         flexDirection: 'row'
@@ -198,14 +197,20 @@ export default class ReactNativeCameraRollPicker extends Component {
           callback={this
           .getSelectedImages
           .bind(this)}/>
-        <TouchableOpacity
-          style={styles.addMediaButton}
-          onPress={this
-          .downloadDialog
-          .bind(this)}>
-          <Text style={styles.addMediaText}>Add media</Text>
-        </TouchableOpacity>
-        <View style={styles.addMediaContainer}></View>
+
+        <View style={[styles.addMediaContainer, {
+            opacity : this
+              .props
+              .album.addContentPermitted() ? 1 : 0
+          }]}>
+          <TouchableOpacity
+            style={styles.addMediaButton}
+            onPress={this
+            .downloadDialog
+            .bind(this)}>
+            <Text style={styles.addMediaText}>Add media</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   }
@@ -216,6 +221,14 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: 65
   },
+  addMediaContainer : {
+    position : 'absolute',
+    bottom : 0,
+    left : 0,
+    right : 0,
+    backgroundColor : 'rgba(255, 255, 255, 0.6)',
+    padding : 10
+  },
   addMediaButton: {
     padding: 20,
     backgroundColor: 'white',
@@ -224,7 +237,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    bottom: 10
   },
   addMediaText: {
     color: 'rgb(34, 125, 197)',

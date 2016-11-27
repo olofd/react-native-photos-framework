@@ -1,5 +1,4 @@
 import Album from './album';
-import commonSort from './common-sort';
 import AlbumQueryResultBase from './album-query-result-base';
 
 export default class AlbumQueryResultCollection extends AlbumQueryResultBase {
@@ -21,7 +20,7 @@ export default class AlbumQueryResultCollection extends AlbumQueryResultBase {
         if(this._changeHandler) {
             this._changeHandler(changeDetails, () => {
               queryResult.applyChangeDetails(changeDetails);
-              return this;  
+              return this;
             }, undefined, queryResult);
         }
     }

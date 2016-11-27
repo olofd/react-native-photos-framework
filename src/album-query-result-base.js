@@ -1,26 +1,36 @@
 import Album from './album';
-import commonSort from './common-sort';
+import photoAppSort from './photo-app-sort';
+import instagramAppSort from './instagram-app-sort';
 
 export default class AlbumQueryResultBase {
 
+    instagramAppAlbumSort() {
+        return this.sortAlbumsByTypeObject(instagramAppSort, 'smartAlbum');
+    }
+
     photoAppAlbumSort() {
-        return this.sortAlbumsByTypeObject(commonSort, 'smartAlbum');
+        return this.sortAlbumsByTypeObject(photoAppSort, 'smartAlbum');
     }
 
     sortAlbumsByTypeObject(typeArray) {
         const newAlbumArray = [...this.albums];
         newAlbumArray
             .sort((albumOne, albumTwo) => {
-                let albumOneWeight = this.getSortWeigth(albumOne, typeArray);
-                let albumTwoWeight = this.getSortWeigth(albumTwo, typeArray);
-                return albumOneWeight > albumTwoWeight ? -1 : albumOneWeight === albumTwoWeight ? albumOne.title.localeCompare(albumTwo.title) : 1;
+                let albumOneWeight = this.getSortWeigth(albumOne,
+                    typeArray);
+                let albumTwoWeight = this.getSortWeigth(albumTwo,
+                    typeArray);
+                return albumOneWeight > albumTwoWeight ? -1 :
+                    albumOneWeight === albumTwoWeight ? albumOne.title.localeCompare(
+                        albumTwo.title) : 1;
             });
         return newAlbumArray;
     }
 
     getSortWeigth(albumObj, typeArray) {
         return typeArray.reduce((weight, typeObj, index) => {
-            if (typeObj.type === albumObj.type && typeObj.subType == albumObj.subType) {
+            if (typeObj.type === albumObj.type && typeObj.subType ==
+                albumObj.subType) {
                 weight = typeArray.length - index;
             }
             return weight;

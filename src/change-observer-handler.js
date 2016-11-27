@@ -8,7 +8,7 @@ function updateHandler(arr, cb) {
 }
 
 export default function (changeDetails, arr, createNewObjFunc) {
-    //This function is constructed from Apple's documentation on how to handle
+    //This function is constructed from Apple's documentation on how to apply
     //incremental changes.
     let lastIndex = (arr.length - 1);
     updateHandler(changeDetails.removedObjects, (updatedObj) => {
@@ -26,7 +26,7 @@ export default function (changeDetails, arr, createNewObjFunc) {
         }
     });
 
-    //Moves will only happen if you update a property that affects the sortorder.
+    //Moves will only happen if you update a property that affects the original sort order.
     if (changeDetails.moves) {
         let tempObj = {};
         for (let i = 0; i < changeDetails.moves.length; i = (i + 2)) {

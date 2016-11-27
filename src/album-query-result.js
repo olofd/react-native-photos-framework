@@ -1,7 +1,7 @@
 import Album from './album';
-import commonSort from './common-sort';
 import AlbumQueryResultBase from './album-query-result-base';
 import changeObserverHandler from './change-observer-handler';
+
 export default class AlbumQueryResult extends AlbumQueryResultBase {
     constructor(obj, fetchParams, eventEmitter) {
         super();

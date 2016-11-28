@@ -14,13 +14,7 @@ export default class AlbumQueryResult extends AlbumQueryResultBase {
             .map(albumObj => new Album(albumObj, this._fetchParams.fetchOptions, eventEmitter));
         eventEmitter.addListener('onObjectChange', (changeDetails) => {
             if (this._cacheKey === changeDetails._cacheKey) {
-                this._changeHandler && this._changeHandler(changeDetails, this);
-                if (changeDetails.albumLocalIdentifier) {
-                    const albumThatChanged = this
-                        .albums
-                        .find(album => album.localIdentifier === changeDetails.albumLocalIdentifier);
-                    albumThatChanged && albumThatChanged._emitChange(changeDetails, albumThatChanged);
-                }
+                this.emit('onChange', changeDetails, this);
             }
         });
     }

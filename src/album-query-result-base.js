@@ -1,8 +1,9 @@
 import Album from './album';
 import photoAppSort from './photo-app-sort';
 import instagramAppSort from './instagram-app-sort';
+import EventEmitter from '../../react-native/Libraries/EventEmitter/EventEmitter';
 
-export default class AlbumQueryResultBase {
+export default class AlbumQueryResultBase extends EventEmitter {
 
     instagramAppAlbumSort() {
         return this.sortAlbumsByTypeObject(instagramAppSort, 'smartAlbum');
@@ -38,6 +39,7 @@ export default class AlbumQueryResultBase {
     }
 
     onChange(changeHandler) {
-        this._changeHandler = changeHandler;
+      this.addListener('onChange', changeHandler);
+      return () => thi.removeListener('onChange', changeHandler);
     }
 }

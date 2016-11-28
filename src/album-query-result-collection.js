@@ -5,7 +5,8 @@ export default class AlbumQueryResultCollection extends AlbumQueryResultBase {
     constructor(queryFetchResults, fetchParams, eventEmitter) {
         super();
         this.queryFetchResults = queryFetchResults;
-        this.onChangeHandlers = this.queryFetchResults.map(qfr => qfr.onChange(this.onQueryResultChange.bind(this)));
+        this.onChangeHandlers = this.queryFetchResults.map(qfr => qfr.onChange(
+            this.onQueryResultChange.bind(this)));
     }
 
     get albums() {
@@ -17,11 +18,9 @@ export default class AlbumQueryResultCollection extends AlbumQueryResultBase {
     }
 
     onQueryResultChange(changeDetails, queryResult) {
-        if(this._changeHandler) {
-            this._changeHandler(changeDetails, () => {
-              queryResult.applyChangeDetails(changeDetails);
-              return this;
-            }, undefined, queryResult);
-        }
+        this.emit('onChange', changeDetails, () => {
+            queryResult.applyChangeDetails(changeDetails);
+            return this;
+        }, undefined, queryResult);
     }
 }

@@ -30,7 +30,7 @@ export default class Album extends EventEmitter {
                             });
                     }
                     return assetArray;
-                }, undefined, this);
+                }, this);
             }
         });
     }
@@ -67,17 +67,12 @@ export default class Album extends EventEmitter {
         return this.permittedOperations && this.permittedOperations[index];
     }
 
-    stopTrackingAssets() {
-        return new Promise((resolve, reject) => {
-            if (this._cacheKey) {
-                return resolve(NativeApi.stopTracking(this._cacheKey));
-            }else {
-              resolve({success : true, status : 'was-not-tracked'});
-            }
-        });
+    stopTracking() {
+        return NativeApi.stopTracking(this._cacheKey);
     }
 
-    getAssets(params, trackAssets) {
+    getAssets(params) {
+        const trackAssets = params.trackInsertsAndDeletes || params.trackAssetsChanges;
         if (trackAssets && !this._cacheKey) {
             this._cacheKey = uuidGenerator();
         }

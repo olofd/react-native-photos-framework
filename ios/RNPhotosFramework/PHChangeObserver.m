@@ -49,92 +49,126 @@ static id ObjectOrNull(id object)
             
             PHFetchResultChangeDetails *changeDetails = [changeInstance changeDetailsForFetchResult:cachedFetchResult.fetchResult];
             
-
             if(changeDetails != nil) {
-                NSMutableArray *removedLocalIdentifiers = [NSMutableArray arrayWithCapacity:changeDetails.removedObjects.count];
-                NSArray *removedIndexes = [self indexSetToReturnableArray:changeDetails.removedIndexes];
-                for(int i = 0; i < [changeDetails.removedObjects count];i++) {
-                    PHObject *object = (PHObject *)[changeDetails.removedObjects objectAtIndex:i];
-                    if(object) {
-                        [removedLocalIdentifiers addObject:@{
-                                                             @"index" : [removedIndexes objectAtIndex:i],
-                                                             @"localIdentifier" : [object localIdentifier]
-                                                             }];
-                    }
-                }
                 
                 
-                NSMutableArray *insertedObjects = [NSMutableArray arrayWithCapacity:changeDetails.insertedObjects.count];
-                NSArray *insertedIndexes = [self indexSetToReturnableArray:changeDetails.insertedIndexes];
-                for(int i = 0; i < [changeDetails.insertedIndexes count];i++) {
-                    PHObject *object = (PHObject *)[changeDetails.insertedObjects objectAtIndex:i];
-                    if([object isKindOfClass:[PHCollection class]]) {
-                        PHCollection *collection = (PHCollection *)object;
-                        NSMutableDictionary *insertedObject = [[[PHCollectionService generateAlbumsResponseFromParams:cachedFetchResult.originalFetchParams andAlbums:@[collection] andCacheAssets:NO] objectForKey:@"albums"]
-                        objectAtIndex:0];
-                        [insertedObjects addObject:@{
-                                                    @"index" : [insertedIndexes objectAtIndex:i],
-                                                    @"obj" : insertedObject
-                                                    }];
+                BOOL trackInsertsAndDeletes = [RCTConvert BOOL:cachedFetchResult.originalFetchParams[@"trackInsertsAndDeletes"]];
+                BOOL trackChanges = [RCTConvert BOOL:cachedFetchResult.originalFetchParams[@"trackChanges"]];
+                
+                NSMutableArray *removedLocalIdentifiers = [NSNull null];
+                NSArray *removedIndexes = [NSNull null];
+                
+                NSMutableArray *insertedObjects = [NSNull null];
+                NSArray *insertedIndexes = [NSNull null];
+                
+                if(trackInsertsAndDeletes) {
+                    removedLocalIdentifiers = [NSMutableArray arrayWithCapacity:changeDetails.removedObjects.count];
+                    removedIndexes = [self indexSetToReturnableArray:changeDetails.removedIndexes];
+                    for(int i = 0; i < [changeDetails.removedObjects count];i++) {
+                        PHObject *object = (PHObject *)[changeDetails.removedObjects objectAtIndex:i];
+                        if(object) {
+                            [removedLocalIdentifiers addObject:@{
+                                                                 @"index" : [removedIndexes objectAtIndex:i],
+                                                                 @"localIdentifier" : [object localIdentifier]
+                                                                 }];
+                        }
                     }
                     
-                    if([object isKindOfClass:[PHAsset class]]) {
-                        PHAsset *asset = (PHAsset *)object;
-                        NSMutableDictionary *insertedObject = [[PHAssetsService assetsArrayToUriArray:@[object] andIncludeMetaData:[RCTConvert BOOL:cachedFetchResult.originalFetchParams[@"includeMetaData"]]] objectAtIndex:0];
-                        [insertedObjects addObject:@{
-                                                     @"index" : [insertedIndexes objectAtIndex:i],
-                                                     @"obj" : insertedObject
-                                                     }];
+                    
+                    insertedObjects = [NSMutableArray arrayWithCapacity:changeDetails.insertedObjects.count];
+                    insertedIndexes = [self indexSetToReturnableArray:changeDetails.insertedIndexes];
+                    for(int i = 0; i < [changeDetails.insertedIndexes count];i++) {
+                        PHObject *object = (PHObject *)[changeDetails.insertedObjects objectAtIndex:i];
+                        if([object isKindOfClass:[PHCollection class]]) {
+                            PHCollection *collection = (PHCollection *)object;
+                            NSMutableDictionary *insertedObject = [[[PHCollectionService generateAlbumsResponseFromParams:cachedFetchResult.originalFetchParams andAlbums:@[collection] andCacheAssets:NO] objectForKey:@"albums"]
+                                                                   objectAtIndex:0];
+                            [insertedObjects addObject:@{
+                                                         @"index" : [insertedIndexes objectAtIndex:i],
+                                                         @"obj" : insertedObject
+                                                         }];
+                        }
+                        
+                        if([object isKindOfClass:[PHAsset class]]) {
+                            PHAsset *asset = (PHAsset *)object;
+                            NSMutableDictionary *insertedObject = [[PHAssetsService assetsArrayToUriArray:@[object] andIncludeMetaData:[RCTConvert BOOL:cachedFetchResult.originalFetchParams[@"includeMetaData"]]] objectAtIndex:0];
+                            [insertedObjects addObject:@{
+                                                         @"index" : [insertedIndexes objectAtIndex:i],
+                                                         @"obj" : insertedObject
+                                                         }];
+                        }
                     }
                 }
                 
-                NSMutableArray *changedObjects = [NSMutableArray arrayWithCapacity:changeDetails.changedObjects.count];
-                NSArray *changedIndexes = [self indexSetToReturnableArray:changeDetails.changedIndexes];
-                for(int i = 0; i < [changeDetails.changedObjects count];i++) {
-                    PHObject *object = (PHObject *)[changeDetails.changedObjects objectAtIndex:i];
-                    if([object isKindOfClass:[PHCollection class]]) {
-                        PHCollection *collection = (PHCollection *)object;
-                        NSMutableDictionary *changedObject = [[[PHCollectionService generateAlbumsResponseFromParams:cachedFetchResult.originalFetchParams andAlbums:@[collection] andCacheAssets:NO] objectForKey:@"albums"] objectAtIndex:0];
-                        [changedObjects addObject:@{
-                                                    @"index" : [changedIndexes objectAtIndex:i],
-                                                    @"obj" : changedObject
-                                                    }];
+                NSMutableArray *changedObjects = [NSNull null];
+                NSArray *changedIndexes = [NSNull null];
+                if(trackChanges) {
+                    changedObjects = [NSMutableArray arrayWithCapacity:changeDetails.changedObjects.count];
+                    changedIndexes = [self indexSetToReturnableArray:changeDetails.changedIndexes];
+                    
+                    for(int i = 0; i < [changeDetails.changedObjects count];i++) {
+                        PHObject *object = (PHObject *)[changeDetails.changedObjects objectAtIndex:i];
+                        if([object isKindOfClass:[PHCollection class]]) {
+                            PHCollection *collection = (PHCollection *)object;
+                            NSMutableDictionary *changedObject = [[[PHCollectionService generateAlbumsResponseFromParams:cachedFetchResult.originalFetchParams andAlbums:@[collection] andCacheAssets:NO] objectForKey:@"albums"] objectAtIndex:0];
+                            [changedObjects addObject:@{
+                                                        @"index" : [changedIndexes objectAtIndex:i],
+                                                        @"obj" : changedObject
+                                                        }];
+                            
+                        }
+                        
+                        if([object isKindOfClass:[PHAsset class]]) {
+                            PHAsset *asset = (PHAsset *)object;
+                            NSMutableDictionary *changedObject = [[PHAssetsService assetsArrayToUriArray:@[object] andIncludeMetaData:[RCTConvert BOOL:cachedFetchResult.originalFetchParams[@"includeMetaData"]]] objectAtIndex:0];
+                            [changedObjects addObject:@{
+                                                        @"index" : [changedIndexes objectAtIndex:i],
+                                                        @"obj" : changedObject
+                                                        }];
+                        }
                         
                     }
-                    
-                    if([object isKindOfClass:[PHAsset class]]) {
-                        PHAsset *asset = (PHAsset *)object;
-                        NSMutableDictionary *changedObject = [[PHAssetsService assetsArrayToUriArray:@[object] andIncludeMetaData:[RCTConvert BOOL:cachedFetchResult.originalFetchParams[@"includeMetaData"]]] objectAtIndex:0];
-                        [changedObjects addObject:@{
-                                                     @"index" : [changedIndexes objectAtIndex:i],
-                                                     @"obj" : changedObject
-                                                     }];
+                }
+                
+                if(trackInsertsAndDeletes || trackChanges) {
+                    NSMutableArray *moves = [NSNull null];
+                    if(changeDetails.hasMoves) {
+                        moves = [NSMutableArray new];
+                        [changeDetails enumerateMovesWithBlock:^(NSUInteger fromIndex, NSUInteger toIndex) {
+                            [moves addObject:@(fromIndex)];
+                            [moves addObject:@(toIndex)];
+                        }];
                     }
                     
-                }
-                NSMutableArray *moves = [NSNull null];
-                if(changeDetails.hasMoves) {
-                    moves = [NSMutableArray new];
-                    [changeDetails enumerateMovesWithBlock:^(NSUInteger fromIndex, NSUInteger toIndex) {
-                        [moves addObject:@(fromIndex)];
-                        [moves addObject:@(toIndex)];
-                    }];
+                    BOOL hasMoves = moves != [NSNull null] && moves.count != 0;
+                    
+                    BOOL shouldNotifyForInsertOrDelete = ((
+                                                           (insertedIndexes != [NSNull null] && insertedIndexes.count != 0) ||
+                                                           (removedIndexes != [NSNull null] && removedIndexes.count != 0) ||
+                                                           hasMoves) && trackInsertsAndDeletes);
+                    
+                    BOOL shouldNotifyForChange = ((
+                                                   (changedIndexes != [NSNull null] && changedIndexes.count != 0) ||
+                                                   hasMoves) && trackChanges);
+                    
+                    if(shouldNotifyForInsertOrDelete || shouldNotifyForChange){
+                        [bridge.eventDispatcher sendAppEventWithName:@"RNPFObjectChange"
+                                                                body:@{
+                                                                       @"_cacheKey": uuid,
+                                                                       @"type" : @"AssetChange",
+                                                                       @"removedIndexes" : removedIndexes,
+                                                                       @"insertedIndexes" : insertedIndexes,
+                                                                       @"changedIndexes" : changedIndexes,
+                                                                       @"insertedObjects" : insertedObjects,
+                                                                       @"removedObjects" : removedLocalIdentifiers,
+                                                                       @"changedObjects" : changedObjects,
+                                                                       @"hasIncrementalChanges" : @(changeDetails.hasIncrementalChanges),
+                                                                       @"moves" : moves
+                                                                       }];
+                        cachedFetchResult.fetchResult = [changeDetails fetchResultAfterChanges];
+                    }
                 }
 
-                [bridge.eventDispatcher sendAppEventWithName:@"RNPFObjectChange"
-                                                        body:@{
-                                                               @"_cacheKey": uuid,
-                                                               @"type" : @"AssetChange",
-                                                               @"removedIndexes" : removedIndexes,
-                                                               @"insertedIndexes" : insertedIndexes,
-                                                               @"changedIndexes" : changedIndexes,
-                                                               @"insertedObjects" : insertedObjects,
-                                                               @"removedObjects" : removedLocalIdentifiers,
-                                                               @"changedObjects" : changedObjects,
-                                                               @"hasIncrementalChanges" : @(changeDetails.hasIncrementalChanges),
-                                                               @"moves" : moves
-                                                               }];
-                cachedFetchResult.fetchResult = [changeDetails fetchResultAfterChanges];
             }
         }];
         

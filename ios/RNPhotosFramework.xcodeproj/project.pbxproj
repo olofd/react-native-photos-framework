@@ -98,7 +98,6 @@
 				639BE3581DB82A7C00A2BE6F /* RCTConvert+RNPhotosFramework.m */,
 				639BE3641DBB902E00A2BE6F /* PHChangeObserver.h */,
 				639BE3651DBB902E00A2BE6F /* PHChangeObserver.m */,
-				63A33AA31DBE94350022B5FF /* RCTCachedFetchResult.h */,
 				63A33AA61DBE9D3F0022B5FF /* PHAssetsService.h */,
 				63A33AA71DBE9D3F0022B5FF /* PHAssetsService.m */,
 				63A33AAC1DBE9DB80022B5FF /* PHFetchOptionsService.h */,
@@ -109,6 +108,7 @@
 				63C543471DC00BDA004BFE57 /* PHHelpers.m */,
 				6342E06E1DC346E300F7765E /* PHSaveAssetRequest.h */,
 				6342E06F1DC346E300F7765E /* PHSaveAssetRequest.m */,
+				63A33AA31DBE94350022B5FF /* RCTCachedFetchResult.h */,
 				63A33AA41DBE94350022B5FF /* RCTCachedFetchResult.m */,
 			);
 			path = RNPhotosFramework;

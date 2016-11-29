@@ -143,17 +143,24 @@ uri : "pk://3D5E6260-2B63-472E-A38A-3B543E936E8C/L0/001"
       ],
       includeHiddenAssets: false,
       includeAllBurstAssets: false
-    }
+    },
+    //When you say 'trackInsertsAndDeletes or trackChanges' for an albums query result,
+    //They will be cached and tracking will start.
+    //Call queryResult.stopTracking() to stop this. ex. on componentDidUnmount
+    trackInsertsAndDeletes : true,
+    trackChanges : false
+
   }).then((queryResult) => {
     const album = queryResult.albums[0];
     return album.getAssets({
-      //The fetch-options from the outer query will apply 	here, if we get
+      //The fetch-options from the outer query will apply here, if we get
       startIndex: 0,
       endIndex: 10,
-      //When you say 'trackAssets' for an albums assets.
-      //The will be cached and change-tracking will start.
-      //Call album.stopTrackingAssets() to stop this. ex. on componentDidUnmount
-      trackAssets : true
+      //When you say 'trackInsertsAndDeletes or trackAssetsChange' for an albums assets,
+      //They will be cached and tracking will start.
+      //Call album.stopTracking() to stop this. ex. on componentDidUnmount
+      trackInsertsAndDeletes : true,
+      trackChanges : false
     }).then((response) => {
       console.log(response.assets, 'The assets in the first album');
     });
@@ -177,6 +184,8 @@ The getAlbumsMany-api can take multiple queries (array<albumquery>) and return a
 | includeMetaData | false | `boolean` | Include some meta data about the album. You can also choose to get this metaData at a later point by calling album.getMetaData (See bellow) |
 | noCache | `false` | `boolean` | If you set this flag to true. The result won't get cached or tracked for changes. |
 | preCacheAssets | `false` | `boolean` | If you set this property to true all assets of all albums your query returned will be cached and change-tracking will start. |
+| trackInsertsAndDeletes | `false` | `boolean` | If you set this to true. You will get called back on `queryResult.onChange` when a Insert or Delete happens. See observing changes bellow for more details. |
+| trackChanges | `false` | `boolean` | If you set this to true. You will get called back on `queryResult.onChange` when a Change happens to the query-result. See observing changes bellow for more details. |
 
 # Working with Albums:
 
@@ -380,32 +389,36 @@ You can register a listener that receives updates when any of the albums that re
 changes (Not if their assets change, only the Albums get those messages, see bellow).
 You currently receive the following events: `AlbumTitleChanged` (More to come).
 ~~~~
-albumsFetchResult.onChange((changeDetails, update, unsubscribe) => {
-    const newAlbumFetchResult = update();
-    this.setState({albumsFetchResult: newAlbumFetchResult});
+const unsubscribeFunc = albumsFetchResult.onChange((changeDetails, update) => {
+    if(changeDetails.hasIncrementalChanges) {
+      const newAlbumFetchResult = update();
+      this.setState({albumsFetchResult: newAlbumFetchResult});
+    } else {
+      //Do full reload here..
+    }
 });
 ~~~~
 NOTE: If a change occures that affects one of the AlbumQueryResults albums that change will also be passed along to the album.
 
-##Album-level
+##Album/Assets-level
+To receive change-updates on an album's assets you need to supply at least one of these
+two arguments when calling `getAssets` on that album:
+`trackInsertsAndDeletes : true`
+`trackChanges : false`
+(See `Retrieving albums and enumerating their assets` above)
+
+
 On an album object you can do:
 ~~~~
-album.onChange((changeDetails) => {
-  console.log('album did change', changeDetails);
+const unsubscribeFunc = album.onChange((changeDetails, update) => {
+  if(changeDetails.hasIncrementalChanges) {
+    this.setState({
+      //Important! Assets must be supplied in original fetch-order.
+      assets : update(this.state.assets)
+    });
+  }else {
+    //Do full reload here..
+  }
 });
 ~~~~
-The changeDetails for albums contains the following props:
-~~~~
-{
-  type : string //AssetChange, AlbumTitleChanged
-  newTitle : string //If AlbumTitleChanged-event.
-  removedIndexes : array<number> //The removed indexes
-  changedIndexes : array<number> //The changed indexes
-  insertedIndexes : array<number> //The inserted indexes
-  hasIncrementalChanges : boolean // A Boolean value that indicates whether changes to the fetch result can be described incrementally.
-  hasMoves : boolean // A Boolean value that indicates whether objects have been rearranged in the fetch result.
-}
-~~~~
-NOTE: You will have to decide for yourself if you want to do a full reload of the album or rearrange the assets you have in JS-memory according to the information in the changeDetails.
-
-All of these change events is for information. This library will provide a way of getting new immutable collections out of the changes so you can rerender efficiently.
+The update-function will apply the changes to your collection.

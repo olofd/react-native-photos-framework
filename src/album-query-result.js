@@ -1,6 +1,7 @@
 import Album from './album';
 import AlbumQueryResultBase from './album-query-result-base';
 import changeObserverHandler from './change-observer-handler';
+import NativeApi from './index';
 
 export default class AlbumQueryResult extends AlbumQueryResultBase {
     constructor(obj, fetchParams, eventEmitter) {
@@ -17,6 +18,10 @@ export default class AlbumQueryResult extends AlbumQueryResultBase {
                 this.emit('onChange', changeDetails, this);
             }
         });
+    }
+
+    stopTracking() {
+        return NativeApi.stopTracking(this._cacheKey);
     }
 
     applyChangeDetails(changeDetails) {

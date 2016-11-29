@@ -197,7 +197,13 @@ class CameraRollRNPhotosFramework {
   }
 
   stopTracking(cacheKey) {
-    return RCTCameraRollRNPhotosFrameworkManager.stopTracking(cacheKey);
+    return new Promise((resolve, reject) => {
+        if (cacheKey) {
+            return resolve(RCTCameraRollRNPhotosFrameworkManager.stopTracking(cacheKey));
+        }else {
+          resolve({success : true, status : 'was-not-tracked'});
+        }
+    });
   }
 
   asSingleQueryResult(albumQueryResultList, params, eventEmitter) {

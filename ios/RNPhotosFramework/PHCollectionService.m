@@ -79,9 +79,10 @@ static id ObjectOrNull(id object)
 
 
 +(NSMutableDictionary *) generateCollectionResponseWithCollections:(PHFetchResult<PHAssetCollection *> *)collections andParams:(NSDictionary *)params {
-    NSString *noCacheFlag = params[@"noCache"];
+    BOOL trackInsertsAndDeletes = [RCTConvert BOOL:params[@"trackInsertsAndDeletes"]];
+    BOOL trackChanges = [RCTConvert BOOL:params[@"trackChanges"]];
     BOOL preCacheAssets = [RCTConvert BOOL:params[@"preCacheAssets"]];
-    BOOL shouldCache = noCacheFlag == nil || ![RCTConvert BOOL:noCacheFlag];
+    BOOL shouldCache = trackInsertsAndDeletes || trackChanges;
     
     NSMutableDictionary *multipleAlbumsResponse = [PHCollectionService generateAlbumsResponseFromParams:params andAlbums:collections andCacheAssets:preCacheAssets];
     if(shouldCache) {

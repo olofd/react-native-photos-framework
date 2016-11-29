@@ -72,7 +72,7 @@ class CameraRollPicker extends Component {
     this
       .props
       .album
-      .stopTrackingAssets();
+      .stopTracking();
   }
 
   _fetch(reset, nextProps) {
@@ -81,6 +81,8 @@ class CameraRollPicker extends Component {
     props
       .album
       .getAssets({
+        trackInsertsAndDeletes : true,
+        trackAssetsChanges : true,
         startIndex: this.state.images.length,
         endIndex: this.state.images.length + 200,
         fetchOptions: {

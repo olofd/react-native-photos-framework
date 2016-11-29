@@ -101,7 +101,9 @@ export default class AlbumList extends Component {
         RNPhotosFramework.getAlbumsCommon({
           assetCount: 'exact',
           includeMetaData: true,
-          previewAssets: 2
+          previewAssets: 2,
+          trackInsertsAndDeletes : true,
+          trackChanges : true
         }, true).then((albumsFetchResult) => {
           albumsFetchResult.onChange((changeDetails, update, unsubscribe) => {
             const newAlbumFetchResult = update();

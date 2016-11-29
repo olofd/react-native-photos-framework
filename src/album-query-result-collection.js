@@ -21,6 +21,10 @@ export default class AlbumQueryResultCollection extends AlbumQueryResultBase {
         this.emit('onChange', changeDetails, () => {
             queryResult.applyChangeDetails(changeDetails);
             return this;
-        }, undefined, queryResult);
+        }, queryResult);
+    }
+
+    stopTracking() {
+      return Promise.all(this.queryFetchResults.map(qfr => qfr.stopTracking()));
     }
 }

@@ -169,7 +169,7 @@ static id ObjectOrNull(id object)
                 }
                 
                 if(numberOfPreviewAssets > 0) {
-                   NSArray<NSDictionary *> *previewAssets = [PHAssetsService assetsArrayToUriArray:[PHAssetsService getAssetsForFetchResult:assets startIndex:0 endIndex:numberOfPreviewAssets] andIncludeMetaData:NO];
+                   NSArray<NSDictionary *> *previewAssets = [PHAssetsService assetsArrayToUriArray:[PHAssetsService getAssetsForFetchResult:assets startIndex:0 endIndex:(numberOfPreviewAssets-1)] andIncludeMetaData:NO];
                     [albumDictionary setObject:previewAssets forKey:@"previewAssets"];
                 }
                 

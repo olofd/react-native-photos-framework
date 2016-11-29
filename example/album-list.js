@@ -105,13 +105,11 @@ export default class AlbumList extends Component {
           trackInsertsAndDeletes : true,
           trackChanges : true
         }, true).then((albumsFetchResult) => {
-          var a = albumsFetchResult.onChange((changeDetails, update, unsubscribe) => {
+          albumsFetchResult.onChange((changeDetails, update, unsubscribe) => {
             const newAlbumFetchResult = update();
             this.setState({albumsFetchResult: newAlbumFetchResult});
             this.albumPropsToListView();
           });
-          a();
-          albumsFetchResult.stopTracking();
           simple_timer.stop('first_album_fetch');
           console.debug('react-native-photos-framework albums request took %s milliseconds.', simple_timer.get('first_album_fetch').delta)
           this.setState({albumsFetchResult: albumsFetchResult});

@@ -403,8 +403,8 @@ NOTE: If a change occures that affects one of the AlbumQueryResults albums that 
 ##Album/Assets-level
 To receive change-updates on an album's assets you need to supply at least one of these
 two arguments when calling `getAssets` on that album:
-`trackInsertsAndDeletes : true`
-`trackChanges : false`
+`trackInsertsAndDeletes : true` or
+`trackChanges : true`
 (See `Retrieving albums and enumerating their assets` above)
 
 

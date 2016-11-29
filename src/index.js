@@ -94,7 +94,7 @@ class CameraRollRNPhotosFramework {
 
   getAlbums(params) {
     return this
-      .getAlbumsMany(params)
+      .getAlbumsMany([params])
       .then((queryResults) => {
         return queryResults[0];
       });

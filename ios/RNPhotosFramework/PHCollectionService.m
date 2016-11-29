@@ -71,7 +71,7 @@ static id ObjectOrNull(id object)
     NSString * subTypeString = params[@"subType"];
     PHAssetCollectionType type = [RCTConvert PHAssetCollectionType:typeString];
     PHAssetCollectionSubtype subType = [RCTConvert PHAssetCollectionSubtype:subTypeString];
-    PHAssetCollection *collections = [PHAssetCollection fetchAssetCollectionsWithType:type
+    PHFetchResult<PHAssetCollection *> *collections = [PHAssetCollection fetchAssetCollectionsWithType:type
                                                                               subtype:subType
                                                                               options:fetchOptions];
     return collections;

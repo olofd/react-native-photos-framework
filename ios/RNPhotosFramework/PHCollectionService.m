@@ -101,28 +101,28 @@ static id ObjectOrNull(id object)
     NSMutableDictionary *collectionDictionary = [NSMutableDictionary new];
     NSMutableArray *albumsArray = [NSMutableArray arrayWithCapacity:albums.count];
     
-    NSDictionary *paramsToUse = params;
+    //We are going to fetch only for preview items.
+    //Let's set a fetchLimit.
+    NSDictionary *fetchOptions = [RCTConvert NSDictionary:params[@"assetFetchOptions"]];
+    NSMutableDictionary *assetFetchParams = [[NSMutableDictionary alloc] init];
+
     if(!cacheAssets && countType == RNPFAssetCountTypeEstimated && numberOfPreviewAssets > 0) {
-        //We are going to fetch only for preview items.
-        //Let's set a fetchLimit.
-        NSMutableDictionary *mutableParams = [params mutableCopy];
-        NSDictionary *fetchOptions = [RCTConvert NSDictionary:mutableParams[@"fetchOptions"]];
-        NSMutableDictionary *mutFetchOptions;
-        if(fetchOptions) {
-            mutFetchOptions = [fetchOptions mutableCopy];
-            [mutFetchOptions setObject:@(numberOfPreviewAssets) forKey:@"fetchLimit"];
-        }else {
-            mutFetchOptions = [NSMutableDictionary dictionaryWithObject:@(numberOfPreviewAssets) forKey:@"fetchLimit"];
-        }
-        [mutableParams setObject:mutFetchOptions forKey:@"fetchOptions"];
-        paramsToUse = mutableParams;
+        //If we are not caching the result and the assetCount should only be estimated.
+        //We can set a fetchLimit when getting the previewAssets (Small optimization)
+        NSMutableDictionary *fetchOptionsMutable = [fetchOptions mutableCopy];
+        [fetchOptionsMutable setObject:@(numberOfPreviewAssets) forKey:@"fetchLimit"];
+        fetchOptions = fetchOptionsMutable;
     }
+    if(fetchOptions) {
+        [assetFetchParams setObject:fetchOptions forKey:@"fetchOptions"];
+    }
+    
     
     for(PHCollection *collection in albums)
     {
         if ([collection isKindOfClass:[PHAssetCollection class]])
         {
-            NSMutableDictionary *albumDictionary = [self generateAlbumResponseFromCollection:collection numberOfPreviewAssets:numberOfPreviewAssets countType:countType includeMetaData:includeMetaData cacheAssets:cacheAssets assetFetchParams:paramsToUse];
+            NSMutableDictionary *albumDictionary = [self generateAlbumResponseFromCollection:collection numberOfPreviewAssets:numberOfPreviewAssets countType:countType includeMetaData:includeMetaData cacheAssets:cacheAssets assetFetchParams:assetFetchParams];
             
             [albumsArray addObject:albumDictionary];
         }

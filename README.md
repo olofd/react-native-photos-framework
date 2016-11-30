@@ -1,7 +1,7 @@
 # react-native-photos-framework
 
 ###Example project
-####NOTE: This is not a UI-component, it's an API. The example project just shows off some of the the capabilities of this API.
+####NOTE: This is not a GUI-component, it's an API. The example project just shows off some of the the capabilities of this API.
 ![](https://media.giphy.com/media/3o6Ztqdc8OF3FAgAiQ/source.gif)
 
 ###Description
@@ -13,15 +13,15 @@ This however uses ALAssetLibrary which is a deprecated API from Apple
 and can only load photos and videos stored on the users device.
 This is not what your user expects today. Most users photos live on iCloud and these won't show if you use ALAssetLibrary.
 
-If you use this library (Photos Framework) you can display the users local resources and the users iCloud resources.
+If you use this library (Photos framework) you can display the users local resources and the users iCloud resources.
 
 ###Installation:
 `npm i react-native-photos-framework --save && react-native link react-native-photos-framework`
 
 NOTE: When running `npm install` this library will try to automatically add `NSPhotoLibraryUsageDescription` to your Info.plist.
 Check that it is there after the install or update it's value from the default:
-`Using photo library to select pictures`.
-(Will not do anything if you have already defined this key in Info.plist)
+`Using photo library to select pictures`
+ (Will not do anything if you have already defined this key in Info.plist)
 
 ##Library (Top level):
 
@@ -33,14 +33,13 @@ Check that it is there after the install or update it's value from the default:
   });
 ~~~~
 
-Signature: `RNPhotosFramework.authorizationStatus() : Promise<{status : string, isAuthorized : boolean}>.`
+Signature: `RNPhotosFramework.authorizationStatus() : Promise<{status : string, isAuthorized : boolean}>`.
 Fetches the current authorization-status.
-
 NOTE: You can receive the following statuses :
-`notDetermined` //Before user has granted permission,
-`restricted` //User is restricted by policy, cannot use Photos,
-`denied` //User has denied permission,
-`authorized` //User has granted permission
+* `notDetermined` //Before user has granted permission,
+* `restricted` //User is restricted by policy, cannot use Photos,
+* `denied` //User has denied permission,
+* `authorized` //User has granted permission
 
 ###requestAuthorization
 ~~~~
@@ -51,11 +50,10 @@ NOTE: You can receive the following statuses :
   });
 ~~~~
 
-Signature: `RNPhotosFramework.requestAuthorization() : Promise<{status : string, isAuthorized : boolean}>.``
+Signature: `RNPhotosFramework.requestAuthorization() : Promise<{status : string, isAuthorized : boolean}>`.
 This will prompt the user to grant access to the user library at first start.
 If you do not call this method explicitly before using any of the other functions in this library, the grant-access-dialog will appear for the user automatically at the first function-call into the library. But only one function-call can automatically
-trigger this dialog, so if another call comes into Photos Framework before the user has granted you access, that function-call will fail. Therefore, I urge you to call this method explicitly before you start using the rest of the library to not experience unexpected behaviour.
-
+trigger this dialog, so if another call comes into Photos Framework before the user has granted you access, that function-call will fail. Therefore I urge you to call this method explicitly before you start using the rest of the library to not experience unexpected behaviour.
 NOTE: You do not have to first check the authorizationStatus before calling this. If the user has granted access before, this will just return authorized-status.
 NOTE: See available statuses in doc. about: `authorizationStatus`
 
@@ -64,7 +62,7 @@ NOTE: See available statuses in doc. about: `authorizationStatus`
 fetchOptions is a query-object which can be sent both when fetching albums with
 `getAlbums` and when fetching assets with `getAssets`. Below you can see the available options
 for fetchOptions. You can also read Apple's documentation around [PHFetchOptions here](https://developer.apple.com/reference/photos/phfetchoptions).
-(Many of the args. map one-to-one with native data structures.)
+(Many of the args map one-to-one with native data structures.)
 
 | Prop  | Default  | Type | Description |
 | :------------ |:---------------:| :---------------:| :-----|
@@ -175,7 +173,7 @@ uri : "pk://3D5E6260-2B63-472E-A38A-3B543E936E8C/L0/001"
 Get albums allow to query the Photos Framework for asset-albums. Both User-created ones and Smart-albums.
 Note that Apple creates a lot of dynamic, so called Smart Albums, like : 'Recently added', 'Favourites' etc.
 
-NOTE: There is also another method called `getAlbumsMany`. This could be considered a low-level-method of the API. It is constructed so that this library can build more accessible methods on top of one joint native-call: like getUserTopAlbums in pure JS.
+NOTE: There is also another method called `getAlbumsMany`. This could be considered a low-level-method of the API. It is constructed so that this library can build more accessable methods on top of one joint native-call: like getUserTopAlbums in pure JS.
 The getAlbumsMany-api can take multiple queries (array<albumquery>) and return an array<albumqueryresult>.
 
 | Prop  | Default  | Type | Description |
@@ -287,7 +285,7 @@ When you retrieve assets from the API you will get back an Asset object.
 There is nothing special about this object. I've defined it as a class so
 that it can have some instance-methods. But it should be highly compatible with
 native RN-elements like `<Image source={asset.image}></Image>`.
-NOTE: Use the property. image on an asset for the <Image>-tag. Otherwise
+NOTE: Use the property .image on an asset for the <Image>-tag. Otherwise
 RN will freeze your asset object. And they are, right now at least mutable.
 //More info about videos/audio coming soon
 
@@ -338,7 +336,7 @@ But you can choose to use the other two deliveryMode's to. you do this by callin
   });
 ~~~~
 If you choose to use opportunistic here you will see a low-res-version of the image displayed
-while the high quality version of the resource is downloaded. NOTE: This library will call correct lifecycle callback's on your image-tag when this is used: the
+while the highQuality version of the resource is downloaded. NOTE: This library will call correct lifecycle callback's on your image-tag when this is used: the
 `<Image onPartialLoad={//Low-res-callback} onLoad={//High-res-callback} onProgress={//downloadCallback}>`
 
 #Creating Assets:

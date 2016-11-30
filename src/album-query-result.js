@@ -12,7 +12,7 @@ export default class AlbumQueryResult extends AlbumQueryResultBase {
         this._albumNativeObjs = this.albums;
         this.albums = this
             ._albumNativeObjs
-            .map(albumObj => new Album(albumObj, this._fetchParams.fetchOptions, eventEmitter));
+            .map(albumObj => new Album(albumObj, this._fetchParams.assetFetchOptions, eventEmitter));
         eventEmitter.addListener('onObjectChange', (changeDetails) => {
             if (this._cacheKey === changeDetails._cacheKey) {
                 this.emit('onChange', changeDetails, this);

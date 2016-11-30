@@ -102,6 +102,13 @@ export default class AlbumList extends Component {
           assetCount: 'exact',
           includeMetaData: true,
           previewAssets: 2,
+          assetFetchOptions : {
+            mediaTypes : ['image'],
+            sortDescriptors : [{
+              key : 'creationDate',
+              ascending : true
+            }]
+          },
           trackInsertsAndDeletes : true,
           trackChanges : true
         }, true).then((albumsFetchResult) => {

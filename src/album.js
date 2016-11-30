@@ -77,6 +77,7 @@ export default class Album extends EventEmitter {
             this._cacheKey = uuidGenerator();
         }
         return NativeApi.getAssets({
+            fetchOptions : this._fetchOptions,
             ...params,
             _cacheKey: this._cacheKey,
             albumLocalIdentifier: this.localIdentifier

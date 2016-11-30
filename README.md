@@ -104,12 +104,12 @@ import RNPhotosFramework from 'react-native-photos-framework';
 
 | Prop  | Default  | Type | Description |
 | :------------ |:---------------:| :---------------:| :-----|
+| fetchOptions | - | `object` | See above. |
 | startIndex | 0 | `number` | startIndex-offset for fetching |
 | endIndex | 0 | `number` | endIndex-offset stop for fetching |
 | includeMetaData | false | `boolean` | Include a lot of meta data about the asset (See bellow). You can also choose to get this metaData at a later point by calling asset.getMetaData (See bellow) |
 | prepareForSizeDisplay | - | `Rect(width, height)` | The size of the image you soon will display after running the query. This is highly optional and only there for optimizations of big lists. Prepares the images for display in Photos by using PHCachingImageManager |
 | prepareScale | 2.0 | `number` | The scale to prepare the image in. |
-| fetchOptions | - | `object` | See above. |
 
 ###Example of asset response with `includeMetaData : true`
 ~~~~
@@ -176,6 +176,8 @@ NOTE: There is also another method called `getAlbumsMany`. This could be conside
 The getAlbumsMany-api can take multiple queries (array<albumquery>) and return an array<albumqueryresult>.
 
 | Prop  | Default  | Type | Description |
+| fetchOptions | - | `object` | See above. |
+| assetFetchOptions | - | `object` | Fetch options used when loading assets from album returned. You can choose to pass these fetchOptions here to affect `previewAssets` and `assetCount` in the album according to these options. Note: If you supply fetchOptions when later calling getAssets, those options will override these options.  |
 | :------------ |:---------------:| :---------------:| :-----|
 | type | `album` | `string` | Defines what type of album/collection you wish to retrieve. Converted in Native to PHAssetCollectionType. Accepted enum-values: `album`, `smartAlbum`, `moment` |
 | subType | `any` | `string` | Defines what subType the album/collection you wish to retrieve should have. Converted in Native to PHAssetCollectionSubtype. Accepted enum-values: `any`, `albumRegular`, `syncedEvent`, `syncedFaces`, `syncedAlbum`, `imported`, `albumMyPhotoStream`, `albumCloudShared`, `smartAlbumGeneric`, `smartAlbumPanoramas`, `smartAlbumVideos`, `smartAlbumFavorites`, `smartAlbumTimelapses`, `smartAlbumAllHidden`, `smartAlbumRecentlyAdded`, `smartAlbumBursts`, `smartAlbumSlomoVideos`, `smartAlbumUserLibrary`, `smartAlbumSelfPortraits`, `smartAlbumScreenshots` |

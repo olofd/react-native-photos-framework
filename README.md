@@ -1,7 +1,7 @@
 # react-native-photos-framework
 
 ###Example project
-####NOTE: This is not a GUI-component, it's an API. The example project just shows off some of the the capabilities of this API.
+####NOTE: This is not a UI-component, it's an API. The example project just shows off some of the the capabilities of this API.
 ![](https://media.giphy.com/media/3o6Ztqdc8OF3FAgAiQ/source.gif)
 
 ###Description
@@ -52,7 +52,7 @@ NOTE: You can receive the following statuses :
 Signature: RNPhotosFramework.requestAuthorization() : Promise<{status : string, isAuthorized : boolean}>.
 This will prompt the user to grant access to the user library at first start.
 If you do not call this method explicitly before using any of the other functions in this library, the grant-access-dialog will appear for the user automatically at the first function-call into the library. But only one function-call can automatically
-trigger this dialog, so if another call comes into Photos Framework before the user has granted you access, that function-call will fail. Therefore I urge you to call this method explicitly before you start using the rest of the library to not experience unexpected behaviour.
+trigger this dialog, so if another call comes into Photos Framework before the user has granted you access, that function-call will fail. Therefore, I urge you to call this method explicitly before you start using the rest of the library to not experience unexpected behaviour.
 NOTE: You do not have to first check the authorizationStatus before calling this. If the user has granted access before, this will just return authorized-status.
 NOTE: See available statuses in doc. about: `authorizationStatus`
 
@@ -61,12 +61,12 @@ NOTE: See available statuses in doc. about: `authorizationStatus`
 fetchOptions is a query-object which can be sent both when fetching albums with
 `getAlbums` and when fetching assets with `getAssets`. Below you can see the available options
 for fetchOptions. You can also read Apple's documentation around [PHFetchOptions here](https://developer.apple.com/reference/photos/phfetchoptions).
-(Many of the args map one-to-one with native data structures.)
+(Many of the args. map one-to-one with native data structures.)
 
 | Prop  | Default  | Type | Description |
 | :------------ |:---------------:| :---------------:| :-----|
-| mediaTypes (Only for `getAssets`) | - | `array<string>` | Defines what mediaType the asset should be. Array combined with OR-operator. eg. ['image', 'video'] will return both photos and videos. Converted in Native to PHAssetMediaType. Accepted values: `image`, `video`, `audio`, `unknown` |
-| mediaSubTypes (Only for `getAssets`) | - | `array<string>` | Defines what subtype the asset should be. Array combined with OR-operator. eg. ['photoPanorama', 'photoHDR'] will return both panorama and HDR-assets. Converted in Native to PHAssetMediaSubtype. Accepted enum-values: `none`, `photoPanorama`, `photoHDR`, `photoScreenshot`, `photoLive`, `videoStreamed`, `videoHighFrameRate`, `videoTimeLapse` (mediaTypes and mediaSubTypes are combined with AND-operator) |
+| mediaTypes (Only for `getAssets`) | - | `array<string>` | Defines what mediaType the asset should be. Array combined with OR-operator. e.g. ['image', 'video'] will return both photos and videos. Converted in Native to PHAssetMediaType. Accepted values: `image`, `video`, `audio`, `unknown` |
+| mediaSubTypes (Only for `getAssets`) | - | `array<string>` | Defines what subtype the asset should be. Array combined with OR-operator. e.g. ['photoPanorama', 'photoHDR'] will return both panorama and HDR-assets. Converted in Native to PHAssetMediaSubtype. Accepted enum-values: `none`, `photoPanorama`, `photoHDR`, `photoScreenshot`, `photoLive`, `videoStreamed`, `videoHighFrameRate`, `videoTimeLapse` (mediaTypes and mediaSubTypes are combined with AND-operator) |
 | sourceTypes (Only for `getAssets`) | - | `array<string>` | Defines where the asset should come from originally. Array combined with OR-operator. Converted in Native to PHAssetSourceType. Accepted enum-values: `none`, `userLibrary`, `cloudShared`, `itunesSynced`. |
 | includeHiddenAssets | false | `boolean` | A Boolean value that determines whether the fetch result includes assets marked as hidden. |
 | includeAllBurstAssets | false | `boolean` | A Boolean value that determines whether the fetch result includes all assets from burst photo sequences. |
@@ -85,8 +85,8 @@ import RNPhotosFramework from 'react-native-photos-framework';
     endIndex: 100,
 
     fetchOptions : {
-      // Media types you wish to display. See table bellow for possible options. Where
-      // is the image located? See table bellow for possible options.
+      // Media types you wish to display. See table below for possible options. Where
+      // is the image located? See table below for possible options.
       sourceTypes: ['userLibrary'],
 
       sortDescriptors : [
@@ -107,7 +107,7 @@ import RNPhotosFramework from 'react-native-photos-framework';
 | fetchOptions | - | `object` | See above. |
 | startIndex | 0 | `number` | startIndex-offset for fetching |
 | endIndex | 0 | `number` | endIndex-offset stop for fetching |
-| includeMetaData | false | `boolean` | Include a lot of meta data about the asset (See bellow). You can also choose to get this metaData at a later point by calling asset.getMetaData (See bellow) |
+| includeMetaData | false | `boolean` | Include a lot of meta data about the asset (See below). You can also choose to get this metaData at a later point by calling asset.getMetaData (See below) |
 | prepareForSizeDisplay | - | `Rect(width, height)` | The size of the image you soon will display after running the query. This is highly optional and only there for optimizations of big lists. Prepares the images for display in Photos by using PHCachingImageManager |
 | prepareScale | 2.0 | `number` | The scale to prepare the image in. |
 
@@ -172,7 +172,7 @@ uri : "pk://3D5E6260-2B63-472E-A38A-3B543E936E8C/L0/001"
 Get albums allow to query the Photos Framework for asset-albums. Both User-created ones and Smart-albums.
 Note that Apple creates a lot of dynamic, so called Smart Albums, like : 'Recently added', 'Favourites' etc.
 
-NOTE: There is also another method called `getAlbumsMany`. This could be considered a low-level-method of the API. It is constructed so that this library can build more accessable methods on top of one joint native-call: like getUserTopAlbums in pure JS.
+NOTE: There is also another method called `getAlbumsMany`. This could be considered a low-level-method of the API. It is constructed so that this library can build more accessible methods on top of one joint native-call: like getUserTopAlbums in pure JS.
 The getAlbumsMany-api can take multiple queries (array<albumquery>) and return an array<albumqueryresult>.
 
 | Prop  | Default  | Type | Description |
@@ -183,11 +183,11 @@ The getAlbumsMany-api can take multiple queries (array<albumquery>) and return a
 | subType | `any` | `string` | Defines what subType the album/collection you wish to retrieve should have. Converted in Native to PHAssetCollectionSubtype. Accepted enum-values: `any`, `albumRegular`, `syncedEvent`, `syncedFaces`, `syncedAlbum`, `imported`, `albumMyPhotoStream`, `albumCloudShared`, `smartAlbumGeneric`, `smartAlbumPanoramas`, `smartAlbumVideos`, `smartAlbumFavorites`, `smartAlbumTimelapses`, `smartAlbumAllHidden`, `smartAlbumRecentlyAdded`, `smartAlbumBursts`, `smartAlbumSlomoVideos`, `smartAlbumUserLibrary`, `smartAlbumSelfPortraits`, `smartAlbumScreenshots` |
 | assetCount | `estimated` | `string/enum` | You can choose to get `estimated` count of the collection or `exact`-count. Of course these have different performance-impacts. Returns -1 if the estimated count can't be fetched quickly. Remember that your of course fetchOptions affects this count. |
 | previewAssets | - | `number` | If you set this to a number, say 2, you will get the first two images from the album included in the album-response. This is so you can show a small preview-thumbnail for the album if you like to. |
-| includeMetaData | false | `boolean` | Include some meta data about the album. You can also choose to get this metaData at a later point by calling album.getMetaData (See bellow) |
+| includeMetaData | false | `boolean` | Include some meta data about the album. You can also choose to get this metaData at a later point by calling album.getMetaData (See below) |
 | noCache | `false` | `boolean` | If you set this flag to true. The result won't get cached or tracked for changes. |
 | preCacheAssets | `false` | `boolean` | If you set this property to true all assets of all albums your query returned will be cached and change-tracking will start. |
-| trackInsertsAndDeletes | `false` | `boolean` | If you set this to true. You will get called back on `queryResult.onChange` when a Insert or Delete happens. See observing changes bellow for more details. |
-| trackChanges | `false` | `boolean` | If you set this to true. You will get called back on `queryResult.onChange` when a Change happens to the query-result. See observing changes bellow for more details. |
+| trackInsertsAndDeletes | `false` | `boolean` | If you set this to true. You will get called back on `queryResult.onChange` when a Insert or Delete happens. See observing changes below for more details. |
+| trackChanges | `false` | `boolean` | If you set this to true. You will get called back on `queryResult.onChange` when a Change happens to the query-result. See observing changes below for more details. |
 
 # Working with Albums:
 
@@ -218,7 +218,7 @@ There is also another multi-method you can use here:
 Signature: RNPhotosFramework.createAlbums(albumTitles) : Promise<album>.
 
 NOTE: Alums can have the same name. All resources in Photos are unique on their
-localIdentifier. You can use the bellow methods to tackle this:
+localIdentifier. You can use the below methods to tackle this:
 
 ###getAlbumsByTitle
 ~~~~
@@ -284,7 +284,7 @@ When you retrieve assets from the API you will get back an Asset object.
 There is nothing special about this object. I've defined it as a class so
 that it can have some instance-methods. But it should be highly compatible with
 native RN-elements like `<Image source={asset.image}></Image>`.
-NOTE: Use the property .image on an asset for the <Image>-tag. Otherwise
+NOTE: Use the property. image on an asset for the <Image>-tag. Otherwise
 RN will freeze your asset object. And they are, right now at least mutable.
 //More info about videos/audio coming soon
 
@@ -335,7 +335,7 @@ But you can choose to use the other two deliveryMode's to. you do this by callin
   });
 ~~~~
 If you choose to use opportunistic here you will see a low-res-version of the image displayed
-while the highQuality version of the resource is downloaded. NOTE: This library will call correct lifecycle callback's on your image-tag when this is used: the
+while the high quality version of the resource is downloaded. NOTE: This library will call correct lifecycle callback's on your image-tag when this is used: the
 `<Image onPartialLoad={//Low-res-callback} onLoad={//High-res-callback} onProgress={//downloadCallback}>`
 
 #Creating Assets:
@@ -388,7 +388,7 @@ No details provided
 
 ##AlbumQueryResult-level
 You can register a listener that receives updates when any of the albums that result contains
-changes (Not if their assets change, only the Albums get those messages, see bellow).
+changes (Not if their assets change, only the Albums get those messages, see below).
 You currently receive the following events: `AlbumTitleChanged` (More to come).
 ~~~~
 const unsubscribeFunc = albumsFetchResult.onChange((changeDetails, update) => {

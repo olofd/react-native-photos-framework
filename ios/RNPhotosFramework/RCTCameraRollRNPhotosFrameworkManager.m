@@ -73,7 +73,8 @@ RCT_EXPORT_METHOD(getAssets:(NSDictionary *)params
     
     NSArray<PHAsset *> *assets = [PHAssetsService getAssetsForFetchResult:assetsFetchResult startIndex:startIndex endIndex:endIndex];
     [self prepareAssetsForDisplayWithParams:params andAssets:assets];
-    BOOL includesLastAsset = endIndex >= (assetsFetchResult.count -1);
+    NSInteger assetCount = assetsFetchResult.count;
+    BOOL includesLastAsset = assetCount == 0 || endIndex >= (assetCount -1);
     resolve(@{
               @"assets" : [PHAssetsService assetsArrayToUriArray:assets andIncludeMetaData:includeMetaData],
               @"includesLastAsset" : @(includesLastAsset)

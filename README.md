@@ -13,14 +13,15 @@ This however uses ALAssetLibrary which is a deprecated API from Apple
 and can only load photos and videos stored on the users device.
 This is not what your user expects today. Most users photos live on iCloud and these won't show if you use ALAssetLibrary.
 
-If you use this library/Photos framework you can display the users local resources and the users iCloud resources.
+If you use this library (Photos Framework) you can display the users local resources and the users iCloud resources.
 
 ###Installation:
 `npm i react-native-photos-framework --save && react-native link react-native-photos-framework`
 
 NOTE: When running `npm install` this library will try to automatically add `NSPhotoLibraryUsageDescription` to your Info.plist.
 Check that it is there after the install or update it's value from the default:
-`Using photo library to select pictures`
+`Using photo library to select pictures`.
+(Will not do anything if you have already defined this key in Info.plist)
 
 ##Library (Top level):
 
@@ -32,8 +33,9 @@ Check that it is there after the install or update it's value from the default:
   });
 ~~~~
 
-Signature: RNPhotosFramework.authorizationStatus() : Promise<{status : string, isAuthorized : boolean}>.
+Signature: `RNPhotosFramework.authorizationStatus() : Promise<{status : string, isAuthorized : boolean}>.`
 Fetches the current authorization-status.
+
 NOTE: You can receive the following statuses :
 `notDetermined` //Before user has granted permission,
 `restricted` //User is restricted by policy, cannot use Photos,
@@ -49,10 +51,11 @@ NOTE: You can receive the following statuses :
   });
 ~~~~
 
-Signature: RNPhotosFramework.requestAuthorization() : Promise<{status : string, isAuthorized : boolean}>.
+Signature: `RNPhotosFramework.requestAuthorization() : Promise<{status : string, isAuthorized : boolean}>.``
 This will prompt the user to grant access to the user library at first start.
 If you do not call this method explicitly before using any of the other functions in this library, the grant-access-dialog will appear for the user automatically at the first function-call into the library. But only one function-call can automatically
 trigger this dialog, so if another call comes into Photos Framework before the user has granted you access, that function-call will fail. Therefore, I urge you to call this method explicitly before you start using the rest of the library to not experience unexpected behaviour.
+
 NOTE: You do not have to first check the authorizationStatus before calling this. If the user has granted access before, this will just return authorized-status.
 NOTE: See available statuses in doc. about: `authorizationStatus`
 

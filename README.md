@@ -173,10 +173,11 @@ uri : "pk://3D5E6260-2B63-472E-A38A-3B543E936E8C/L0/001"
 Get albums allow to query the Photos Framework for asset-albums. Both User-created ones and Smart-albums.
 Note that Apple creates a lot of dynamic, so called Smart Albums, like : 'Recently added', 'Favourites' etc.
 
-NOTE: There is also another method called `getAlbumsMany`. This could be considered a low-level-method of the API. It is constructed so that this library can build more accessable methods on top of one joint native-call: like getUserTopAlbums in pure JS.
+NOTE: There is also another method called `getAlbumsMany`. This could be considered a low-level-method of the API. It is constructed so that this library can build more accessible methods on top of one joint native-call: like getUserTopAlbums in pure JS.
 The getAlbumsMany-api can take multiple queries (array<albumquery>) and return an array<albumqueryresult>.
 
 | Prop  | Default  | Type | Description |
+| :------------ |:---------------:| :---------------:| :-----|
 | fetchOptions | - | `object` | See above. |
 | assetFetchOptions | - | `object` | Fetch options used when loading assets from album returned. You can choose to pass these fetchOptions here to affect `previewAssets` and `assetCount` in the album according to these options. Note: If you supply fetchOptions when later calling getAssets, those options will override these options.  |
 | :------------ |:---------------:| :---------------:| :-----|
@@ -199,7 +200,7 @@ The getAlbumsMany-api can take multiple queries (array<albumquery>) and return a
 //Fetches albums for params. See above
 RNPhotosFramework.getAlbums(params)
 //Fetches many queries
-//asSingleQueryResult : boolean. if true, will return response as one single response.
+//as SingleQueryResult : boolean. if true, will return response as one single response.
 RNPhotosFramework.getAlbumsMany([params, params...], asSingleQueryResult);
 //Prebuilt query for fetching the most typical albums:
 //Camera-Roll, User-albums and user-shared-albums.

@@ -26,9 +26,6 @@
     NSDictionary *params = [RCTConvert NSDictionary:outerParams[@"fetchOptions"]];
     PHFetchOptions *options = [[PHFetchOptions alloc] init];
     options = [self getCommonFetchOptionsFromParams:params andFetchOptions:options];
-    if(options.sortDescriptors == nil || options.sortDescriptors.count == 0) {
-        options.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
-    }
     return options;
 }
 

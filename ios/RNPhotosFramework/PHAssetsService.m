@@ -93,20 +93,16 @@
     return dictToExtend;
 }
 
-+(NSMutableArray<PHAsset *> *) getAssetsForFetchResult:(PHFetchResult *)assetsFetchResult startIndex:(int)startIndex endIndex:(int)endIndex andReverseIndices:(BOOL)reverseIndices {
-    
++(NSMutableArray<PHAsset *> *) getAssetsForFetchResult:(PHFetchResult *)assetsFetchResult startIndex:(int)startIndex endIndex:(int)endIndex assetDisplayStartToEnd:(BOOL)assetDisplayStartToEnd andAssetDisplayTopDown:(BOOL)assetDisplayTopDown {
     NSMutableArray<PHAsset *> *assets = [NSMutableArray new];
     int assetCount = assetsFetchResult.count;
     if(assetCount != 0) {
         int originalStartIndex = startIndex;
         int originalEndIndex = endIndex;
-
-        // load most recent assets from library first by default
         startIndex = (assetCount - endIndex) - 1;
         endIndex = assetCount - originalStartIndex;
-        
-        // load oldest assets from library first if reverseIndices is true
-        if(reverseIndices) {
+        // load oldest assets from library first if assetDisplayStartToEnd is true
+        if(assetDisplayStartToEnd) {
             startIndex = originalStartIndex;
             endIndex = originalEndIndex;
         }
@@ -123,7 +119,8 @@
             endIndex = assetCount;
         }
         NSIndexSet *indexSet = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(startIndex, endIndex - startIndex)];
-        NSEnumerationOptions enumerationOptions = reverseIndices ? NSEnumerationConcurrent : NSEnumerationReverse;
+        // display assets from the top to bottom of page if assetDisplayTopDown is true
+        NSEnumerationOptions enumerationOptions = assetDisplayTopDown ? NSEnumerationConcurrent : NSEnumerationReverse;
         [assetsFetchResult enumerateObjectsAtIndexes:indexSet options:enumerationOptions usingBlock:^(PHAsset *asset, NSUInteger idx, BOOL * _Nonnull stop) {
             [assets addObject:asset];
         }];

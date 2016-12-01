@@ -98,10 +98,17 @@
     NSMutableArray<PHAsset *> *assets = [NSMutableArray new];
     int assetCount = assetsFetchResult.count;
     if(assetCount != 0) {
+        int originalStartIndex = startIndex;
+        int originalEndIndex = endIndex;
+
+        // load most recent assets from library first by default
+        startIndex = (assetCount - endIndex) - 1;
+        endIndex = assetCount - originalStartIndex;
+        
+        // load oldest assets from library first if reverseIndices is true
         if(reverseIndices) {
-            int originalStartIndex = startIndex;
-            startIndex = (assetCount - endIndex) - 1;
-            endIndex = assetCount - originalStartIndex;
+            startIndex = originalStartIndex;
+            endIndex = originalEndIndex;
         }
         if(startIndex < 0) {
             startIndex = 0;
@@ -116,7 +123,7 @@
             endIndex = assetCount;
         }
         NSIndexSet *indexSet = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(startIndex, endIndex - startIndex)];
-        NSEnumerationOptions enumerationOptions = reverseIndices ? NSEnumerationReverse : NSEnumerationConcurrent;
+        NSEnumerationOptions enumerationOptions = reverseIndices ? NSEnumerationConcurrent : NSEnumerationReverse;
         [assetsFetchResult enumerateObjectsAtIndexes:indexSet options:enumerationOptions usingBlock:^(PHAsset *asset, NSUInteger idx, BOOL * _Nonnull stop) {
             [assets addObject:asset];
         }];

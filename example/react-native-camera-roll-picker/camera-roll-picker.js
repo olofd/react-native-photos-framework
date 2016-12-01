@@ -84,16 +84,9 @@ class CameraRollPicker extends Component {
         trackInsertsAndDeletes : true,
         trackAssetsChanges : true,
         startIndex: this.state.images.length,
-        endIndex: this.state.images.length + 200,
-        fetchOptions: {
-          includeHiddenAssets : true,
-          sortDescriptors: [
-            {
-              key: 'creationDate',
-              ascending: false
-            }
-          ]
-        }
+        endIndex: this.state.images.length + 20,
+        fetchOptions: {},
+        reverse : true
 
       }, true)
       .then((data) => {

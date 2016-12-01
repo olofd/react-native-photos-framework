@@ -116,7 +116,7 @@
             endIndex = assetCount;
         }
         NSIndexSet *indexSet = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(startIndex, endIndex - startIndex)];
-        NSEnumerationOptions enumerationOptions = reverseIndices ? NSEnumerationConcurrent : NSEnumerationReverse;
+        NSEnumerationOptions enumerationOptions = reverseIndices ? NSEnumerationReverse : NSEnumerationConcurrent;
         [assetsFetchResult enumerateObjectsAtIndexes:indexSet options:enumerationOptions usingBlock:^(PHAsset *asset, NSUInteger idx, BOOL * _Nonnull stop) {
             [assets addObject:asset];
         }];

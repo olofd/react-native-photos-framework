@@ -100,7 +100,7 @@
     if(assetCount != 0) {
         if(reverseIndices) {
             int originalStartIndex = startIndex;
-            startIndex = assetCount - endIndex;
+            startIndex = (assetCount - endIndex) - 1;
             endIndex = assetCount - originalStartIndex;
         }
         if(startIndex < 0) {
@@ -110,10 +110,10 @@
             endIndex = 0;
         }
         if(startIndex >= assetCount) {
-            startIndex = assetCount -1;
+            startIndex = assetCount;
         }
         if(endIndex >= assetCount) {
-            endIndex = assetCount -1;
+            endIndex = assetCount;
         }
         NSIndexSet *indexSet = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(startIndex, endIndex - startIndex)];
         NSEnumerationOptions enumerationOptions = reverseIndices ? NSEnumerationConcurrent : NSEnumerationReverse;

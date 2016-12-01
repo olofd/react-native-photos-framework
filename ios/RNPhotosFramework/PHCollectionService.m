@@ -170,7 +170,8 @@ static id ObjectOrNull(id object)
                 }
                 
                 if(numberOfPreviewAssets > 0) {
-                   NSArray<NSDictionary *> *previewAssets = [PHAssetsService assetsArrayToUriArray:[PHAssetsService getAssetsForFetchResult:assets startIndex:0 endIndex:(numberOfPreviewAssets-1)] andIncludeMetaData:NO];
+                   BOOL reverseIndices = [RCTConvert BOOL:assetFetchParams[@"reverse"]];
+                   NSArray<NSDictionary *> *previewAssets = [PHAssetsService assetsArrayToUriArray:[PHAssetsService getAssetsForFetchResult:assets startIndex:0 endIndex:(numberOfPreviewAssets-1) andReverseIndices:reverseIndices] andIncludeMetaData:NO];
                     [albumDictionary setObject:previewAssets forKey:@"previewAssets"];
                 }
                 

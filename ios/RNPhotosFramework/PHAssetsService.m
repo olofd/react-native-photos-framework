@@ -93,19 +93,35 @@
     return dictToExtend;
 }
 
-+(NSMutableArray<PHAsset *> *) getAssetsForFetchResult:(PHFetchResult *)assetsFetchResult startIndex:(NSUInteger)startIndex endIndex:(NSUInteger)endIndex {
++(NSMutableArray<PHAsset *> *) getAssetsForFetchResult:(PHFetchResult *)assetsFetchResult startIndex:(int)startIndex endIndex:(int)endIndex andReverseIndices:(BOOL)reverseIndices {
     
     NSMutableArray<PHAsset *> *assets = [NSMutableArray new];
-    [assetsFetchResult enumerateObjectsUsingBlock:^(PHAsset *asset, NSUInteger index, BOOL *stop) {
-        if(index >= startIndex){
+    int assetCount = assetsFetchResult.count;
+    if(assetCount != 0) {
+        if(reverseIndices) {
+            int originalStartIndex = startIndex;
+            startIndex = assetCount - endIndex;
+            endIndex = assetCount - originalStartIndex;
+        }
+        if(startIndex < 0) {
+            startIndex = 0;
+        }
+        if(endIndex < 0) {
+            endIndex = 0;
+        }
+        if(startIndex >= assetCount) {
+            startIndex = assetCount -1;
+        }
+        if(endIndex >= assetCount) {
+            endIndex = assetCount -1;
+        }
+        NSIndexSet *indexSet = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(startIndex, endIndex - startIndex)];
+        NSEnumerationOptions enumerationOptions = reverseIndices ? NSEnumerationConcurrent : NSEnumerationReverse;
+        [assetsFetchResult enumerateObjectsAtIndexes:indexSet options:enumerationOptions usingBlock:^(PHAsset *asset, NSUInteger idx, BOOL * _Nonnull stop) {
             [assets addObject:asset];
-        }
-        if(index >= endIndex){
-            *stop = YES;
-            return;
-        }
-        
-    }];
+        }];
+    }
+
     return assets;
 }
 

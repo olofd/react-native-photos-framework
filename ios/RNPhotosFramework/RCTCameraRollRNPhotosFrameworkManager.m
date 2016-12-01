@@ -68,10 +68,11 @@ RCT_EXPORT_METHOD(getAssets:(NSDictionary *)params
     NSString *endIndexParam = params[@"endIndex"];
     BOOL includeMetaData = [RCTConvert BOOL:params[@"includeMetaData"]];
     
-    NSUInteger startIndex = [RCTConvert NSInteger:startIndexParam];
-    NSUInteger endIndex = endIndexParam != nil ? [RCTConvert NSInteger:endIndexParam] : (assetsFetchResult.count -1);
+    int startIndex = [RCTConvert int:startIndexParam];
+    int endIndex = endIndexParam != nil ? [RCTConvert int:endIndexParam] : (assetsFetchResult.count -1);
     
-    NSArray<PHAsset *> *assets = [PHAssetsService getAssetsForFetchResult:assetsFetchResult startIndex:startIndex endIndex:endIndex];
+    BOOL reverseIndices = [RCTConvert BOOL:params[@"reverse"]];
+    NSArray<PHAsset *> *assets = [PHAssetsService getAssetsForFetchResult:assetsFetchResult startIndex:startIndex endIndex:endIndex andReverseIndices:reverseIndices];
     [self prepareAssetsForDisplayWithParams:params andAssets:assets];
     NSInteger assetCount = assetsFetchResult.count;
     BOOL includesLastAsset = assetCount == 0 || endIndex >= (assetCount -1);

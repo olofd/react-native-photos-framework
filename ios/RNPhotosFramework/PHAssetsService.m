@@ -93,7 +93,7 @@
     return dictToExtend;
 }
 
-+(NSMutableArray<PHAsset *> *) getAssetsForFetchResult:(PHFetchResult *)assetsFetchResult startIndex:(int)startIndex endIndex:(int)endIndex assetDisplayStartToEnd:(BOOL)assetDisplayStartToEnd andAssetDisplayTopDown:(BOOL)assetDisplayTopDown {
++(NSMutableArray<PHAsset *> *) getAssetsForFetchResult:(PHFetchResult *)assetsFetchResult startIndex:(int)startIndex endIndex:(int)endIndex assetDisplayStartToEnd:(BOOL)assetDisplayStartToEnd andAssetDisplayBottomUp:(BOOL)assetDisplayBottomUp {
     NSMutableArray<PHAsset *> *assets = [NSMutableArray new];
     int assetCount = assetsFetchResult.count;
     if(assetCount != 0) {
@@ -119,8 +119,8 @@
             endIndex = assetCount;
         }
         NSIndexSet *indexSet = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(startIndex, endIndex - startIndex)];
-        // display assets from the top to bottom of page if assetDisplayTopDown is true
-        NSEnumerationOptions enumerationOptions = assetDisplayTopDown ? NSEnumerationConcurrent : NSEnumerationReverse;
+        // display assets from the top to bottom of page if assetDisplayBottomUp is true
+        NSEnumerationOptions enumerationOptions = assetDisplayBottomUp ? NSEnumerationReverse : NSEnumerationConcurrent;
         [assetsFetchResult enumerateObjectsAtIndexes:indexSet options:enumerationOptions usingBlock:^(PHAsset *asset, NSUInteger idx, BOOL * _Nonnull stop) {
             [assets addObject:asset];
         }];

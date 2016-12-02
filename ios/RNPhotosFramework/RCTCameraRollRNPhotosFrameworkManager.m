@@ -72,8 +72,8 @@ RCT_EXPORT_METHOD(getAssets:(NSDictionary *)params
     int endIndex = endIndexParam != nil ? [RCTConvert int:endIndexParam] : (assetsFetchResult.count -1);
     
     BOOL assetDisplayStartToEnd = [RCTConvert BOOL:params[@"assetDisplayStartToEnd"]];
-    BOOL assetDisplayTopDown = [RCTConvert BOOL:params[@"assetDisplayTopDown"]];
-    NSArray<PHAsset *> *assets = [PHAssetsService getAssetsForFetchResult:assetsFetchResult startIndex:startIndex endIndex:endIndex assetDisplayStartToEnd:assetDisplayStartToEnd andAssetDisplayTopDown:assetDisplayTopDown];
+    BOOL assetDisplayBottomUp = [RCTConvert BOOL:params[@"assetDisplayBottomUp"]];
+    NSArray<PHAsset *> *assets = [PHAssetsService getAssetsForFetchResult:assetsFetchResult startIndex:startIndex endIndex:endIndex assetDisplayStartToEnd:assetDisplayStartToEnd andAssetDisplayBottomUp:assetDisplayBottomUp];
     [self prepareAssetsForDisplayWithParams:params andAssets:assets];
     NSInteger assetCount = assetsFetchResult.count;
     BOOL includesLastAsset = assetCount == 0 || endIndex >= (assetCount -1);

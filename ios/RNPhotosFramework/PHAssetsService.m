@@ -119,7 +119,7 @@
             endIndex = assetCount;
         }
         NSIndexSet *indexSet = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(startIndex, endIndex - startIndex)];
-        // display assets from the top to bottom of page if assetDisplayBottomUp is true
+        // display assets from the bottom to top of page if assetDisplayBottomUp is true
         NSEnumerationOptions enumerationOptions = assetDisplayBottomUp ? NSEnumerationReverse : NSEnumerationConcurrent;
         [assetsFetchResult enumerateObjectsAtIndexes:indexSet options:enumerationOptions usingBlock:^(PHAsset *asset, NSUInteger idx, BOOL * _Nonnull stop) {
             [assets addObject:asset];

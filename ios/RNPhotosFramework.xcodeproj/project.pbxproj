@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		632D5ED31DF19458006A862C /* PHAssetsService_getAssetsForFetchResultTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 632D5ED21DF19458006A862C /* PHAssetsService_getAssetsForFetchResultTests.m */; };
+		632D5ED51DF19458006A862C /* libRNPhotosFramework.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 632F8C131DB758E7007E83E1 /* libRNPhotosFramework.a */; };
+		632D5EDD1DF19526006A862C /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 632D5EDC1DF19526006A862C /* libReact.a */; };
 		632F8C251DB75A4A007E83E1 /* PHCachingImageManagerInstance.m in Sources */ = {isa = PBXBuildFile; fileRef = 632F8C201DB75A4A007E83E1 /* PHCachingImageManagerInstance.m */; };
 		632F8C261DB75A4A007E83E1 /* RCTCameraRollRNPhotosFrameworkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 632F8C221DB75A4A007E83E1 /* RCTCameraRollRNPhotosFrameworkManager.m */; };
 		632F8C271DB75A4A007E83E1 /* RCTImageLoaderRNPhotosFramework.m in Sources */ = {isa = PBXBuildFile; fileRef = 632F8C241DB75A4A007E83E1 /* RCTImageLoaderRNPhotosFramework.m */; };
@@ -19,6 +22,16 @@
 		63A33AB11DBEA06C0022B5FF /* PHCollectionService.m in Sources */ = {isa = PBXBuildFile; fileRef = 63A33AB01DBEA06C0022B5FF /* PHCollectionService.m */; };
 		63C543481DC00BDA004BFE57 /* PHHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 63C543471DC00BDA004BFE57 /* PHHelpers.m */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		632D5ED61DF19458006A862C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 632F8C0B1DB758E6007E83E1 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 632F8C121DB758E6007E83E1;
+			remoteInfo = RNPhotosFramework;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		632F8C111DB758E6007E83E1 /* CopyFiles */ = {
@@ -33,6 +46,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		632D5ED01DF19458006A862C /* RNPhotosFrameworkTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RNPhotosFrameworkTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		632D5ED21DF19458006A862C /* PHAssetsService_getAssetsForFetchResultTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PHAssetsService_getAssetsForFetchResultTests.m; sourceTree = "<group>"; };
+		632D5ED41DF19458006A862C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		632D5EDC1DF19526006A862C /* libReact.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libReact.a; path = "../node_modules/react-native/React/build/Debug-iphoneos/libReact.a"; sourceTree = "<group>"; };
 		632F8C131DB758E7007E83E1 /* libRNPhotosFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNPhotosFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		632F8C1F1DB75A4A007E83E1 /* PHCachingImageManagerInstance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHCachingImageManagerInstance.h; sourceTree = "<group>"; };
 		632F8C201DB75A4A007E83E1 /* PHCachingImageManagerInstance.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHCachingImageManagerInstance.m; sourceTree = "<group>"; };
@@ -59,6 +76,15 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		632D5ECD1DF19458006A862C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				632D5EDD1DF19526006A862C /* libReact.a in Frameworks */,
+				632D5ED51DF19458006A862C /* libRNPhotosFramework.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		632F8C101DB758E6007E83E1 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -69,11 +95,30 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		632D5ED11DF19458006A862C /* RNPhotosFrameworkTests */ = {
+			isa = PBXGroup;
+			children = (
+				632D5ED21DF19458006A862C /* PHAssetsService_getAssetsForFetchResultTests.m */,
+				632D5ED41DF19458006A862C /* Info.plist */,
+			);
+			path = RNPhotosFrameworkTests;
+			sourceTree = "<group>";
+		};
+		632D5EDB1DF19525006A862C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				632D5EDC1DF19526006A862C /* libReact.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		632F8C0A1DB758E6007E83E1 = {
 			isa = PBXGroup;
 			children = (
 				632F8C151DB758E7007E83E1 /* RNPhotosFramework */,
+				632D5ED11DF19458006A862C /* RNPhotosFrameworkTests */,
 				632F8C141DB758E7007E83E1 /* Products */,
+				632D5EDB1DF19525006A862C /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -81,6 +126,7 @@
 			isa = PBXGroup;
 			children = (
 				632F8C131DB758E7007E83E1 /* libRNPhotosFramework.a */,
+				632D5ED01DF19458006A862C /* RNPhotosFrameworkTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -117,6 +163,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		632D5ECF1DF19458006A862C /* RNPhotosFrameworkTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 632D5EDA1DF19458006A862C /* Build configuration list for PBXNativeTarget "RNPhotosFrameworkTests" */;
+			buildPhases = (
+				632D5ECC1DF19458006A862C /* Sources */,
+				632D5ECD1DF19458006A862C /* Frameworks */,
+				632D5ECE1DF19458006A862C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				632D5ED71DF19458006A862C /* PBXTargetDependency */,
+			);
+			name = RNPhotosFrameworkTests;
+			productName = RNPhotosFrameworkTests;
+			productReference = 632D5ED01DF19458006A862C /* RNPhotosFrameworkTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		632F8C121DB758E6007E83E1 /* RNPhotosFramework */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 632F8C1C1DB758E7007E83E1 /* Build configuration list for PBXNativeTarget "RNPhotosFramework" */;
@@ -143,6 +207,11 @@
 				LastUpgradeCheck = 0800;
 				ORGANIZATIONNAME = "Olof Dahlbom";
 				TargetAttributes = {
+					632D5ECF1DF19458006A862C = {
+						CreatedOnToolsVersion = 8.1;
+						DevelopmentTeam = 5BEG6QJ94B;
+						ProvisioningStyle = Automatic;
+					};
 					632F8C121DB758E6007E83E1 = {
 						CreatedOnToolsVersion = 8.0;
 						DevelopmentTeam = 5BEG6QJ94B;
@@ -163,11 +232,30 @@
 			projectRoot = "";
 			targets = (
 				632F8C121DB758E6007E83E1 /* RNPhotosFramework */,
+				632D5ECF1DF19458006A862C /* RNPhotosFrameworkTests */,
 			);
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		632D5ECE1DF19458006A862C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
+		632D5ECC1DF19458006A862C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				632D5ED31DF19458006A862C /* PHAssetsService_getAssetsForFetchResultTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		632F8C0F1DB758E6007E83E1 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -188,7 +276,47 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		632D5ED71DF19458006A862C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 632F8C121DB758E6007E83E1 /* RNPhotosFramework */;
+			targetProxy = 632D5ED61DF19458006A862C /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		632D5ED81DF19458006A862C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEVELOPMENT_TEAM = 5BEG6QJ94B;
+				INFOPLIST_FILE = RNPhotosFrameworkTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lc++",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.olof.dahlbom.RNPhotosFrameworkTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		632D5ED91DF19458006A862C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEVELOPMENT_TEAM = 5BEG6QJ94B;
+				INFOPLIST_FILE = RNPhotosFrameworkTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lc++",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.olof.dahlbom.RNPhotosFrameworkTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 		632F8C1A1DB758E7007E83E1 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -312,6 +440,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		632D5EDA1DF19458006A862C /* Build configuration list for PBXNativeTarget "RNPhotosFrameworkTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				632D5ED81DF19458006A862C /* Debug */,
+				632D5ED91DF19458006A862C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		632F8C0E1DB758E6007E83E1 /* Build configuration list for PBXProject "RNPhotosFramework" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

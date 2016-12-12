@@ -414,6 +414,7 @@
 					"$(SRCROOT)/../../gotlandskartan/app/node_modules/react-native/Libraries/Image",
 					"$(SRCROOT)/../../react-native/React/**",
 					"$(SRCROOT)/../../react-native/Libraries/Image",
+					"$(SRCROOT)/../example/node_modules/react-native/React/**",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -430,6 +431,7 @@
 					"$(SRCROOT)/../../gotlandskartan/app/node_modules/react-native/Libraries/Image",
 					"$(SRCROOT)/../../react-native/React/**",
 					"$(SRCROOT)/../../react-native/Libraries/Image",
+					"$(SRCROOT)/../example/node_modules/react-native/React/**",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";

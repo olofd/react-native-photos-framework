@@ -118,9 +118,19 @@
         if(endIndex >= assetCount) {
             endIndex = assetCount;
         }
-        NSIndexSet *indexSet = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(startIndex, endIndex - startIndex)];
+        int indexRangeLength = endIndex - startIndex;
+        // adjust range length calculation if original and active index are 0
+        if(originalStartIndex == 0 && startIndex == 0){
+            indexRangeLength = (endIndex - startIndex) + 1;
+        }
+        if(indexRangeLength >= assetCount){
+            indexRangeLength = assetCount;
+        }
+        NSIndexSet *indexSet = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(startIndex, indexRangeLength)];
+        NSEnumerationOptions enumerationOptionsStartToEnd = assetDisplayBottomUp ? NSEnumerationReverse : NSEnumerationConcurrent;
+        NSEnumerationOptions enumerationOptionsEndToStart = assetDisplayBottomUp ? NSEnumerationConcurrent : NSEnumerationReverse;
         // display assets from the bottom to top of page if assetDisplayBottomUp is true
-        NSEnumerationOptions enumerationOptions = assetDisplayBottomUp ? NSEnumerationConcurrent : NSEnumerationReverse;
+        NSEnumerationOptions enumerationOptions = assetDisplayStartToEnd ? enumerationOptionsStartToEnd : enumerationOptionsEndToStart;
         [assetsFetchResult enumerateObjectsAtIndexes:indexSet options:enumerationOptions usingBlock:^(PHAsset *asset, NSUInteger idx, BOOL * _Nonnull stop) {
             [assets addObject:asset];
         }];

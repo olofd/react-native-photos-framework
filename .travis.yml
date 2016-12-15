@@ -11,7 +11,7 @@ install:
   - nvm install 5
   - wget https://github.com/yarnpkg/yarn/releases/download/v0.16.0/yarn-0.16.0.js
   - export yarn="node $(pwd)/yarn-0.16.0.js"
-  - cd example && $yarn install
+  - cd example && $yarn install && cd ..
 
 script:
   - if [[ "$TEST_TYPE" = objc-ios ]]; then make test; fi

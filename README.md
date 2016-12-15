@@ -1,5 +1,4 @@
-# react-native-photos-framework [![Build Status](https://travis-ci.org/facebook/react-native.svg?branch=master)](https://travis-ci.org/facebook/react-native) [![Circle CI](https://circleci.com/gh/facebook/react-native.svg?style=svg)](https://circleci.com/gh/facebook/react-native) [![npm version](https://badge.fury.io/js/react-native.svg)](https://badge.fury.io/js/react-native)
-
+# react-native-photos-framework [![Build Status](https://travis-ci.org/olofd/react-native-photos-framework.svg?branch=add-reverse-option-stable)](https://travis-ci.org/olofd/react-native-photos-framework) [![npm version](https://badge.fury.io/js/react-native-photos-framework.svg)](https://badge.fury.io/js/react-native-photos-framework)
 
 ###Example project
 ####NOTE: This is not a GUI-component, it's an API. The example project just shows off some of the the capabilities of this API.

@@ -111,6 +111,8 @@ import RNPhotosFramework from 'react-native-photos-framework';
 | includeMetaData | false | `boolean` | Include a lot of meta data about the asset (See below). You can also choose to get this metaData at a later point by calling asset.getMetaData (See below) |
 | prepareForSizeDisplay | - | `Rect(width, height)` | The size of the image you soon will display after running the query. This is highly optional and only there for optimizations of big lists. Prepares the images for display in Photos by using PHCachingImageManager |
 | prepareScale | 2.0 | `number` | The scale to prepare the image in. |
+| assetDisplayStartToEnd | false | `boolean` | Retrieves assets from the beginning of the library when set to true. Using this sorting option preserves the native order of assets as they are viewed in the Photos app.  |
+| assetDisplayBottomUp | false | `boolean` | Used to arrange assets from the bottom to top of screen when scrolling up to view paginated results. |
 
 ###Example of asset response with `includeMetaData : true`
 ~~~~

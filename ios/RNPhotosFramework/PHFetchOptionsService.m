@@ -34,7 +34,6 @@
         return nil;
     }
     NSDictionary *params = [RCTConvert NSDictionary:outerParams[@"fetchOptions"]];
-    BOOL excludeEmptyAlbums = [RCTConvert BOOL:params[@"excludeEmptyAlbums"]];
     PHFetchOptions *options = [[PHFetchOptions alloc] init];
     options = [self getCommonFetchOptionsFromParams:params andFetchOptions:options];
     if(options.sortDescriptors == nil || options.sortDescriptors.count == 0) {
@@ -100,7 +99,7 @@
 }
 
 +(NSPredicate *) getMediaTypePredicate:(NSDictionary *)params {
-    NSMutableArray * mediaTypes = [RCTConvert PHAssetMediaTypes:params[@"mediaTypes"]];
+    NSArray<NSNumber *> * mediaTypes = [RCTConvert PHAssetMediaTypes:params[@"mediaTypes"]];
     if(mediaTypes == nil) {
         return nil;
     }

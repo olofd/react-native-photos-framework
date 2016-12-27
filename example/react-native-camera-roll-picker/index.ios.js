@@ -166,8 +166,30 @@ export default class ReactNativeCameraRollPicker extends Component {
     });
   }
 
+  insertLocalImage() {
+    RNPhotosFramework.createAssets({
+      images: [
+        {
+          uri: 'testimage.jpg'
+        }
+      ]
+    }).then((assets) => {
+      this
+        .props
+        .album
+        .addAssets(assets)
+        .then((status) => {});
+    });
+  }
+
   downloadDialog() {
     AlertIOS.alert('Add media', 'Select what to add:', [
+      {
+        text: 'Insert local image',
+        onPress: this
+          .insertLocalImage
+          .bind(this)
+      },
       {
         text: '5 random photos',
         onPress: this

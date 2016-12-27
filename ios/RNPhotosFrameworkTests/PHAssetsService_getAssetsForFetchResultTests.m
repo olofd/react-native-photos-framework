@@ -47,21 +47,26 @@ NSMutableArray *scenarioAssets;
     XCTAssertTrue(resultNoNo.count == 10);
 }
 
+-(int) assetAsInt:(PHAssetWithCollectionIndex *)assetWithIndex{
+    return [(NSNumber *)[assetWithIndex asset] intValue];
+}
+
 //Testing scenarios from : https://github.com/olofd/react-native-photos-framework/pull/11#issuecomment-264324873
 -(void) testOrderScenarioOne {
     // load assets from newest to oldest from the top to bottom of screen
     // this is default behavior
-    NSArray <NSNumber *> *result = [PHAssetsService getAssetsForFetchResult:scenarioAssets startIndex:0 endIndex:2 assetDisplayStartToEnd:NO andAssetDisplayBottomUp:NO];
+    NSArray <PHAssetWithCollectionIndex *> *result = [PHAssetsService getAssetsForFetchResult:scenarioAssets startIndex:0 endIndex:2 assetDisplayStartToEnd:NO andAssetDisplayBottomUp:NO];
     
     XCTAssertEqual(result.count, 3);
-    XCTAssertEqual([result[0] intValue], 2016);
-    XCTAssertEqual([result[1] intValue], 2015);
-    XCTAssertEqual([result[2] intValue], 2014);
+    
+    XCTAssertEqual([self assetAsInt:result[0]], 2016);
+    XCTAssertEqual([self assetAsInt:result[1]], 2015);
+    XCTAssertEqual([self assetAsInt:result[2]], 2014);
     //scrolling down will load
     result = [PHAssetsService getAssetsForFetchResult:scenarioAssets startIndex:3 endIndex:5 assetDisplayStartToEnd:NO andAssetDisplayBottomUp:NO];
     XCTAssertEqual(result.count, 2);
-    XCTAssertEqual([result[0] intValue], 2013);
-    XCTAssertEqual([result[1] intValue], 2012);
+    XCTAssertEqual([self assetAsInt:result[0]], 2013);
+    XCTAssertEqual([self assetAsInt:result[1]], 2012);
 }
 
 -(void) testOrderScenarioTwo {
@@ -69,14 +74,14 @@ NSMutableArray *scenarioAssets;
     NSArray <NSNumber *> *result = [PHAssetsService getAssetsForFetchResult:scenarioAssets startIndex:0 endIndex:2 assetDisplayStartToEnd:NO andAssetDisplayBottomUp:YES];
     
     XCTAssertEqual(result.count, 3);
-    XCTAssertEqual([result[0] intValue], 2014);
-    XCTAssertEqual([result[1] intValue], 2015);
-    XCTAssertEqual([result[2] intValue], 2016);
+    XCTAssertEqual([self assetAsInt:result[0]], 2014);
+    XCTAssertEqual([self assetAsInt:result[1]], 2015);
+    XCTAssertEqual([self assetAsInt:result[2]], 2016);
     //scrolling down will load
     result = [PHAssetsService getAssetsForFetchResult:scenarioAssets startIndex:3 endIndex:5 assetDisplayStartToEnd:NO andAssetDisplayBottomUp:YES];
     XCTAssertEqual(result.count, 2);
-    XCTAssertEqual([result[0] intValue], 2012);
-    XCTAssertEqual([result[1] intValue], 2013);
+    XCTAssertEqual([self assetAsInt:result[0]], 2012);
+    XCTAssertEqual([self assetAsInt:result[1]], 2013);
 }
 
 -(void) testOrderScenarioThree {
@@ -84,14 +89,14 @@ NSMutableArray *scenarioAssets;
     NSArray <NSNumber *> *result = [PHAssetsService getAssetsForFetchResult:scenarioAssets startIndex:0 endIndex:2 assetDisplayStartToEnd:YES andAssetDisplayBottomUp:NO];
     
     XCTAssertEqual(result.count, 3);
-    XCTAssertEqual([result[0] intValue], 2012);
-    XCTAssertEqual([result[1] intValue], 2013);
-    XCTAssertEqual([result[2] intValue], 2014);
+    XCTAssertEqual([self assetAsInt:result[0]], 2012);
+    XCTAssertEqual([self assetAsInt:result[1]], 2013);
+    XCTAssertEqual([self assetAsInt:result[2]], 2014);
     //scrolling up will load
     result = [PHAssetsService getAssetsForFetchResult:scenarioAssets startIndex:3 endIndex:5 assetDisplayStartToEnd:YES andAssetDisplayBottomUp:NO];
     XCTAssertEqual(result.count, 2);
-    XCTAssertEqual([result[0] intValue], 2015);
-    XCTAssertEqual([result[1] intValue], 2016);
+    XCTAssertEqual([self assetAsInt:result[0]], 2015);
+    XCTAssertEqual([self assetAsInt:result[1]], 2016);
 }
 
 -(void) testOrderScenarioFour {
@@ -99,14 +104,14 @@ NSMutableArray *scenarioAssets;
     NSArray <NSNumber *> *result = [PHAssetsService getAssetsForFetchResult:scenarioAssets startIndex:0 endIndex:2 assetDisplayStartToEnd:YES andAssetDisplayBottomUp:YES];
     
     XCTAssertEqual(result.count, 3);
-    XCTAssertEqual([result[0] intValue], 2014);
-    XCTAssertEqual([result[1] intValue], 2013);
-    XCTAssertEqual([result[2] intValue], 2012);
+    XCTAssertEqual([self assetAsInt:result[0]], 2014);
+    XCTAssertEqual([self assetAsInt:result[1]], 2013);
+    XCTAssertEqual([self assetAsInt:result[2]], 2012);
     //scrolling up will load
     result = [PHAssetsService getAssetsForFetchResult:scenarioAssets startIndex:3 endIndex:5 assetDisplayStartToEnd:YES andAssetDisplayBottomUp:YES];
     XCTAssertEqual(result.count, 2);
-    XCTAssertEqual([result[0] intValue], 2016);
-    XCTAssertEqual([result[1] intValue], 2015);
+    XCTAssertEqual([self assetAsInt:result[0]], 2016);
+    XCTAssertEqual([self assetAsInt:result[1]], 2015);
 }
 
 @end

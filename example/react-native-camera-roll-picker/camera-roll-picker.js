@@ -59,6 +59,7 @@ class CameraRollPicker extends Component {
       .props
       .album
       .onChange((changeDetails, update, unsubscribe) => {
+        console.log(changeDetails, update);
         this.state.images = update(this.state.images);
         this.state.dataSource = this
           .state
@@ -86,10 +87,11 @@ class CameraRollPicker extends Component {
         startIndex: this.state.images.length,
         endIndex: this.state.images.length + 20,
         fetchOptions: {},
-        reverse : true
-
-      }, true)
+        assetDisplayBottomUp : false,
+        assetDisplayStartToEnd : false
+      })
       .then((data) => {
+        console.log(data);
         simple_timer.stop('fetch_timer');
         console.log('react-native-photos-framework fetch request took %s milliseconds.', simple_timer.get('fetch_timer').delta)
         this._appendImages(data);

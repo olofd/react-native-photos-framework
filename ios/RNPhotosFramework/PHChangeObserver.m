@@ -7,15 +7,6 @@
 #import "PHAssetsService.h"
 @implementation PHChangeObserver
 
-static id ObjectOrNull(id object)
-{
-    return object ?: [NSNull null];
-}
-
--(void) receiveTestNotification:(NSNotification*)notification {
-    NSLog(@"onRestart");
-}
-
 + (PHChangeObserver *)sharedChangeObserver {
     static PHChangeObserver *sharedChangeObserver = nil;
     static dispatch_once_t onceToken;
@@ -55,11 +46,11 @@ static id ObjectOrNull(id object)
                 BOOL trackInsertsAndDeletes = [RCTConvert BOOL:cachedFetchResult.originalFetchParams[@"trackInsertsAndDeletes"]];
                 BOOL trackChanges = [RCTConvert BOOL:cachedFetchResult.originalFetchParams[@"trackChanges"]];
                 
-                NSMutableArray *removedLocalIdentifiers = [NSNull null];
-                NSArray *removedIndexes = [NSNull null];
+                NSMutableArray *removedLocalIdentifiers = (NSMutableArray *)[NSNull null];
+                NSArray *removedIndexes = (NSArray *)[NSNull null];
                 
-                NSMutableArray *insertedObjects = [NSNull null];
-                NSArray *insertedIndexes = [NSNull null];
+                NSMutableArray *insertedObjects = (NSMutableArray *)[NSNull null];
+                NSArray *insertedIndexes = (NSArray *)[NSNull null];
                 
                 if(trackInsertsAndDeletes) {
                     removedLocalIdentifiers = [NSMutableArray arrayWithCapacity:changeDetails.removedObjects.count];
@@ -81,7 +72,7 @@ static id ObjectOrNull(id object)
                         PHObject *object = (PHObject *)[changeDetails.insertedObjects objectAtIndex:i];
                         if([object isKindOfClass:[PHCollection class]]) {
                             PHCollection *collection = (PHCollection *)object;
-                            NSMutableDictionary *insertedObject = [[[PHCollectionService generateAlbumsResponseFromParams:cachedFetchResult.originalFetchParams andAlbums:@[collection] andCacheAssets:NO] objectForKey:@"albums"]
+                            NSMutableDictionary *insertedObject = [[[PHCollectionService generateAlbumsResponseFromParams:cachedFetchResult.originalFetchParams andAlbums:(PHFetchResult *)@[collection] andCacheAssets:NO] objectForKey:@"albums"]
                                                                    objectAtIndex:0];
                             [insertedObjects addObject:@{
                                                          @"index" : [insertedIndexes objectAtIndex:i],
@@ -90,8 +81,7 @@ static id ObjectOrNull(id object)
                         }
                         
                         if([object isKindOfClass:[PHAsset class]]) {
-                            PHAsset *asset = (PHAsset *)object;
-                            NSMutableDictionary *insertedObject = [[PHAssetsService assetsArrayToUriArray:@[object] andIncludeMetaData:[RCTConvert BOOL:cachedFetchResult.originalFetchParams[@"includeMetaData"]]] objectAtIndex:0];
+                            NSDictionary *insertedObject = [[PHAssetsService assetsArrayToUriArray:@[object] andIncludeMetaData:[RCTConvert BOOL:cachedFetchResult.originalFetchParams[@"includeMetaData"]]] objectAtIndex:0];
                             [insertedObjects addObject:@{
                                                          @"index" : [insertedIndexes objectAtIndex:i],
                                                          @"obj" : insertedObject
@@ -100,8 +90,8 @@ static id ObjectOrNull(id object)
                     }
                 }
                 
-                NSMutableArray *changedObjects = [NSNull null];
-                NSArray *changedIndexes = [NSNull null];
+                NSMutableArray *changedObjects = (NSMutableArray *)[NSNull null];
+                NSArray *changedIndexes = (NSArray *)[NSNull null];
                 if(trackChanges) {
                     changedObjects = [NSMutableArray arrayWithCapacity:changeDetails.changedObjects.count];
                     changedIndexes = [self indexSetToReturnableArray:changeDetails.changedIndexes];
@@ -110,7 +100,7 @@ static id ObjectOrNull(id object)
                         PHObject *object = (PHObject *)[changeDetails.changedObjects objectAtIndex:i];
                         if([object isKindOfClass:[PHCollection class]]) {
                             PHCollection *collection = (PHCollection *)object;
-                            NSMutableDictionary *changedObject = [[[PHCollectionService generateAlbumsResponseFromParams:cachedFetchResult.originalFetchParams andAlbums:@[collection] andCacheAssets:NO] objectForKey:@"albums"] objectAtIndex:0];
+                            NSMutableDictionary *changedObject = [[[PHCollectionService generateAlbumsResponseFromParams:cachedFetchResult.originalFetchParams andAlbums:(PHFetchResult *)@[collection] andCacheAssets:NO] objectForKey:@"albums"] objectAtIndex:0];
                             [changedObjects addObject:@{
                                                         @"index" : [changedIndexes objectAtIndex:i],
                                                         @"obj" : changedObject
@@ -119,8 +109,7 @@ static id ObjectOrNull(id object)
                         }
                         
                         if([object isKindOfClass:[PHAsset class]]) {
-                            PHAsset *asset = (PHAsset *)object;
-                            NSMutableDictionary *changedObject = [[PHAssetsService assetsArrayToUriArray:@[object] andIncludeMetaData:[RCTConvert BOOL:cachedFetchResult.originalFetchParams[@"includeMetaData"]]] objectAtIndex:0];
+                            NSDictionary *changedObject = [[PHAssetsService assetsArrayToUriArray:@[object] andIncludeMetaData:[RCTConvert BOOL:cachedFetchResult.originalFetchParams[@"includeMetaData"]]] objectAtIndex:0];
                             [changedObjects addObject:@{
                                                         @"index" : [changedIndexes objectAtIndex:i],
                                                         @"obj" : changedObject
@@ -131,7 +120,7 @@ static id ObjectOrNull(id object)
                 }
                 
                 if(trackInsertsAndDeletes || trackChanges) {
-                    NSMutableArray *moves = [NSNull null];
+                    NSMutableArray *moves = (NSMutableArray *)[NSNull null];
                     if(changeDetails.hasMoves) {
                         moves = [NSMutableArray new];
                         [changeDetails enumerateMovesWithBlock:^(NSUInteger fromIndex, NSUInteger toIndex) {
@@ -140,15 +129,15 @@ static id ObjectOrNull(id object)
                         }];
                     }
                     
-                    BOOL hasMoves = moves != [NSNull null] && moves.count != 0;
+                    BOOL hasMoves = ![moves isEqual:[NSNull null]] && moves.count != 0;
                     
                     BOOL shouldNotifyForInsertOrDelete = ((
-                                                           (insertedIndexes != [NSNull null] && insertedIndexes.count != 0) ||
-                                                           (removedIndexes != [NSNull null] && removedIndexes.count != 0) ||
+                                                           (![insertedIndexes isEqual:[NSNull null]] && insertedIndexes.count != 0) ||
+                                                           (![removedIndexes isEqual:[NSNull null]] && removedIndexes.count != 0) ||
                                                            hasMoves) && trackInsertsAndDeletes);
                     
                     BOOL shouldNotifyForChange = ((
-                                                   (changedIndexes != [NSNull null] && changedIndexes.count != 0) ||
+                                                   (![changedIndexes isEqual:[NSNull null]] && changedIndexes.count != 0) ||
                                                    hasMoves) && trackChanges);
                     
                     if(shouldNotifyForInsertOrDelete || shouldNotifyForChange){
@@ -179,7 +168,7 @@ static id ObjectOrNull(id object)
 }
 
 -(NSArray *)indexSetToReturnableArray:(NSIndexSet *)inputIndexSet {
-    NSMutableArray *indexArray = [NSNull null];
+    NSMutableArray *indexArray = (NSMutableArray *)[NSNull null];
     if(inputIndexSet) {
         indexArray = [NSMutableArray arrayWithCapacity:inputIndexSet.count];
         [inputIndexSet enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL *stop) {

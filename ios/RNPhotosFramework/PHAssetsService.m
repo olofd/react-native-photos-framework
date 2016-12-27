@@ -7,6 +7,7 @@
 #import "RCTConvert.h"
 #import "RCTConvert+RNPhotosFramework.h"
 #import "RCTProfile.h"
+#import "PHAssetWithCollectionIndex.h"
 
 @import Photos;
 @implementation PHAssetsService
@@ -54,14 +55,30 @@
     return [PHAsset fetchAssetsWithOptions:options];
 }
 
-+(NSArray<NSDictionary *> *) assetsArrayToUriArray:(NSArray<PHAsset *> *)assetsArray andIncludeMetaData:(BOOL)includeMetaData {
++(NSArray<NSDictionary *> *) assetsArrayToUriArray:(NSArray<id> *)assetsArray andIncludeMetaData:(BOOL)includeMetaData {
     RCT_PROFILE_BEGIN_EVENT(0, @"-[RCTCameraRollRNPhotosFrameworkManager assetsArrayToUriArray", nil);
 
     NSMutableArray *uriArray = [NSMutableArray arrayWithCapacity:assetsArray.count];
     NSDictionary *reveredMediaTypes = [RCTConvert PHAssetMediaTypeValuesReversed];
     for(int i = 0;i < assetsArray.count; i++) {
-        PHAsset *asset = [assetsArray objectAtIndex:i];
-        NSMutableDictionary *responseDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:[asset localIdentifier], @"localIdentifier", @([asset pixelWidth]), @"width", @([asset pixelHeight]), @"height", [reveredMediaTypes objectForKey:@([asset mediaType])], @"mediaType", nil];
+        id assetObj = [assetsArray objectAtIndex:i];
+        NSNumber *assetIndex = (NSNumber *)[NSNull null];
+        PHAsset *asset;
+        if([assetObj isKindOfClass:[PHAsset class]]) {
+            asset = assetObj;
+        }else {
+            PHAssetWithCollectionIndex *assetWithCollectionIndex = assetObj;
+            asset = assetWithCollectionIndex.asset;
+            assetIndex = assetWithCollectionIndex.collectionIndex;
+        }
+
+        NSMutableDictionary *responseDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+                                             [asset localIdentifier], @"localIdentifier",
+                                             @([asset pixelWidth]), @"width",
+                                             @([asset pixelHeight]), @"height",
+                                             [reveredMediaTypes objectForKey:@([asset mediaType])], @"mediaType",
+                                             assetIndex, @"collectionIndex",
+                                             nil];
         if(includeMetaData) {
             [self extendAssetDicWithAssetMetaData:responseDict andPHAsset:asset];
         }
@@ -93,10 +110,29 @@
     return dictToExtend;
 }
 
-+(NSMutableArray<PHAsset *> *) getAssetsForFetchResult:(PHFetchResult *)assetsFetchResult startIndex:(int)startIndex endIndex:(int)endIndex assetDisplayStartToEnd:(BOOL)assetDisplayStartToEnd andAssetDisplayBottomUp:(BOOL)assetDisplayBottomUp {
-    NSMutableArray<PHAsset *> *assets = [NSMutableArray new];
-    int assetCount = assetsFetchResult.count;
++(NSMutableArray<PHAssetWithCollectionIndex*> *) getAssetsForFetchResult:(PHFetchResult *)assetsFetchResult startIndex:(int)startIndex endIndex:(int)endIndex assetDisplayStartToEnd:(BOOL)assetDisplayStartToEnd andAssetDisplayBottomUp:(BOOL)assetDisplayBottomUp {
+    
+    NSMutableArray<PHAssetWithCollectionIndex *> *assets = [NSMutableArray new];
+    int assetCount = (int)assetsFetchResult.count;
+    
     if(assetCount != 0) {
+        
+        NSIndexSet *indexSet = [self getIndexSetForAssetEnumerationWithAssetCount:(int)assetsFetchResult.count startIndex:startIndex endIndex:endIndex assetDisplayStartToEnd:assetDisplayStartToEnd];
+        
+        NSEnumerationOptions enumerationOptionsStartToEnd = assetDisplayBottomUp ? NSEnumerationReverse : NSEnumerationConcurrent;
+        NSEnumerationOptions enumerationOptionsEndToStart = assetDisplayBottomUp ? NSEnumerationConcurrent : NSEnumerationReverse;
+        // display assets from the bottom to top of page if assetDisplayBottomUp is true
+        NSEnumerationOptions enumerationOptions = assetDisplayStartToEnd ? enumerationOptionsStartToEnd : enumerationOptionsEndToStart;
+        
+        [assetsFetchResult enumerateObjectsAtIndexes:indexSet options:enumerationOptions usingBlock:^(PHAsset *asset, NSUInteger idx, BOOL * _Nonnull stop) {
+            [assets addObject:[[PHAssetWithCollectionIndex alloc] initWithAsset:asset andCollectionIndex:@(idx)]];
+        }];
+    }
+
+    return assets;
+}
+
++(NSIndexSet *) getIndexSetForAssetEnumerationWithAssetCount:(int)assetCount startIndex:(int)startIndex endIndex:(int)endIndex assetDisplayStartToEnd:(BOOL)assetDisplayStartToEnd {
         int originalStartIndex = startIndex;
         int originalEndIndex = endIndex;
         startIndex = (assetCount - endIndex) - 1;
@@ -126,20 +162,10 @@
         if(indexRangeLength >= assetCount){
             indexRangeLength = assetCount;
         }
-        NSIndexSet *indexSet = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(startIndex, indexRangeLength)];
-        NSEnumerationOptions enumerationOptionsStartToEnd = assetDisplayBottomUp ? NSEnumerationReverse : NSEnumerationConcurrent;
-        NSEnumerationOptions enumerationOptionsEndToStart = assetDisplayBottomUp ? NSEnumerationConcurrent : NSEnumerationReverse;
-        // display assets from the bottom to top of page if assetDisplayBottomUp is true
-        NSEnumerationOptions enumerationOptions = assetDisplayStartToEnd ? enumerationOptionsStartToEnd : enumerationOptionsEndToStart;
-        [assetsFetchResult enumerateObjectsAtIndexes:indexSet options:enumerationOptions usingBlock:^(PHAsset *asset, NSUInteger idx, BOOL * _Nonnull stop) {
-            [assets addObject:asset];
-        }];
-    }
-
-    return assets;
+        return [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(startIndex, indexRangeLength)];
 }
 
-+(void)deleteAssets:(NSArray<PHAsset *> *)assetsToDelete andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error, NSArray<NSString *> * localIdentifiers))completeBlock {
++(void)deleteAssets:(PHFetchResult<PHAsset *> *)assetsToDelete andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error, NSArray<NSString *> * localIdentifiers))completeBlock {
     __block NSMutableArray<NSString *> *deletedAssetsLocalIdentifers = [NSMutableArray arrayWithCapacity:assetsToDelete.count];
     [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
         for(int i = 0; i< assetsToDelete.count; i++) {
@@ -178,7 +204,7 @@
          if ([info objectForKey:@"PHImageFileURLKey"]) {
              // path looks like this -
              // file:///var/mobile/Media/DCIM/###APPLE/IMG_####.JPG
-             NSURL *path = [info objectForKey:@"PHImageFileURLKey"];
+             //NSURL *path = [info objectForKey:@"PHImageFileURLKey"];
          }
      }];
 }

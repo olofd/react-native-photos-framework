@@ -143,9 +143,9 @@ RCT_ENUM_CONVERTER_WITH_REVERSED(PHAssetSourceType, (@{
 
 +(int) PHAssetSourceTypes:(NSArray<NSString *> *)arrayWithSourceTypeStrings {
     if(arrayWithSourceTypeStrings.count == 0){
-        return nil;
+        return PHAssetSourceTypeNone;
     }
-    int sourceTypes;
+    int sourceTypes = 0;
     for(int i = 0; i < arrayWithSourceTypeStrings.count;i++) {
         PHAssetSourceType sourceType = [RCTConvert PHAssetSourceType:[arrayWithSourceTypeStrings objectAtIndex:i]];
         sourceTypes = sourceTypes | sourceType;

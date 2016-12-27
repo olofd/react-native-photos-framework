@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6302902D1E0C7A1900A39835 /* PHAssetWithCollectionIndex.m in Sources */ = {isa = PBXBuildFile; fileRef = 6302902C1E0C7A1900A39835 /* PHAssetWithCollectionIndex.m */; };
 		632D5ED31DF19458006A862C /* PHAssetsService_getAssetsForFetchResultTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 632D5ED21DF19458006A862C /* PHAssetsService_getAssetsForFetchResultTests.m */; };
 		632D5ED51DF19458006A862C /* libRNPhotosFramework.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 632F8C131DB758E7007E83E1 /* libRNPhotosFramework.a */; };
 		632D5EDD1DF19526006A862C /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 632D5EDC1DF19526006A862C /* libReact.a */; };
@@ -14,6 +15,7 @@
 		632F8C261DB75A4A007E83E1 /* RCTCameraRollRNPhotosFrameworkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 632F8C221DB75A4A007E83E1 /* RCTCameraRollRNPhotosFrameworkManager.m */; };
 		632F8C271DB75A4A007E83E1 /* RCTImageLoaderRNPhotosFramework.m in Sources */ = {isa = PBXBuildFile; fileRef = 632F8C241DB75A4A007E83E1 /* RCTImageLoaderRNPhotosFramework.m */; };
 		6342E0701DC346E300F7765E /* PHSaveAssetRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 6342E06F1DC346E300F7765E /* PHSaveAssetRequest.m */; };
+		63880A7B1E1281F3007532B2 /* RCTConvert+RNPhotosFrameworkTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 63880A7A1E1281F3007532B2 /* RCTConvert+RNPhotosFrameworkTests.m */; };
 		639BE3591DB82A7C00A2BE6F /* RCTConvert+RNPhotosFramework.m in Sources */ = {isa = PBXBuildFile; fileRef = 639BE3581DB82A7C00A2BE6F /* RCTConvert+RNPhotosFramework.m */; };
 		639BE3661DBB902E00A2BE6F /* PHChangeObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 639BE3651DBB902E00A2BE6F /* PHChangeObserver.m */; };
 		63A33AA51DBE94350022B5FF /* RCTCachedFetchResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 63A33AA41DBE94350022B5FF /* RCTCachedFetchResult.m */; };
@@ -46,6 +48,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		6302902B1E0C7A1900A39835 /* PHAssetWithCollectionIndex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHAssetWithCollectionIndex.h; sourceTree = "<group>"; };
+		6302902C1E0C7A1900A39835 /* PHAssetWithCollectionIndex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHAssetWithCollectionIndex.m; sourceTree = "<group>"; };
 		632D5ED01DF19458006A862C /* RNPhotosFrameworkTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RNPhotosFrameworkTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		632D5ED21DF19458006A862C /* PHAssetsService_getAssetsForFetchResultTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PHAssetsService_getAssetsForFetchResultTests.m; sourceTree = "<group>"; };
 		632D5ED41DF19458006A862C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -59,6 +63,7 @@
 		632F8C241DB75A4A007E83E1 /* RCTImageLoaderRNPhotosFramework.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageLoaderRNPhotosFramework.m; sourceTree = "<group>"; };
 		6342E06E1DC346E300F7765E /* PHSaveAssetRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHSaveAssetRequest.h; sourceTree = "<group>"; };
 		6342E06F1DC346E300F7765E /* PHSaveAssetRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHSaveAssetRequest.m; sourceTree = "<group>"; };
+		63880A7A1E1281F3007532B2 /* RCTConvert+RNPhotosFrameworkTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+RNPhotosFrameworkTests.m"; sourceTree = "<group>"; };
 		639BE3571DB82A7C00A2BE6F /* RCTConvert+RNPhotosFramework.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RCTConvert+RNPhotosFramework.h"; sourceTree = "<group>"; };
 		639BE3581DB82A7C00A2BE6F /* RCTConvert+RNPhotosFramework.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+RNPhotosFramework.m"; sourceTree = "<group>"; };
 		639BE3641DBB902E00A2BE6F /* PHChangeObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHChangeObserver.h; sourceTree = "<group>"; };
@@ -100,6 +105,7 @@
 			children = (
 				632D5ED21DF19458006A862C /* PHAssetsService_getAssetsForFetchResultTests.m */,
 				632D5ED41DF19458006A862C /* Info.plist */,
+				63880A7A1E1281F3007532B2 /* RCTConvert+RNPhotosFrameworkTests.m */,
 			);
 			path = RNPhotosFrameworkTests;
 			sourceTree = "<group>";
@@ -156,6 +162,8 @@
 				6342E06F1DC346E300F7765E /* PHSaveAssetRequest.m */,
 				63A33AA31DBE94350022B5FF /* RCTCachedFetchResult.h */,
 				63A33AA41DBE94350022B5FF /* RCTCachedFetchResult.m */,
+				6302902B1E0C7A1900A39835 /* PHAssetWithCollectionIndex.h */,
+				6302902C1E0C7A1900A39835 /* PHAssetWithCollectionIndex.m */,
 			);
 			path = RNPhotosFramework;
 			sourceTree = "<group>";
@@ -253,6 +261,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				632D5ED31DF19458006A862C /* PHAssetsService_getAssetsForFetchResultTests.m in Sources */,
+				63880A7B1E1281F3007532B2 /* RCTConvert+RNPhotosFrameworkTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -263,6 +272,7 @@
 				632F8C251DB75A4A007E83E1 /* PHCachingImageManagerInstance.m in Sources */,
 				63A33AAE1DBE9DB80022B5FF /* PHFetchOptionsService.m in Sources */,
 				63A33AA51DBE94350022B5FF /* RCTCachedFetchResult.m in Sources */,
+				6302902D1E0C7A1900A39835 /* PHAssetWithCollectionIndex.m in Sources */,
 				63A33AB11DBEA06C0022B5FF /* PHCollectionService.m in Sources */,
 				639BE3591DB82A7C00A2BE6F /* RCTConvert+RNPhotosFramework.m in Sources */,
 				63C543481DC00BDA004BFE57 /* PHHelpers.m in Sources */,
@@ -289,6 +299,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DEVELOPMENT_TEAM = 5BEG6QJ94B;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../../react-native/React/**",
+					"$(SRCROOT)/../../react-native/Libraries/Image",
+					"$(SRCROOT)/../example/node_modules/react-native/React/**",
+					"$(SRCROOT)/../example/node_modules/react-native/Libraries/Image",
+				);
 				INFOPLIST_FILE = RNPhotosFrameworkTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -305,6 +321,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DEVELOPMENT_TEAM = 5BEG6QJ94B;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../../react-native/React/**",
+					"$(SRCROOT)/../../react-native/Libraries/Image",
+					"$(SRCROOT)/../example/node_modules/react-native/React/**",
+					"$(SRCROOT)/../example/node_modules/react-native/Libraries/Image",
+				);
 				INFOPLIST_FILE = RNPhotosFrameworkTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";

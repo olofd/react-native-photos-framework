@@ -1,7 +1,9 @@
 import NativeApi from './index';
 import Asset from './asset';
 import uuidGenerator from './uuid-generator';
-import changeObserverHandler from './change-observer-handler';
+import changeObserverHandler, {
+    assetArrayObserverHandler
+} from './change-observer-handler';
 import EventEmitter from '../../react-native/Libraries/EventEmitter/EventEmitter';
 
 export default class Album extends EventEmitter {
@@ -22,7 +24,7 @@ export default class Album extends EventEmitter {
             if (changeDetails._cacheKey === this._cacheKey) {
                 this._emitChange(changeDetails, (assetArray) => {
                     if (assetArray) {
-                        return changeObserverHandler(
+                        return assetArrayObserverHandler(
                             changeDetails, assetArray,
                             (nativeObj) => {
                                 return new Asset(
@@ -77,7 +79,7 @@ export default class Album extends EventEmitter {
             this._cacheKey = uuidGenerator();
         }
         return NativeApi.getAssets({
-            fetchOptions : this._fetchOptions,
+            fetchOptions: this._fetchOptions,
             ...params,
             _cacheKey: this._cacheKey,
             albumLocalIdentifier: this.localIdentifier

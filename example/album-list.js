@@ -98,7 +98,7 @@ export default class AlbumList extends Component {
     RNPhotosFramework
       .requestAuthorization()
       .then((status) => {
-        RNPhotosFramework.getAlbumsCommon({
+        RNPhotosFramework.getAlbums({
           assetCount: 'exact',
           includeMetaData: true,
           previewAssets: 2,
@@ -113,9 +113,11 @@ export default class AlbumList extends Component {
           trackChanges : true
         }, true).then((albumsFetchResult) => {
           albumsFetchResult.onChange((changeDetails, update, unsubscribe) => {
-            const newAlbumFetchResult = update();
-            this.setState({albumsFetchResult: newAlbumFetchResult});
-            this.albumPropsToListView();
+            if(update) {
+              const newAlbumFetchResult = update();
+              this.setState({albumsFetchResult: newAlbumFetchResult});
+              this.albumPropsToListView();
+            }
           });
           simple_timer.stop('first_album_fetch');
           console.debug('react-native-photos-framework albums request took %s milliseconds.', simple_timer.get('first_album_fetch').delta)

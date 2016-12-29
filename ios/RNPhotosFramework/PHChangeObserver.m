@@ -82,9 +82,12 @@
                         
                         if([object isKindOfClass:[PHAsset class]]) {
                             NSDictionary *insertedObject = [[PHAssetsService assetsArrayToUriArray:@[object] andIncludeMetaData:[RCTConvert BOOL:cachedFetchResult.originalFetchParams[@"includeMetaData"]]] objectAtIndex:0];
+                            NSNumber *collectionIndex = [insertedIndexes objectAtIndex:i];
+                            NSMutableDictionary *mutableInsertedDict = [insertedObject mutableCopy];
+                            [mutableInsertedDict setObject:collectionIndex forKey:@"collectionIndex"];
                             [insertedObjects addObject:@{
-                                                         @"index" : [insertedIndexes objectAtIndex:i],
-                                                         @"obj" : insertedObject
+                                                         @"index" : collectionIndex,
+                                                         @"obj" : mutableInsertedDict
                                                          }];
                         }
                     }
@@ -110,9 +113,12 @@
                         
                         if([object isKindOfClass:[PHAsset class]]) {
                             NSDictionary *changedObject = [[PHAssetsService assetsArrayToUriArray:@[object] andIncludeMetaData:[RCTConvert BOOL:cachedFetchResult.originalFetchParams[@"includeMetaData"]]] objectAtIndex:0];
+                            NSNumber *collectionIndex = [insertedIndexes objectAtIndex:i];
+                            NSMutableDictionary *mutableChangedDict = [changedObject mutableCopy];
+                            [mutableChangedDict setObject:collectionIndex forKey:@"collectionIndex"];
                             [changedObjects addObject:@{
-                                                        @"index" : [changedIndexes objectAtIndex:i],
-                                                        @"obj" : changedObject
+                                                        @"index" : collectionIndex,
+                                                        @"obj" : mutableChangedDict
                                                         }];
                         }
                         

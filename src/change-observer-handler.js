@@ -6,7 +6,7 @@ function updateHandler(arr, cb) {
         }
     }
 }
-
+ 
 export function indeciesIsReversedNormalOrScrambled(arr, changeDetails) {
     const indecies = arr.map(x => x.collectionIndex);
     if (indecies.some(index => index === undefined)) {
@@ -17,7 +17,7 @@ export function indeciesIsReversedNormalOrScrambled(arr, changeDetails) {
         let thisOrder = 'scrambled';
         let previousIndex;
         let currentIndex = arr[i].collectionIndex;
-        if (i !== 0) {
+        if (i !== 0 && arr[i - 1]) {
             previousIndex = arr[i - 1].collectionIndex;
         }
         if (previousIndex !== undefined) {
@@ -46,37 +46,50 @@ export function assetArrayObserverHandler(changeDetails, arr, createNewObjFunc) 
         );
         return;
     }
-    const startIndex = arrayOrder === 'normal' ? arr[0].collectionIndex : arr[
+    let startIndex = 0;
+    if(arr.length > 0) {
+        startIndex = arrayOrder === 'normal' || arr.length === 0 ? arr[0].collectionIndex : arr[
         arr.length - 1].collectionIndex;
+    }
+
     return collectionArrayObserverHandler(changeDetails, arr, createNewObjFunc,
-        (index, arr) => {
+        (index, arr, operation) => {
+
             let indexAffected = index + startIndex;
             if (arrayOrder === 'reversed') {
-                indexAffected = (arr.length) -
+                indexAffected = (arr.length - (operation === 'insert' ? 0 : 1)) -
                     indexAffected;
             }
             return indexAffected;
         }, (arr, index, operation, newObj) => {
-
             if (arrayOrder === 'normal') {
                 for (let i = index + 1; i < arr.length; i++) {
-                    const affectedObj = arr[i];
-                    affectedObj.collectionIndex++;
+                    modifyIndex(arr, i, operation);
                 }
             } else if (arrayOrder === 'reversed') {
                 for (let i = index - 1; i >= 0; i--) {
-                    const affectedObj = arr[i];
-                    affectedObj.collectionIndex++;
+                    modifyIndex(arr, i, operation);
                 }
             }
         });
 }
 
-function getObjectIndex(updatedObj, indexTranslater, arr) {
+function modifyIndex(arr, index, operation) {
+    const affectedObj = arr[index];
+    if (affectedObj) {
+        if (operation === 'insert') {
+            affectedObj.collectionIndex++;
+        } else if (operation === 'remove') {
+            affectedObj.collectionIndex--;
+        }
+    }
+}
+
+function getObjectIndex(updatedObj, indexTranslater, arr, operation) {
     const objectIndex = updatedObj.obj !== undefined && (updatedObj.obj.collectionIndex !==
         undefined) ? updatedObj.obj.collectionIndex : updatedObj.index;
     return indexTranslater !== undefined ? indexTranslater(
-        objectIndex, arr) : objectIndex;
+        objectIndex, arr, operation) : objectIndex;
 }
 
 export function collectionArrayObserverHandler(changeDetails, arr,
@@ -86,7 +99,7 @@ export function collectionArrayObserverHandler(changeDetails, arr,
 
     let lastIndex = (arr.length - 1);
     updateHandler(changeDetails.removedObjects, (updatedObj) => {
-        const index = getObjectIndex(updatedObj, indexTranslater, arr);
+        const index = getObjectIndex(updatedObj, indexTranslater, arr, 'remove');
         if (index <= lastIndex && index >= 0) {
             arr[index] = undefined;
             afterModCb && afterModCb(arr, index, 'remove');
@@ -96,7 +109,7 @@ export function collectionArrayObserverHandler(changeDetails, arr,
 
     lastIndex = (arr.length - 1);
     updateHandler(changeDetails.insertedObjects, (updatedObj) => {
-        const index = getObjectIndex(updatedObj, indexTranslater, arr);
+        const index = getObjectIndex(updatedObj, indexTranslater, arr, 'insert');
         if (index <= (lastIndex + 1) && index >=
             0) {
             const newObj = createNewObjFunc(updatedObj
@@ -121,16 +134,16 @@ export function collectionArrayObserverHandler(changeDetails, arr,
 
             const fromObj = tempObj[fromIndex] || arr[fromIndex];
             tempObj[toIndex] = arr[toIndex];
-            arr[toIndex] = fromObj;
+            arr[toIndex] = fromObj; 
         }
     }
 
     lastIndex = (arr.length - 1);
     updateHandler(changeDetails.changedObjects, (updatedObj) => {
-        const index = getObjectIndex(updatedObj, indexTranslater, arr);
+        const index = getObjectIndex(updatedObj, indexTranslater, arr, 'change');
         if (index <= lastIndex && index >= 0) {
             arr[index] = createNewObjFunc(updatedObj.obj);
         }
     });
     return arr;
-}
+} 

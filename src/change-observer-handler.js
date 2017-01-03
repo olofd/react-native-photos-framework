@@ -6,7 +6,21 @@ function updateHandler(arr, cb) {
         }
     }
 }
- 
+
+function enumerateMoves(arr, changeDetails, indexTranslater, cb) {
+    for (let i = 0; i < changeDetails.moves.length; i = (i + 2)) {
+        let fromIndex = changeDetails.moves[i];
+        let toIndex = changeDetails.moves[i + 1];
+
+        fromIndex = indexTranslater !== undefined ? indexTranslater(
+            fromIndex, arr, 'move') : fromIndex;
+        toIndex = indexTranslater !== undefined ? indexTranslater(toIndex, arr, 'move') :
+            toIndex;
+        cb(fromIndex, toIndex);
+
+    }
+}
+
 export function indeciesIsReversedNormalOrScrambled(arr, changeDetails) {
     const indecies = arr.map(x => x.collectionIndex);
     if (indecies.some(index => index === undefined)) {
@@ -38,7 +52,7 @@ export function indeciesIsReversedNormalOrScrambled(arr, changeDetails) {
     return order;
 }
 
-export function assetArrayObserverHandler(changeDetails, arr, createNewObjFunc) {
+export function assetArrayObserverHandler(changeDetails, arr, createNewObjFunc, requestNewItemsCb) {
     const arrayOrder = indeciesIsReversedNormalOrScrambled(arr, changeDetails);
     if (arrayOrder === 'scrambled') {
         throw new Error(
@@ -47,19 +61,19 @@ export function assetArrayObserverHandler(changeDetails, arr, createNewObjFunc) 
         return;
     }
     let startIndex = 0;
-    if(arr.length > 0) {
+    if (arr.length > 0) {
         startIndex = arrayOrder === 'normal' || arr.length === 0 ? arr[0].collectionIndex : arr[
-        arr.length - 1].collectionIndex;
+            arr.length - 1].collectionIndex;
     }
 
-    return collectionArrayObserverHandler(changeDetails, arr, createNewObjFunc,
+    return collectionArrayObserverHandler(changeDetails, arr, createNewObjFunc, requestNewItemsCb,
         (index, arr, operation) => {
-
             let indexAffected = index + startIndex;
             if (arrayOrder === 'reversed') {
                 indexAffected = (arr.length - (operation === 'insert' ? 0 : 1)) -
                     indexAffected;
             }
+            console.log(indexAffected);
             return indexAffected;
         }, (arr, index, operation, newObj) => {
             if (arrayOrder === 'normal') {
@@ -92,58 +106,99 @@ function getObjectIndex(updatedObj, indexTranslater, arr, operation) {
         objectIndex, arr, operation) : objectIndex;
 }
 
+function getMissingIndecies(changeDetails, arr,
+    createNewObjFunc, requestNewItemsCb, indexTranslater) {
+    const missingIndecies = [];
+    enumerateMoves(arr, changeDetails,
+        indexTranslater, (fromIndex, toIndex) => {
+            if ((fromIndex > (arr.length - 1) || fromIndex < 0) && missingIndecies.indexOf(fromIndex) === -1) {
+                missingIndecies.push(fromIndex);
+            } 
+    });
+    return missingIndecies;  
+}
+
 export function collectionArrayObserverHandler(changeDetails, arr,
-    createNewObjFunc, indexTranslater, afterModCb) {
+    createNewObjFunc, requestNewItemsCb, indexTranslater, afterModCb) {
     //This function is constructed from Apple's documentation on how to apply
     //incremental changes.
+    return new Promise((resolve, reject) => {
+        let fetchedResources;
+        if (requestNewItemsCb) {
+            const missingIndecies = getMissingIndecies(changeDetails, arr,
+                createNewObjFunc, requestNewItemsCb, indexTranslater);
+            if (missingIndecies && missingIndecies.length) {
+                requestNewItemsCb(missingIndecies, (missingItems) => {
 
-    let lastIndex = (arr.length - 1);
-    updateHandler(changeDetails.removedObjects, (updatedObj) => {
-        const index = getObjectIndex(updatedObj, indexTranslater, arr, 'remove');
-        if (index <= lastIndex && index >= 0) {
-            arr[index] = undefined;
-            afterModCb && afterModCb(arr, index, 'remove');
+                });
+            }
+        } else {
+            return performUpdate();
         }
+
+        function performUpdate() {
+            let lastIndex = (arr.length - 1);
+            updateHandler(changeDetails.removedObjects, (updatedObj) => {
+                const index = getObjectIndex(updatedObj, indexTranslater, arr, 'remove');
+                if (index <= lastIndex && index >= 0) {
+                    arr[index] = undefined;
+                    afterModCb && afterModCb(arr, index, 'remove');
+                }
+            });
+            arr = arr.filter(obj => (obj !== undefined));
+
+            lastIndex = (arr.length - 1);
+            updateHandler(changeDetails.insertedObjects, (updatedObj) => {
+                const index = getObjectIndex(updatedObj, indexTranslater, arr, 'insert');
+                if (index <= (lastIndex + 1) && index >=
+                    0) {
+                    const newObj = createNewObjFunc(updatedObj
+                        .obj);
+                    arr.splice(index, 0, newObj);
+                    afterModCb && afterModCb(arr, index, 'insert', newObj);
+                }
+                lastIndex = (arr.length - 1);
+            });
+
+            //Moves will only happen if you update a property that affects the original sort order.
+            if (changeDetails.moves) {
+                let tempObj = {};
+                let asyncMoves = [];
+                enumerateMoves(arr, changeDetails,
+                    indexTranslater, (fromIndex, toIndex) => {
+                        let reInsertedCollectionIndex;
+                        if (!tempObj[fromIndex] && arr[fromIndex] && arr[fromIndex] && arr[fromIndex].collectionIndex !== undefined) {
+                            reInsertedCollectionIndex = arr[fromIndex].collectionIndex;
+                        }
+
+                        const fromObj = tempObj[fromIndex] || arr[fromIndex];
+                        tempObj[toIndex] = arr[toIndex];
+
+                        if ((arr[toIndex] && arr[toIndex].collectionIndex !== undefined) &&
+                            (fromObj && fromObj.collectionIndex !== undefined)) {
+                            fromObj.collectionIndex = arr[toIndex].collectionIndex;
+                        }
+                        arr[toIndex] = fromObj;
+                        if (reInsertedCollectionIndex !== undefined) {
+                            arr[fromIndex] = {
+                                collectionIndex: reInsertedCollectionIndex
+                            }
+                        }
+                    });
+            }
+
+            lastIndex = (arr.length - 1);
+            updateHandler(changeDetails.changedObjects, (updatedObj) => {
+                const index = getObjectIndex(updatedObj, indexTranslater, arr, 'change');
+                if (index <= lastIndex && index >= 0) {
+                    arr[index] = createNewObjFunc(updatedObj.obj);
+                }
+            });
+            return resolve(arr);
+        }
+        return performUpdate();
     });
-    arr = arr.filter(obj => (obj !== undefined));
 
-    lastIndex = (arr.length - 1);
-    updateHandler(changeDetails.insertedObjects, (updatedObj) => {
-        const index = getObjectIndex(updatedObj, indexTranslater, arr, 'insert');
-        if (index <= (lastIndex + 1) && index >=
-            0) {
-            const newObj = createNewObjFunc(updatedObj
-                .obj);
-            arr.splice(index, 0, newObj);
-            afterModCb && afterModCb(arr, index, 'insert', newObj);
-        }
-        lastIndex = (arr.length - 1);
-    });
 
-    //Moves will only happen if you update a property that affects the original sort order.
-    if (changeDetails.moves) {
-        let tempObj = {};
-        for (let i = 0; i < changeDetails.moves.length; i = (i + 2)) {
-            let fromIndex = changeDetails.moves[i];
-            let toIndex = changeDetails.moves[i + 1];
 
-            fromIndex = indexTranslater !== undefined ? indexTranslater(
-                fromIndex) : fromIndex;
-            toIndex = indexTranslater !== undefined ? indexTranslater(toIndex) :
-                toIndex;
-
-            const fromObj = tempObj[fromIndex] || arr[fromIndex];
-            tempObj[toIndex] = arr[toIndex];
-            arr[toIndex] = fromObj; 
-        }
-    }
-
-    lastIndex = (arr.length - 1);
-    updateHandler(changeDetails.changedObjects, (updatedObj) => {
-        const index = getObjectIndex(updatedObj, indexTranslater, arr, 'change');
-        if (index <= lastIndex && index >= 0) {
-            arr[index] = createNewObjFunc(updatedObj.obj);
-        }
-    });
-    return arr;
-} 
+}

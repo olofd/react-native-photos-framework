@@ -87,7 +87,7 @@ class CameraRollPicker extends Component {
         startIndex: this.state.images.length,
         endIndex: this.state.images.length + 20,
         fetchOptions: {},
-        assetDisplayBottomUp : false,
+        assetDisplayBottomUp : true,
         assetDisplayStartToEnd : false
       })
       .then((data) => {

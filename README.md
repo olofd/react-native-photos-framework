@@ -397,8 +397,9 @@ You currently receive the following events: `AlbumTitleChanged` (More to come).
 ~~~~
 const unsubscribeFunc = albumsFetchResult.onChange((changeDetails, update) => {
     if(changeDetails.hasIncrementalChanges) {
-      const newAlbumFetchResult = update();
-      this.setState({albumsFetchResult: newAlbumFetchResult});
+      update((updatedFetchResult) => {
+         this.setState({albumsFetchResult: updatedFetchResult});
+      });
     } else {
       //Do full reload here..
     }
@@ -413,14 +414,21 @@ two arguments when calling `getAssets` on that album:
 `trackChanges : true`
 (See `Retrieving albums and enumerating their assets` above)
 
-
 On an album object you can do:
 ~~~~
 const unsubscribeFunc = album.onChange((changeDetails, update) => {
   if(changeDetails.hasIncrementalChanges) {
-    this.setState({
-      //Important! Assets must be supplied in original fetch-order.
-      assets : update(this.state.assets)
+    //Important! Assets must be supplied in original fetch-order.
+    update(this.state.assets, (updatedAssetArray) => {
+      this.setState({
+        assets : updatedAssetArray
+      });
+    }, 
+    //If RNPF needs to retrive more assets to complete the change,
+    //eg. a move happened that moved a previous out of array-index asset into your corrently loaded assets.
+    //Here you can apply a param obj for options on how to load those assets. eg. ´includeMetadata : true´.
+    {
+      includeMetadata : true
     });
   }else {
     //Do full reload here..

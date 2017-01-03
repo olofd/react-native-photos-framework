@@ -48,6 +48,7 @@ export default class Album extends EventEmitter {
         const fetchOptionsWithIndecies = {...fetchOptions, indecies : [...indecies]};
         console.log('Requested indecies', fetchOptionsWithIndecies);
         return this.getAssetsWithIndecies(fetchOptionsWithIndecies).then((assets) => {
+            console.log(assets);
             callback && callback(assets);
             return assets;
         });

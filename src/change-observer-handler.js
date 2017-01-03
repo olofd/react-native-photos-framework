@@ -13,11 +13,11 @@ function enumerateMoves(arr, changeDetails, indexTranslater, cb) {
             let fromIndex = changeDetails.moves[i];
             let toIndex = changeDetails.moves[i + 1];
 
-            fromIndex = indexTranslater !== undefined ? indexTranslater(
+            let fromIndexMod = indexTranslater !== undefined ? indexTranslater(
                 fromIndex, arr, 'move') : fromIndex;
-            toIndex = indexTranslater !== undefined ? indexTranslater(toIndex, arr, 'move') :
+            let toIndexMod = indexTranslater !== undefined ? indexTranslater(toIndex, arr, 'move') :
                 toIndex;
-            cb(fromIndex, toIndex);
+            cb(fromIndexMod, toIndexMod, fromIndex, toIndex);
         }
     }
 }
@@ -113,11 +113,11 @@ function getMissingIndecies(changeDetails, arr,
     createNewObjFunc, requestNewItemsCb, indexTranslater) {
     const missingIndecies = [];
     enumerateMoves(arr, changeDetails,
-        indexTranslater, (fromIndex, toIndex) => {
-            if ((fromIndex > (arr.length - 1) || fromIndex < 0) && missingIndecies.indexOf(fromIndex) === -1) {
-                missingIndecies.push(fromIndex);
+        indexTranslater, (fromIndex, toIndex, originalFromIndex, originalToIndex) => {
+            if ((fromIndex > (arr.length - 1) || fromIndex < 0) && missingIndecies.indexOf(originalFromIndex) === -1) {
+                missingIndecies.push(originalToIndex);
             }
-        });
+        }); 
     return missingIndecies;
 }
 
@@ -170,7 +170,7 @@ export function collectionArrayObserverHandler(changeDetails, arr,
                 let tempObj = {};
                 let asyncMoves = [];
                 enumerateMoves(arr, changeDetails,
-                    indexTranslater, (fromIndex, toIndex) => {
+                    indexTranslater, (fromIndex, toIndex, orginalFromIndex, originalToIndex) => {
                         let reInsertedCollectionIndex;
                         if (!tempObj[fromIndex] && arr[fromIndex] && arr[fromIndex] && arr[fromIndex].collectionIndex !== undefined) {
                             reInsertedCollectionIndex = arr[fromIndex].collectionIndex;
@@ -178,7 +178,7 @@ export function collectionArrayObserverHandler(changeDetails, arr,
 
                         let fromObj = tempObj[fromIndex] || arr[fromIndex];
                         if (!fromObj && missingItems) {
-                            fromObj = missingItems.find(item => item.collectionIndex === fromIndex);
+                            fromObj = missingItems.find(item => item.collectionIndex === originalToIndex);
                         }
                         if (!fromObj) {
                             console.warn('Could not find aset with collectionIndex', fromIndex);

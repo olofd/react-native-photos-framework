@@ -575,7 +575,7 @@ describe('ERRONEOUS INPUT', () => {
 
 //START---------OUTSIDE INDEX MOVE--------------START
 describe('OUTSIDE INDEX MOVE', () => {
-    xit('move asset from outside of index bounds should trigger fetch request', () => {
+    it('move asset from outside of index bounds should trigger fetch request', () => {
         //Changes in position always happens like this, in paired atomic steps:
         const changeDetails = {
             moves: [1, 5, 5, 1]
@@ -590,16 +590,15 @@ describe('OUTSIDE INDEX MOVE', () => {
             id: 'c',
             collectionIndex: 2
         }];
-        const result = assetArrayObserverHandler(changeDetails, arr, (obj) => {
-            return obj;
-        });
 
-        let f = jest.fn();
+        let f = jest.fn(); 
 
         return assetArrayObserverHandler(changeDetails, arr, (obj) => {
             return obj;
-        }, f).then((result) => {
-            expect(f).toHaveBeenCalledWith([5], expect.any(Function));
+        }, (missingIndecies, finnishFunc) => {
+            expect(missingIndecies[0]).toBe(1);
+            finnishFunc(); 
+        }).then((result) => {
         });
     });
 
@@ -655,7 +654,7 @@ describe('OUTSIDE INDEX MOVE', () => {
             return finnishFunc(arrayOfMissingIndecies.map((index) => {
                 return {
                     collectionIndex: index,
-                    id: index === 5 ? 'b' : 'c'
+                    id: index === 1 ? 'b' : 'c'
                 }
             }));
         }).then((result) => {
@@ -686,7 +685,7 @@ describe('OUTSIDE INDEX MOVE', () => {
             return obj;
         }, (arrayOfMissingIndecies, finnishFunc) => {
             return finnishFunc([{
-                collectionIndex: 5,
+                collectionIndex: 1,
                 id: 'b'
             }]);
         }).then((result) => {
@@ -694,29 +693,29 @@ describe('OUTSIDE INDEX MOVE', () => {
         });
     });
 
-    fit('should be able to handle simple out of index move', () => {
+    it('should be able to handle simple out of index move', () => {
         //Changes in position always happens like this, in paired atomic steps:
         const changeDetails = {
             moves: [1, 0, 0, 1]
         };
         const arr = [{
-            id: 'a',
+            id: 'c', 
             collectionIndex: 2
         }, {
-            id: 'b',
+            id: 'a',
             collectionIndex: 1
         }];
 
         return assetArrayObserverHandler(changeDetails, arr, (obj) => {
             return obj;
         }, (arrayOfMissingIndecies, finnishFunc) => {
-            console.log(arrayOfMissingIndecies);
-            return finnishFunc([{
-                collectionIndex: 5,
-                id: 'b'
-            }]);
+            expect(arrayOfMissingIndecies[0]).toBe(1);
+            finnishFunc([{
+                collectionIndex : 1,
+                id : 'b'
+            }]); 
         }).then((result) => {
-            expect(toNumberedCollectionIndex(result)).toBe('0a1b2d');
+            expect(toNumberedCollectionIndex(result)).toBe('2c1b');
         });
     });
 

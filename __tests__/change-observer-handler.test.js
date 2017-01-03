@@ -17,7 +17,7 @@ function toNumberedCollectionIndex(arr) {
 //START---------SINGULAR ADD--------------START
 describe('SINGULAR ADD', () => {
 
-    fit('insert singular in middle of assetCollection with normal order 1', () => {
+    it('insert singular in middle of assetCollection with normal order starting from 0', () => {
         const changeDetails = {
             insertedObjects: [{
                 obj: {
@@ -44,30 +44,30 @@ describe('SINGULAR ADD', () => {
         });
     });
 
-    fit('insert singular in middle of assetCollection with normal order 2', () => {
+    it('insert singular in middle of assetCollection with normal order starting from 3', () => {
         const changeDetails = {
             insertedObjects: [{
                 obj: {
                     id: 'b',
-                    collectionIndex: 2
+                    collectionIndex: 4
                 }
             }]
         };
         const arr = [{
             id: 'a',
-            collectionIndex: 1
+            collectionIndex: 3
         }, {
             id: 'c',
-            collectionIndex: 2 
+            collectionIndex: 4 
         }, {
             id: 'd',
-            collectionIndex: 3
+            collectionIndex: 5
         }];
 
         return assetArrayObserverHandler(changeDetails, arr, (obj) => {
             return obj;
         }).then((result) => {
-            expect(toNumberedCollectionIndex(result)).toBe('1a2b3c4d');
+            expect(toNumberedCollectionIndex(result)).toBe('3a4b5c6d');
         });
     });
 
@@ -234,30 +234,30 @@ describe('PLURALIS REMOVE', () => {
             removedObjects: [{
                 obj: {
                     id: 'a',
-                    collectionIndex: 0
+                    collectionIndex: 1
                 }
             }, {
                 obj: {
                     id: 'c',
-                    collectionIndex: 2
+                    collectionIndex: 3
                 }
             }]
         };
         const arr = [{
             id: 'a',
-            collectionIndex: 0
-        }, {
-            id: 'b',
             collectionIndex: 1
         }, {
-            id: 'c',
+            id: 'b',
             collectionIndex: 2
+        }, {
+            id: 'c',
+            collectionIndex: 3
         }];
 
         return assetArrayObserverHandler(changeDetails, arr, (obj) => {
             return obj;
         }).then((result) => {
-            expect(toNumberedCollectionIndex(result)).toBe('0b');
+            expect(toNumberedCollectionIndex(result)).toBe('1b');
         });
     });
 

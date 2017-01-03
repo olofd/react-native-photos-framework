@@ -60,20 +60,21 @@ export function assetArrayObserverHandler(changeDetails, arr, createNewObjFunc, 
         );
         return;
     }
-    let startIndex = 0;
+    let startIndex = 0; 
     if (arr.length > 0) {
         startIndex = arrayOrder === 'normal' || arr.length === 0 ? arr[0].collectionIndex : arr[
             arr.length - 1].collectionIndex;
     }
+    console.log('START INDEX', startIndex);
 
     return collectionArrayObserverHandler(changeDetails, arr, createNewObjFunc, requestNewItemsCb,
         (index, arr, operation) => {
-            let indexAffected = index + startIndex;
+            let indexAffected = index - startIndex;
             if (arrayOrder === 'reversed') {
                 indexAffected = (arr.length - (operation === 'insert' ? 0 : 1)) -
                     indexAffected;
             }
-            console.log(indexAffected);
+            console.log(indexAffected, index);
             return indexAffected;
         }, (arr, index, operation, newObj) => {
             if (arrayOrder === 'normal') {

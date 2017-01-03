@@ -161,8 +161,6 @@
                                                                        @"moves" : moves
                                                                        }];
                         cachedFetchResult.fetchResult = [changeDetails fetchResultAfterChanges];
-                        PHAsset *a = [cachedFetchResult.fetchResult objectAtIndex:0];
-                        NSLog(@"index zero %@", a.localIdentifier);
                     }
                 }
 

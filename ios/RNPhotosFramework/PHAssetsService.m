@@ -140,14 +140,12 @@
         if(collectionIndex <= (assetCount - 1) && collectionIndex >= 0) {
             PHAsset *asset = [assetsFetchResult objectAtIndex:collectionIndex];
             [assets addObject:[[PHAssetWithCollectionIndex alloc] initWithAsset:asset andCollectionIndex:@(collectionIndex)]];
-            NSLog(@"index zero %@ with index %d", asset.localIdentifier, collectionIndex);
 
         }
 
     }
     return assets;
 }
-
 
 
 +(NSIndexSet *) getIndexSetForAssetEnumerationWithAssetCount:(int)assetCount startIndex:(int)startIndex endIndex:(int)endIndex assetDisplayStartToEnd:(BOOL)assetDisplayStartToEnd {

@@ -88,7 +88,7 @@ class CameraRollPicker extends Component {
       .getAssets({
         trackInsertsAndDeletes : true,
         trackAssetsChanges : true,
-        startIndex: 5,
+        startIndex: 0,
         endIndex: this.state.images.length + 20,
         fetchOptions: {}, 
         assetDisplayBottomUp : false,
@@ -99,7 +99,7 @@ class CameraRollPicker extends Component {
         simple_timer.stop('fetch_timer');
         console.log('react-native-photos-framework fetch request took %s milliseconds.', simple_timer.get('fetch_timer').delta)
         this._appendImages(data);
-      }, (e) => console.log(e)); 
+      }, (e) => console.log(e));  
   }
 
   _appendImages(data) {

@@ -54,19 +54,46 @@ describe('SINGULAR ADD', () => {
         };
         const arr = [{
             id: 'b',
-            collectionIndex: 1
+            collectionIndex: 3
         }, {
             id: 'c',
-            collectionIndex: 2
+            collectionIndex: 4
         }, {
             id: 'd',
-            collectionIndex: 3
+            collectionIndex: 5
         }];
 
         return assetArrayObserverHandler(changeDetails, arr, (obj) => {
             return obj;
         }).then((result) => {
-            expect(toNumberedCollectionIndex(result)).toBe('2b3c4d');
+            expect(toNumberedCollectionIndex(result)).toBe('4b5c6d');
+        });
+    });
+
+    it('insert singular before array starts should not insert only increment collectionIndecies', () => {
+        const changeDetails = {
+            insertedObjects: [{
+                obj: {
+                    id: 'a',
+                    collectionIndex: 0
+                }
+            }]
+        };
+        const arr = [{
+            id: 'd',
+            collectionIndex: 8
+        }, {
+            id: 'c',
+            collectionIndex: 7
+        }, {
+            id: 'b',
+            collectionIndex: 6
+        }];
+
+        return assetArrayObserverHandler(changeDetails, arr, (obj) => {
+            return obj;
+        }).then((result) => {
+            expect(toNumberedCollectionIndex(result)).toBe('9d8c7b');
         });
     });
 
@@ -274,7 +301,7 @@ describe('SINGULAR REMOVE', () => {
         });
     });
 
-    it('remove singular before array starts should not insert only decrement collectionIndecies', () => {
+    it('remove singular before array starts should not remove only decrement collectionIndecies, normal', () => {
         const changeDetails = {
             removedObjects: [{
                 obj: {
@@ -285,19 +312,46 @@ describe('SINGULAR REMOVE', () => {
         };
         const arr = [{
             id: 'b',
-            collectionIndex: 1
+            collectionIndex: 7
         }, {
             id: 'c',
-            collectionIndex: 2
+            collectionIndex: 8
         }, {
             id: 'd',
-            collectionIndex: 3
+            collectionIndex: 9
         }];
 
         return assetArrayObserverHandler(changeDetails, arr, (obj) => {
             return obj;
         }).then((result) => {
-            expect(toNumberedCollectionIndex(result)).toBe('0b1c2d');
+            expect(toNumberedCollectionIndex(result)).toBe('6b7c8d');
+        });
+    });
+
+    it('remove singular before array starts should not remove only decrement collectionIndecies, reversed', () => {
+        const changeDetails = {
+            removedObjects: [{
+                obj: {
+                    id: 'a',
+                    collectionIndex: 0
+                }
+            }]
+        };
+        const arr = [{
+            id: 'd',
+            collectionIndex: 3
+        }, {
+            id: 'c',
+            collectionIndex: 2
+        }, {
+            id: 'b',
+            collectionIndex: 1
+        }];
+
+        return assetArrayObserverHandler(changeDetails, arr, (obj) => {
+            return obj;
+        }).then((result) => {
+            expect(toNumberedCollectionIndex(result)).toBe('2d1c0b');
         });
     });
 });
@@ -631,7 +685,7 @@ describe('OUTSIDE INDEX MOVE', () => {
     it('move asset from outside of index bounds should trigger fetch request', () => {
         //Changes in position always happens like this, in paired atomic steps:
         const changeDetails = {
-            moves: [1, 5, 5, 1]
+            moves: [1, 3, 3, 1]
         };
         const arr = [{
             id: 'a',
@@ -652,6 +706,58 @@ describe('OUTSIDE INDEX MOVE', () => {
             expect(missingIndecies[0]).toBe(1);
             finnishFunc();
         }).then((result) => {});
+    });
+
+    it('moves outside of collection should not change collection', () => {
+        //Changes in position always happens like this, in paired atomic steps:
+        const changeDetails = {
+            moves: [5, 6, 6, 7]
+        };
+        const arr = [{
+            id: 'a',
+            collectionIndex: 1
+        }, {
+            id: 'b',
+            collectionIndex: 2
+        }, {
+            id: 'c',
+            collectionIndex: 3
+        }];
+
+        let f = jest.fn();
+
+        return assetArrayObserverHandler(changeDetails, arr, (obj) => {
+            return obj;
+        }, f).then((result) => {
+            expect(f).not.toHaveBeenCalled();
+            expect(toNumberedCollectionIndex(result)).toBe('1a2b3c');
+        });
+    });
+
+    it('moves from side to side should not change collection', () => {
+        //Changes in position always happens like this, in paired atomic steps:
+        const changeDetails = {
+            moves: [0, 4, 4, 0]
+        };
+        const arr = [{
+            id: 'a',
+            collectionIndex: 1
+        }, {
+            id: 'b',
+            collectionIndex: 2
+        }, {
+            id: 'c',
+            collectionIndex: 3
+        }];
+
+        let f = jest.fn();
+
+        return assetArrayObserverHandler(changeDetails, arr, (obj) => {
+            return obj;
+        }, f).then((result) => {
+            expect(f).not.toHaveBeenCalled();
+            expect(toNumberedCollectionIndex(result)).toBe('1a2b3c');
+        });
     });
 
     it('move singular asset from outside of index bounds should trigger fetch request and insert that index', () => {

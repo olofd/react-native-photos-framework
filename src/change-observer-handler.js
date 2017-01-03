@@ -23,7 +23,7 @@ function enumerateMoves(arr, changeDetails, indexTranslater, cb) {
 }
 
 export function indeciesIsReversedNormalOrScrambled(arr, changeDetails, preferedOrder) {
-    if(!arr || arr.length === 0) {
+    if (!arr || arr.length === 0) {
         return preferedOrder || 'normal';
     }
     const indecies = arr.map(x => x.collectionIndex);
@@ -107,17 +107,21 @@ function getObjectIndex(updatedObj, indexTranslater, arr, operation) {
         undefined) ? updatedObj.obj.collectionIndex : updatedObj.index;
     return indexTranslater !== undefined ? indexTranslater(
         objectIndex, arr, operation) : objectIndex;
-} 
+}
 
 function getMissingIndecies(changeDetails, arr,
     createNewObjFunc, requestNewItemsCb, indexTranslater) {
     const missingIndecies = [];
     enumerateMoves(arr, changeDetails,
         indexTranslater, (fromIndex, toIndex, originalFromIndex, originalToIndex) => {
-            if ((fromIndex > (arr.length - 1) || fromIndex < 0) && missingIndecies.indexOf(originalFromIndex) === -1) {
+
+            const fromIndexIsOutsideOfRange = (fromIndex > (arr.length - 1) || fromIndex < 0);
+            const toIndexIsWithinRange = (toIndex <= (arr.length - 1) && toIndex >= 0);
+            if ((fromIndexIsOutsideOfRange && toIndexIsWithinRange) &&
+                missingIndecies.indexOf(originalFromIndex) === -1) {
                 missingIndecies.push(originalToIndex);
             }
-        }); 
+        });
     return missingIndecies;
 }
 
@@ -148,10 +152,9 @@ export function collectionArrayObserverHandler(changeDetails, arr,
                 if (index <= lastIndex && index >= 0) {
                     arr[index] = undefined;
                     afterModCb && afterModCb(arr, index, 'remove');
-                }
-                else if(index < 0) {
+                } else {
                     //insertion is before our indecies, we need to increment
-                    afterModCb && afterModCb(arr, -1, 'remove');
+                    afterModCb && afterModCb(arr, index, 'remove');
                 }
             });
             arr = arr.filter(obj => (obj !== undefined));
@@ -165,9 +168,9 @@ export function collectionArrayObserverHandler(changeDetails, arr,
                         .obj);
                     arr.splice(index, 0, newObj);
                     afterModCb && afterModCb(arr, index, 'insert', newObj);
-                }else if(index < 0) {
+                } else {
                     //insertion is before our indecies, we need to increment
-                    afterModCb && afterModCb(arr, -1, 'insert');
+                    afterModCb && afterModCb(arr, index, 'insert');
                 }
                 lastIndex = (arr.length - 1);
             });
@@ -178,6 +181,11 @@ export function collectionArrayObserverHandler(changeDetails, arr,
                 let asyncMoves = [];
                 enumerateMoves(arr, changeDetails,
                     indexTranslater, (fromIndex, toIndex, orginalFromIndex, originalToIndex) => {
+                        const fromIndexIsOutsideOfRange = (fromIndex > (arr.length - 1) || fromIndex < 0);
+                        const toIndexIsWithinRange = (toIndex <= (arr.length - 1) && toIndex >= 0);
+                        if(fromIndexIsOutsideOfRange && !toIndexIsWithinRange) {
+                            return;
+                        }
                         let reInsertedCollectionIndex;
                         if (!tempObj[fromIndex] && arr[fromIndex] && arr[fromIndex] && arr[fromIndex].collectionIndex !== undefined) {
                             reInsertedCollectionIndex = arr[fromIndex].collectionIndex;
@@ -197,6 +205,7 @@ export function collectionArrayObserverHandler(changeDetails, arr,
                             (fromObj && fromObj.collectionIndex !== undefined)) {
                             fromObj.collectionIndex = arr[toIndex].collectionIndex;
                         }
+
                         if (toIndex <= arr.length - 1 && toIndex >= 0) {
                             arr[toIndex] = fromObj;
                         }

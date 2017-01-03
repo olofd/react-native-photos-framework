@@ -34,8 +34,23 @@
   ],
   "dependencies": {},
   "scripts": {
+    "test": "jest",
     "update": "git add . && git commit -m \"Updated\" && npm version patch && git push --tags && git push origin master && npm publish",
-    "update-small": "git add . && git commit -m \"Updated\" && git push origin master",
-    "postinstall": "node install.js"
+    "update-small": "git add . && git commit -m \"Updated\" && git push origin master"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.18.0",
+    "babel-jest": "^18.0.0",
+    "babel-polyfill": "^6.20.0",
+    "babel-preset-latest": "^6.16.0",
+    "jest": "^18.1.0",
+    "jest-react-native": "^18.0.0"
+  },
+  "jest": {
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/example/",
+      "local-cli/"
+    ]
   }
 }

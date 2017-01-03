@@ -1,7 +1,9 @@
 import NativeApi from './index';
 import Asset from './asset';
 import uuidGenerator from './uuid-generator';
-import changeObserverHandler from './change-observer-handler';
+import changeObserverHandler, {
+    assetArrayObserverHandler
+} from './change-observer-handler';
 import EventEmitter from '../../react-native/Libraries/EventEmitter/EventEmitter';
 
 export default class Album extends EventEmitter {
@@ -20,18 +22,32 @@ export default class Album extends EventEmitter {
         }
         eventEmitter.addListener('onObjectChange', (changeDetails) => {
             if (changeDetails._cacheKey === this._cacheKey) {
-                this._emitChange(changeDetails, (assetArray) => {
+                this._emitChange(changeDetails, (assetArray, callback, fetchOptions) => {
                     if (assetArray) {
-                        return changeObserverHandler(
+                        return assetArrayObserverHandler(
                             changeDetails, assetArray,
                             (nativeObj) => {
                                 return new Asset(
                                     nativeObj);
-                            });
+                            }, (indecies, callback) => {
+                                //The update algo has requested new assets.
+                                return this.newAssetsRequested(indecies, fetchOptions, callback);
+                            }, this.perferedSortOrder).then(updatedArray => {
+                            callback && callback(updatedArray);
+                            return updatedArray;
+                        });
                     }
                     return assetArray;
                 }, this);
             }
+        });
+    }
+
+    newAssetsRequested(indecies, fetchOptions, callback) {
+        const fetchOptionsWithIndecies = {...fetchOptions, indecies : [...indecies]};
+        return this.getAssetsWithIndecies(fetchOptionsWithIndecies).then((assets) => {
+            callback && callback(assets);
+            return assets;
         });
     }
 
@@ -72,12 +88,26 @@ export default class Album extends EventEmitter {
     }
 
     getAssets(params) {
+        this.perferedSortOrder = params.assetDisplayBottomUp === params.assetDisplayStartToEnd ? 'reversed' : 'normal';
         const trackAssets = params.trackInsertsAndDeletes || params.trackAssetsChanges;
         if (trackAssets && !this._cacheKey) {
             this._cacheKey = uuidGenerator();
         }
         return NativeApi.getAssets({
-            fetchOptions : this._fetchOptions,
+            fetchOptions: this._fetchOptions,
+            ...params,
+            _cacheKey: this._cacheKey,
+            albumLocalIdentifier: this.localIdentifier
+        });
+    }
+
+    getAssetsWithIndecies(params) {
+        const trackAssets = params.trackInsertsAndDeletes || params.trackAssetsChanges;
+        if (trackAssets && !this._cacheKey) {
+            this._cacheKey = uuidGenerator();
+        }
+        return NativeApi.getAssetsWithIndecies({
+            fetchOptions: this._fetchOptions,
             ...params,
             _cacheKey: this._cacheKey,
             albumLocalIdentifier: this.localIdentifier

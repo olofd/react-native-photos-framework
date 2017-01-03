@@ -1,4 +1,4 @@
-# react-native-photos-framework
+# react-native-photos-framework [![Build Status](https://travis-ci.org/olofd/react-native-photos-framework.svg?branch=add-reverse-option-stable)](https://travis-ci.org/olofd/react-native-photos-framework) [![npm version](https://badge.fury.io/js/react-native-photos-framework.svg)](https://badge.fury.io/js/react-native-photos-framework)
 
 ###Example project
 ####NOTE: This is not a GUI-component, it's an API. The example project just shows off some of the the capabilities of this API.
@@ -111,6 +111,8 @@ import RNPhotosFramework from 'react-native-photos-framework';
 | includeMetaData | false | `boolean` | Include a lot of meta data about the asset (See below). You can also choose to get this metaData at a later point by calling asset.getMetaData (See below) |
 | prepareForSizeDisplay | - | `Rect(width, height)` | The size of the image you soon will display after running the query. This is highly optional and only there for optimizations of big lists. Prepares the images for display in Photos by using PHCachingImageManager |
 | prepareScale | 2.0 | `number` | The scale to prepare the image in. |
+| assetDisplayStartToEnd | false | `boolean` | Retrieves assets from the beginning of the library when set to true. Using this sorting option preserves the native order of assets as they are viewed in the Photos app.  |
+| assetDisplayBottomUp | false | `boolean` | Used to arrange assets from the bottom to top of screen when scrolling up to view paginated results. |
 
 ###Example of asset response with `includeMetaData : true`
 ~~~~

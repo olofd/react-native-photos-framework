@@ -16,7 +16,9 @@ export default class AlbumQueryResult extends AlbumQueryResultBase {
                 eventEmitter));
         eventEmitter.addListener('onObjectChange', (changeDetails) => {
             if (this._cacheKey === changeDetails._cacheKey) {
-                this.emit('onChange', changeDetails, this.applyChangeDetails.bind(this, changeDetails), this);
+                this.emit('onChange', changeDetails, (callback) => {
+                    this.applyChangeDetails(changeDetails, callback);
+                }, this);
             }
         });
     }
@@ -25,12 +27,14 @@ export default class AlbumQueryResult extends AlbumQueryResultBase {
         return NativeApi.stopTracking(this._cacheKey);
     }
 
-    applyChangeDetails(changeDetails) {
-        this.albums = collectionArrayObserverHandler(changeDetails, this.albums, (
+    applyChangeDetails(changeDetails, callback) {
+        return collectionArrayObserverHandler(changeDetails, this.albums, (
             nativeObj) => {
             return new Album(nativeObj, this._fetchParams.fetchOptions,
                 this.eventEmitter);
+        }).then((albums) => {
+            this.albums = albums;
+            callback && callback(this);
         });
-        return this.albums;
     }
 }

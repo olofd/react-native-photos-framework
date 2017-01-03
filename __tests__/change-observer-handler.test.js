@@ -9,7 +9,7 @@ function toNumberedCollectionIndex(arr) {
             return 'ERROR';
         }
         return str += asset.collectionIndex.toString() + asset.id.toString();
-    }, '');
+    }, ''); 
 }
 
 //START--------------------BASIC FUNCTIONALLITY--------------------START

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   View,
   StyleSheet,
@@ -11,7 +11,7 @@ import {
   AlertIOS
 } from 'react-native'
 import RNPhotosFramework from 'react-native-photos-framework';
-import {Actions} from 'react-native-router-flux';
+import { Actions } from 'react-native-router-flux';
 //ion-ios-remove-circle
 import Icon from 'react-native-vector-icons/Ionicons';
 var simple_timer = require('simple-timer');
@@ -102,26 +102,27 @@ export default class AlbumList extends Component {
           assetCount: 'exact',
           includeMetaData: true,
           previewAssets: 2,
-          assetFetchOptions : {
-            mediaTypes : ['image'],
-            sortDescriptors : [{
-              key : 'creationDate',
-              ascending : true
+          assetFetchOptions: {
+            mediaTypes: ['image'],
+            sortDescriptors: [{
+              key: 'creationDate',
+              ascending: true
             }]
           },
-          trackInsertsAndDeletes : true,
-          trackChanges : true
+          trackInsertsAndDeletes: true,
+          trackChanges: true
         }, true).then((albumsFetchResult) => {
           albumsFetchResult.onChange((changeDetails, update, unsubscribe) => {
-            if(update) {
-              const newAlbumFetchResult = update();
-              this.setState({albumsFetchResult: newAlbumFetchResult});
-              this.albumPropsToListView();
+            if (update) {
+              update((newAlbumFetchResult) => {
+                this.setState({ albumsFetchResult: newAlbumFetchResult });
+                this.albumPropsToListView();
+              });
             }
           });
           simple_timer.stop('first_album_fetch');
           console.debug('react-native-photos-framework albums request took %s milliseconds.', simple_timer.get('first_album_fetch').delta)
-          this.setState({albumsFetchResult: albumsFetchResult});
+          this.setState({ albumsFetchResult: albumsFetchResult });
           this.albumPropsToListView();
         });
       });
@@ -184,7 +185,7 @@ export default class AlbumList extends Component {
   }
 
   onAlbumPress(album) {
-    Actions.cameraRollPicker({album: album, title: album.title});
+    Actions.cameraRollPicker({ album: album, title: album.title });
   }
 
   _renderAlbum(album, index, columnIndex) {
@@ -195,30 +196,30 @@ export default class AlbumList extends Component {
       <View
         key={index.toString() + columnIndex.toString()}
         style={{
-        opacity: (this.props.edit && !editable)
-          ? 0.3
-          : 1
-      }}>
+          opacity: (this.props.edit && !editable)
+            ? 0.3
+            : 1
+        }}>
         <TouchableOpacity
           disabled={this.props.edit}
           style={styles.listColumn}
           onPress={this
-          .onAlbumPress
-          .bind(this, album)}>
+            .onAlbumPress
+            .bind(this, album)}>
           {album.previewAsset
             ? <Image
-                zIndex={0}
-                source={{
+              zIndex={0}
+              source={{
                 uri: album.previewAsset.image.uri,
                 width: this._imageSize,
                 height: this._imageSize
               }}></Image>
             : <View
               style={{
-              backgroundColor: '#D6D6D6',
-              width: this._imageSize,
-              height: this._imageSize
-            }}></View>}
+                backgroundColor: '#D6D6D6',
+                width: this._imageSize,
+                height: this._imageSize
+              }}></View>}
           {editable
             ? this.renderRemoveIcon(album)
             : null}
@@ -239,9 +240,9 @@ export default class AlbumList extends Component {
       return (
         <TextInput
           onChangeText={(text) => {
-          album.pendingTitle = text;
-          this.forceUpdate();
-        }}
+            album.pendingTitle = text;
+            this.forceUpdate();
+          } }
           style={styles.title}
           value={value}></TextInput>
       );
@@ -275,13 +276,13 @@ export default class AlbumList extends Component {
       <View style={styles.container}>
         <ListView
           style={{
-          flex: 1
-        }}
+            flex: 1
+          }}
           removeClippedSubviews={true}
           dataSource={this.state.dataSource}
           renderRow={this
-          ._renderRow
-          .bind(this)}/>
+            ._renderRow
+            .bind(this)} />
       </View>
     );
   }

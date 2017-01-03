@@ -149,6 +149,10 @@ export function collectionArrayObserverHandler(changeDetails, arr,
                     arr[index] = undefined;
                     afterModCb && afterModCb(arr, index, 'remove');
                 }
+                else if(index < 0) {
+                    //insertion is before our indecies, we need to increment
+                    afterModCb && afterModCb(arr, -1, 'remove');
+                }
             });
             arr = arr.filter(obj => (obj !== undefined));
 
@@ -161,6 +165,9 @@ export function collectionArrayObserverHandler(changeDetails, arr,
                         .obj);
                     arr.splice(index, 0, newObj);
                     afterModCb && afterModCb(arr, index, 'insert', newObj);
+                }else if(index < 0) {
+                    //insertion is before our indecies, we need to increment
+                    afterModCb && afterModCb(arr, -1, 'insert');
                 }
                 lastIndex = (arr.length - 1);
             });

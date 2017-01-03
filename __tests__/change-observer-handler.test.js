@@ -16,7 +16,6 @@ function toNumberedCollectionIndex(arr) {
 
 //START---------SINGULAR ADD--------------START
 describe('SINGULAR ADD', () => {
-
     it('insert singular in middle of assetCollection with normal order starting from 0', () => {
         const changeDetails = {
             insertedObjects: [{
@@ -41,6 +40,33 @@ describe('SINGULAR ADD', () => {
             return obj;
         }).then((result) => {
             expect(toNumberedCollectionIndex(result)).toBe('0a1b2c3d');
+        });
+    });
+
+    it('insert singular before array starts should not insert only increment collectionIndecies', () => {
+        const changeDetails = {
+            insertedObjects: [{
+                obj: {
+                    id: 'a',
+                    collectionIndex: 0
+                }
+            }]
+        };
+        const arr = [{
+            id: 'b',
+            collectionIndex: 1
+        }, {
+            id: 'c',
+            collectionIndex: 2
+        }, {
+            id: 'd',
+            collectionIndex: 3
+        }];
+
+        return assetArrayObserverHandler(changeDetails, arr, (obj) => {
+            return obj;
+        }).then((result) => {
+            expect(toNumberedCollectionIndex(result)).toBe('2b3c4d');
         });
     });
 
@@ -245,6 +271,33 @@ describe('SINGULAR REMOVE', () => {
             return obj;
         }).then((result) => {
             expect(toNumberedCollectionIndex(result)).toBe('1b0a');
+        });
+    });
+
+    it('remove singular before array starts should not insert only decrement collectionIndecies', () => {
+        const changeDetails = {
+            removedObjects: [{
+                obj: {
+                    id: 'a',
+                    collectionIndex: 0
+                }
+            }]
+        };
+        const arr = [{
+            id: 'b',
+            collectionIndex: 1
+        }, {
+            id: 'c',
+            collectionIndex: 2
+        }, {
+            id: 'd',
+            collectionIndex: 3
+        }];
+
+        return assetArrayObserverHandler(changeDetails, arr, (obj) => {
+            return obj;
+        }).then((result) => {
+            expect(toNumberedCollectionIndex(result)).toBe('0b1c2d');
         });
     });
 });
@@ -591,15 +644,14 @@ describe('OUTSIDE INDEX MOVE', () => {
             collectionIndex: 2
         }];
 
-        let f = jest.fn(); 
+        let f = jest.fn();
 
         return assetArrayObserverHandler(changeDetails, arr, (obj) => {
             return obj;
         }, (missingIndecies, finnishFunc) => {
             expect(missingIndecies[0]).toBe(1);
-            finnishFunc(); 
-        }).then((result) => {
-        });
+            finnishFunc();
+        }).then((result) => {});
     });
 
     it('move singular asset from outside of index bounds should trigger fetch request and insert that index', () => {
@@ -699,7 +751,7 @@ describe('OUTSIDE INDEX MOVE', () => {
             moves: [1, 0, 0, 1]
         };
         const arr = [{
-            id: 'c', 
+            id: 'c',
             collectionIndex: 2
         }, {
             id: 'a',
@@ -711,9 +763,9 @@ describe('OUTSIDE INDEX MOVE', () => {
         }, (arrayOfMissingIndecies, finnishFunc) => {
             expect(arrayOfMissingIndecies[0]).toBe(1);
             finnishFunc([{
-                collectionIndex : 1,
-                id : 'b'
-            }]); 
+                collectionIndex: 1,
+                id: 'b'
+            }]);
         }).then((result) => {
             expect(toNumberedCollectionIndex(result)).toBe('2c1b');
         });

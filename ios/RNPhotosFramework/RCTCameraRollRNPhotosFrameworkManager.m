@@ -79,6 +79,19 @@ RCT_EXPORT_METHOD(getAssets:(NSDictionary *)params
     RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 }
 
+RCT_EXPORT_METHOD(getAssetsWithIndecies:(NSDictionary *)params
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+    BOOL includeMetaData = [RCTConvert BOOL:params[@"includeMetaData"]];
+    PHFetchResult<PHAsset *> *assetsFetchResult = [PHAssetsService getAssetsForParams:params];
+    NSArray<PHAssetWithCollectionIndex *> *assets = [PHAssetsService getAssetsForFetchResult:assetsFetchResult atIndecies:[RCTConvert NSArray:params[@"indecies"]]];
+    [self prepareAssetsForDisplayWithParams:params andAssets:assets];
+    resolve(@{
+              @"assets" : [PHAssetsService assetsArrayToUriArray:assets andIncludeMetaData:includeMetaData],
+              });
+}
+
 
 RCT_EXPORT_METHOD(cleanCache:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)

@@ -22,18 +22,34 @@ export default class Album extends EventEmitter {
         }
         eventEmitter.addListener('onObjectChange', (changeDetails) => {
             if (changeDetails._cacheKey === this._cacheKey) {
-                this._emitChange(changeDetails, (assetArray) => {
+                this._emitChange(changeDetails, (assetArray, callback, fetchOptions) => {
+                    console.log(changeDetails, assetArray);
                     if (assetArray) {
                         return assetArrayObserverHandler(
                             changeDetails, assetArray,
                             (nativeObj) => {
                                 return new Asset(
                                     nativeObj);
-                            });
+                            }, (indecies, callback) => {
+                                //The update algo has requested new assets.
+                                return this.newAssetsRequested(indecies, fetchOptions, callback);
+                            }, this.perferedSortOrder).then(updatedArray => {
+                            callback && callback(updatedArray);
+                            return updatedArray;
+                        });
                     }
                     return assetArray;
                 }, this);
             }
+        });
+    }
+
+    newAssetsRequested(indecies, fetchOptions, callback) {
+        const fetchOptionsWithIndecies = {...fetchOptions, indecies : [...indecies]};
+        console.log('Requested indecies', fetchOptionsWithIndecies);
+        return this.getAssetsWithIndecies(fetchOptionsWithIndecies).then((assets) => {
+            callback && callback(assets);
+            return assets;
         });
     }
 
@@ -74,11 +90,25 @@ export default class Album extends EventEmitter {
     }
 
     getAssets(params) {
+        this.perferedSortOrder = params.assetDisplayBottomUp === params.assetDisplayStartToEnd ? 'reversed' : 'normal';
         const trackAssets = params.trackInsertsAndDeletes || params.trackAssetsChanges;
         if (trackAssets && !this._cacheKey) {
             this._cacheKey = uuidGenerator();
         }
         return NativeApi.getAssets({
+            fetchOptions: this._fetchOptions,
+            ...params,
+            _cacheKey: this._cacheKey,
+            albumLocalIdentifier: this.localIdentifier
+        });
+    }
+
+    getAssetsWithIndecies(params) {
+        const trackAssets = params.trackInsertsAndDeletes || params.trackAssetsChanges;
+        if (trackAssets && !this._cacheKey) {
+            this._cacheKey = uuidGenerator();
+        }
+        return NativeApi.getAssetsWithIndecies({
             fetchOptions: this._fetchOptions,
             ...params,
             _cacheKey: this._cacheKey,

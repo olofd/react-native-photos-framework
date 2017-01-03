@@ -1,6 +1,10 @@
 import ReactPropTypes from 'react/lib/ReactPropTypes';
-import {NativeAppEventEmitter} from 'react-native';
-import {NativeModules} from 'react-native';
+import {
+  NativeAppEventEmitter
+} from 'react-native';
+import {
+  NativeModules
+} from 'react-native';
 import Asset from './asset';
 import Album from './album';
 import AlbumQueryResult from './album-query-result';
@@ -27,12 +31,12 @@ class CameraRollRNPhotosFramework {
     const methodsWithoutCacheCleanBlock = ['constructor', 'cleanCache', 'authorizationStatus', 'requestAuthorization'];
     const methodNames = (
       Object.getOwnPropertyNames(CameraRollRNPhotosFramework.prototype)
-        .filter(method => methodsWithoutCacheCleanBlock.indexOf(method) === -1)
+      .filter(method => methodsWithoutCacheCleanBlock.indexOf(method) === -1)
     );
     methodNames.forEach(methodName => {
       const originalMethod = this[methodName];
       this[methodName] = function (...args) {
-        if(!this.cleanCachePromise) {
+        if (!this.cleanCachePromise) {
           this.cleanCachePromise = RCTCameraRollRNPhotosFrameworkManager.cleanCache();
         }
         return this.cleanCachePromise.then(() => originalMethod.apply(this, args));
@@ -77,6 +81,16 @@ class CameraRollRNPhotosFramework {
       });
   }
 
+  getAssetsWithIndecies(params) {
+    return RCTCameraRollRNPhotosFrameworkManager
+      .getAssetsWithIndecies(params)
+      .then((assetsResponse) => {
+        return assetsResponse
+            .assets
+            .map(p => new Asset(p));
+      });
+  }
+
   getAlbumsCommon(params, asSingleQueryResult) {
     return this.getAlbumsMany([
       Object.assign({
@@ -117,11 +131,15 @@ class CameraRollRNPhotosFramework {
   }
 
   getAlbumsByTitle(title) {
-    return this.getAlbumsWithParams({albumTitles: [title]});
+    return this.getAlbumsWithParams({
+      albumTitles: [title]
+    });
   }
 
   getAlbumsByTitles(titles) {
-    return this.getAlbumsWithParams({albumTitles: titles});
+    return this.getAlbumsWithParams({
+      albumTitles: titles
+    });
   }
 
   // param should include property called albumTitles : array<string> But can also
@@ -169,26 +187,30 @@ class CameraRollRNPhotosFramework {
 
   createImageAsset(image) {
     return this
-      .createAssets({images: [image]})
+      .createAssets({
+        images: [image]
+      })
       .then((result) => result[0]);
   }
 
   createVideoAsset(video) {
     return this
-      .createAssets({videos: [video]})
+      .createAssets({
+        videos: [video]
+      })
       .then((result) => result[1]);
   }
 
   createAssets(params) {
     return RCTCameraRollRNPhotosFrameworkManager
       .createAssets({
-      images: params.images,
-      videos: params.videos,
-      albumLocalIdentifier: params.album
-        ? params.album.localIdentifier
-        : undefined,
-      includeMetaData: params.includeMetaData
-    })
+        images: params.images,
+        videos: params.videos,
+        albumLocalIdentifier: params.album ?
+          params.album.localIdentifier :
+          undefined,
+        includeMetaData: params.includeMetaData
+      })
       .then((result) => {
         return result
           .assets
@@ -198,11 +220,14 @@ class CameraRollRNPhotosFramework {
 
   stopTracking(cacheKey) {
     return new Promise((resolve, reject) => {
-        if (cacheKey) {
-            return resolve(RCTCameraRollRNPhotosFrameworkManager.stopTracking(cacheKey));
-        }else {
-          resolve({success : true, status : 'was-not-tracked'});
-        }
+      if (cacheKey) {
+        return resolve(RCTCameraRollRNPhotosFrameworkManager.stopTracking(cacheKey));
+      } else {
+        resolve({
+          success: true,
+          status: 'was-not-tracked'
+        });
+      }
     });
   }
 

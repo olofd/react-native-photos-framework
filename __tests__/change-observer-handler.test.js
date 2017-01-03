@@ -1,5 +1,5 @@
 import {
-     assetArrayObserverHandler,
+    assetArrayObserverHandler,
     collectionArrayObserverHandler
 } from '../src/change-observer-handler.js';
 
@@ -31,11 +31,11 @@ describe('SINGULAR ADD', () => {
             collectionIndex: 0
         }, {
             id: 'c',
-            collectionIndex: 1 
+            collectionIndex: 1
         }, {
             id: 'd',
             collectionIndex: 2
-        }]; 
+        }];
 
         return assetArrayObserverHandler(changeDetails, arr, (obj) => {
             return obj;
@@ -58,7 +58,7 @@ describe('SINGULAR ADD', () => {
             collectionIndex: 3
         }, {
             id: 'c',
-            collectionIndex: 4 
+            collectionIndex: 4
         }, {
             id: 'd',
             collectionIndex: 5
@@ -165,6 +165,30 @@ describe('PLURALIS ADD', () => {
             expect(toNumberedCollectionIndex(result)).toBe('4e3d2c1b0a');
         });
     });
+
+    it('insert multiple in empty collection and expect reversed order', () => {
+        const changeDetails = {
+            insertedObjects: [{
+                obj: {
+                    id: 'b',
+                    collectionIndex: 0
+                }
+            }, {
+                obj: {
+                    id: 'a',
+                    collectionIndex: 1
+                }
+            }]
+        };
+        const arr = [];
+
+        return assetArrayObserverHandler(changeDetails, arr, (obj) => {
+            return obj;
+        }, undefined, 'reversed').then((result) => {
+            expect(toNumberedCollectionIndex(result)).toBe('1a0b');
+        });
+    });
+
 });
 //END---------PLURALIS ADD--------------END
 
@@ -266,29 +290,29 @@ describe('PLURALIS REMOVE', () => {
             removedObjects: [{
                 obj: {
                     id: 'c',
-                    collectionIndex: 2
+                    collectionIndex: 3
                 }
             }, {
                 obj: {
                     id: 'a',
-                    collectionIndex: 0
+                    collectionIndex: 1
                 }
             }]
         };
         const arr = [{
             id: 'c',
-            collectionIndex: 2
+            collectionIndex: 3
         }, {
             id: 'b',
-            collectionIndex: 1
+            collectionIndex: 2
         }, {
             id: 'a',
-            collectionIndex: 0
+            collectionIndex: 1
         }];
         return assetArrayObserverHandler(changeDetails, arr, (obj) => {
             return obj;
         }).then((result) => {
-            expect(toNumberedCollectionIndex(result)).toBe('0b');
+            expect(toNumberedCollectionIndex(result)).toBe('1b');
         });
     });
 });
@@ -536,7 +560,7 @@ describe('ERRONEOUS INPUT', () => {
             }]
         };
         const arr = [{
-            collectionIndex: 1 
+            collectionIndex: 1
         }, {
             collectionIndex: 0
         }, {
@@ -551,10 +575,10 @@ describe('ERRONEOUS INPUT', () => {
 
 //START---------OUTSIDE INDEX MOVE--------------START
 describe('OUTSIDE INDEX MOVE', () => {
-    it('move asset from outside of index bounds should trigger fetch request', () => {
+    xit('move asset from outside of index bounds should trigger fetch request', () => {
         //Changes in position always happens like this, in paired atomic steps:
         const changeDetails = {
-            moves: [1, 5, 5, 1, 5, 1, 1, 5]
+            moves: [1, 5, 5, 1]
         };
         const arr = [{
             id: 'a',
@@ -569,7 +593,7 @@ describe('OUTSIDE INDEX MOVE', () => {
         const result = assetArrayObserverHandler(changeDetails, arr, (obj) => {
             return obj;
         });
-        
+
         let f = jest.fn();
 
         return assetArrayObserverHandler(changeDetails, arr, (obj) => {
@@ -577,10 +601,126 @@ describe('OUTSIDE INDEX MOVE', () => {
         }, f).then((result) => {
             expect(f).toHaveBeenCalledWith([5], expect.any(Function));
         });
-
     });
 
-    xit('move singular in middle of assetCollection with reversed order', () => {
+    it('move singular asset from outside of index bounds should trigger fetch request and insert that index', () => {
+        //Changes in position always happens like this, in paired atomic steps:
+        const changeDetails = {
+            moves: [1, 5, 5, 1]
+        };
+        const arr = [{
+            id: 'a',
+            collectionIndex: 0
+        }, {
+            id: 'e',
+            collectionIndex: 1
+        }, {
+            id: 'c',
+            collectionIndex: 2
+        }];
+
+        return assetArrayObserverHandler(changeDetails, arr, (obj) => {
+            return obj;
+        }, (arrayOfMissingIndecies, finnishFunc) => {
+            return finnishFunc(arrayOfMissingIndecies.map((index) => {
+                return {
+                    collectionIndex: index,
+                    id: 'b'
+                }
+            }));
+        }).then((result) => {
+            expect(toNumberedCollectionIndex(result)).toBe('0a1b2c');
+        });
+    });
+
+    it('move pluralis assets from outside of index bounds should trigger fetch request and insert at those indecies', () => {
+        //Changes in position always happens like this, in paired atomic steps:
+        const changeDetails = {
+            moves: [5, 1, 1, 5, 2, 7, 7, 2]
+        };
+        const arr = [{
+            id: 'a',
+            collectionIndex: 0
+        }, {
+            id: 'e',
+            collectionIndex: 1
+        }, {
+            id: 'c',
+            collectionIndex: 2
+        }];
+
+        return assetArrayObserverHandler(changeDetails, arr, (obj) => {
+            return obj;
+        }, (arrayOfMissingIndecies, finnishFunc) => {
+            return finnishFunc(arrayOfMissingIndecies.map((index) => {
+                return {
+                    collectionIndex: index,
+                    id: index === 5 ? 'b' : 'c'
+                }
+            }));
+        }).then((result) => {
+            expect(toNumberedCollectionIndex(result)).toBe('0a1b2c');
+        });
+    });
+
+    it('move pluralis assets from outside of index bounds, if asset is not returned return non-error-output', () => {
+        //Changes in position always happens like this, in paired atomic steps:
+        const changeDetails = {
+            moves: [5, 1, 1, 5, 2, 7, 7, 2]
+        };
+        const arr = [{
+            id: 'a',
+            collectionIndex: 0
+        }, {
+            id: 'e',
+            collectionIndex: 1
+        }, {
+            id: 'c',
+            collectionIndex: 2
+        }, {
+            id: 'd',
+            collectionIndex: 3
+        }];
+
+        return assetArrayObserverHandler(changeDetails, arr, (obj) => {
+            return obj;
+        }, (arrayOfMissingIndecies, finnishFunc) => {
+            return finnishFunc([{
+                collectionIndex: 5,
+                id: 'b'
+            }]);
+        }).then((result) => {
+            expect(toNumberedCollectionIndex(result)).toBe('0a1b2d');
+        });
+    });
+
+    fit('should be able to handle simple out of index move', () => {
+        //Changes in position always happens like this, in paired atomic steps:
+        const changeDetails = {
+            moves: [1, 0, 0, 1]
+        };
+        const arr = [{
+            id: 'a',
+            collectionIndex: 2
+        }, {
+            id: 'b',
+            collectionIndex: 1
+        }];
+
+        return assetArrayObserverHandler(changeDetails, arr, (obj) => {
+            return obj;
+        }, (arrayOfMissingIndecies, finnishFunc) => {
+            console.log(arrayOfMissingIndecies);
+            return finnishFunc([{
+                collectionIndex: 5,
+                id: 'b'
+            }]);
+        }).then((result) => {
+            expect(toNumberedCollectionIndex(result)).toBe('0a1b2d');
+        });
+    });
+
+    it('move singular in middle of assetCollection with reversed order', () => {
         const changeDetails = {
             moves: [1, 2, 2, 1]
         };

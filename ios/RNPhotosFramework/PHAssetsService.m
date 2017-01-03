@@ -132,6 +132,24 @@
     return assets;
 }
 
++(NSMutableArray<PHAssetWithCollectionIndex*> *) getAssetsForFetchResult:(PHFetchResult *)assetsFetchResult atIndecies:(NSArray<NSNumber *> *)indecies {
+    NSMutableArray<PHAssetWithCollectionIndex *> *assets = [NSMutableArray new];
+    NSUInteger assetCount = assetsFetchResult.count;
+    for(int i = 0; i < indecies.count; i++) {
+        int collectionIndex = [[indecies objectAtIndex:i] intValue];
+        if(collectionIndex <= (assetCount - 1) && collectionIndex >= 0) {
+            PHAsset *asset = [assetsFetchResult objectAtIndex:collectionIndex];
+            [assets addObject:[[PHAssetWithCollectionIndex alloc] initWithAsset:asset andCollectionIndex:@(collectionIndex)]];
+            NSLog(@"index zero %@ with index %d", asset.localIdentifier, collectionIndex);
+
+        }
+
+    }
+    return assets;
+}
+
+
+
 +(NSIndexSet *) getIndexSetForAssetEnumerationWithAssetCount:(int)assetCount startIndex:(int)startIndex endIndex:(int)endIndex assetDisplayStartToEnd:(BOOL)assetDisplayStartToEnd {
         int originalStartIndex = startIndex;
         int originalEndIndex = endIndex;

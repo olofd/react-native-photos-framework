@@ -59,13 +59,17 @@ class CameraRollPicker extends Component {
       .props
       .album
       .onChange((changeDetails, update, unsubscribe) => {
-        console.log(changeDetails);
-        this.state.images = update(this.state.images);
-        this.state.dataSource = this
+        update(this.state.images, (images) => {
+          this.state.images = images;
+          this.state.dataSource = this
           .state
           .dataSource
           .cloneWithRows(this._nEveryRow(this.state.images, this.props.imagesPerRow));
-        this.setState({images: this.state.images, dataSource: this.state.dataSource});
+          this.setState({images: this.state.images, dataSource: this.state.dataSource});
+        }, {
+          includeMetaData : true
+        });
+
       });
   }
 
@@ -85,9 +89,9 @@ class CameraRollPicker extends Component {
         trackInsertsAndDeletes : true,
         trackAssetsChanges : true,
         startIndex: this.state.images.length,
-        endIndex: this.state.images.length + 20,
+        endIndex: 1,
         fetchOptions: {},
-        assetDisplayBottomUp : true,
+        assetDisplayBottomUp : false,
         assetDisplayStartToEnd : false
       })
       .then((data) => {

@@ -8,20 +8,24 @@ function updateHandler(arr, cb) {
 }
 
 function enumerateMoves(arr, changeDetails, indexTranslater, cb) {
-    for (let i = 0; i < changeDetails.moves.length; i = (i + 2)) {
-        let fromIndex = changeDetails.moves[i];
-        let toIndex = changeDetails.moves[i + 1];
+    if (changeDetails.moves && changeDetails.moves.length) {
+        for (let i = 0; i < changeDetails.moves.length; i = (i + 2)) {
+            let fromIndex = changeDetails.moves[i];
+            let toIndex = changeDetails.moves[i + 1];
 
-        fromIndex = indexTranslater !== undefined ? indexTranslater(
-            fromIndex, arr, 'move') : fromIndex;
-        toIndex = indexTranslater !== undefined ? indexTranslater(toIndex, arr, 'move') :
-            toIndex;
-        cb(fromIndex, toIndex);
-
+            fromIndex = indexTranslater !== undefined ? indexTranslater(
+                fromIndex, arr, 'move') : fromIndex;
+            toIndex = indexTranslater !== undefined ? indexTranslater(toIndex, arr, 'move') :
+                toIndex;
+            cb(fromIndex, toIndex);
+        }
     }
 }
 
-export function indeciesIsReversedNormalOrScrambled(arr, changeDetails) {
+export function indeciesIsReversedNormalOrScrambled(arr, changeDetails, preferedOrder) {
+    if(!arr || arr.length === 0) {
+        return preferedOrder || 'normal';
+    }
     const indecies = arr.map(x => x.collectionIndex);
     if (indecies.some(index => index === undefined)) {
         return 'scrambled';
@@ -52,20 +56,19 @@ export function indeciesIsReversedNormalOrScrambled(arr, changeDetails) {
     return order;
 }
 
-export function assetArrayObserverHandler(changeDetails, arr, createNewObjFunc, requestNewItemsCb) {
-    const arrayOrder = indeciesIsReversedNormalOrScrambled(arr, changeDetails);
+export function assetArrayObserverHandler(changeDetails, arr, createNewObjFunc, requestNewItemsCb, preferedOrder) {
+    const arrayOrder = indeciesIsReversedNormalOrScrambled(arr, changeDetails, preferedOrder);
     if (arrayOrder === 'scrambled') {
         throw new Error(
             '[RNPhotosFramework] You can not use the automatic update function for change observing with scrambled or undefined indecies (property collectionIndex). Please submit the assets in their original order or do the update manully'
         );
         return;
     }
-    let startIndex = 0; 
+    let startIndex = 0;
     if (arr.length > 0) {
         startIndex = arrayOrder === 'normal' || arr.length === 0 ? arr[0].collectionIndex : arr[
             arr.length - 1].collectionIndex;
     }
-    console.log('START INDEX', startIndex);
 
     return collectionArrayObserverHandler(changeDetails, arr, createNewObjFunc, requestNewItemsCb,
         (index, arr, operation) => {
@@ -74,7 +77,6 @@ export function assetArrayObserverHandler(changeDetails, arr, createNewObjFunc, 
                 indexAffected = (arr.length - (operation === 'insert' ? 0 : 1)) -
                     indexAffected;
             }
-            console.log(indexAffected, index);
             return indexAffected;
         }, (arr, index, operation, newObj) => {
             if (arrayOrder === 'normal') {
@@ -105,7 +107,7 @@ function getObjectIndex(updatedObj, indexTranslater, arr, operation) {
         undefined) ? updatedObj.obj.collectionIndex : updatedObj.index;
     return indexTranslater !== undefined ? indexTranslater(
         objectIndex, arr, operation) : objectIndex;
-}
+} 
 
 function getMissingIndecies(changeDetails, arr,
     createNewObjFunc, requestNewItemsCb, indexTranslater) {
@@ -114,9 +116,9 @@ function getMissingIndecies(changeDetails, arr,
         indexTranslater, (fromIndex, toIndex) => {
             if ((fromIndex > (arr.length - 1) || fromIndex < 0) && missingIndecies.indexOf(fromIndex) === -1) {
                 missingIndecies.push(fromIndex);
-            } 
-    });
-    return missingIndecies;  
+            }
+        });
+    return missingIndecies;
 }
 
 export function collectionArrayObserverHandler(changeDetails, arr,
@@ -130,14 +132,16 @@ export function collectionArrayObserverHandler(changeDetails, arr,
                 createNewObjFunc, requestNewItemsCb, indexTranslater);
             if (missingIndecies && missingIndecies.length) {
                 requestNewItemsCb(missingIndecies, (missingItems) => {
-
+                    return performUpdate(missingItems);
                 });
+            } else {
+                return performUpdate();
             }
         } else {
             return performUpdate();
         }
 
-        function performUpdate() {
+        function performUpdate(missingItems) {
             let lastIndex = (arr.length - 1);
             updateHandler(changeDetails.removedObjects, (updatedObj) => {
                 const index = getObjectIndex(updatedObj, indexTranslater, arr, 'remove');
@@ -172,19 +176,30 @@ export function collectionArrayObserverHandler(changeDetails, arr,
                             reInsertedCollectionIndex = arr[fromIndex].collectionIndex;
                         }
 
-                        const fromObj = tempObj[fromIndex] || arr[fromIndex];
+                        let fromObj = tempObj[fromIndex] || arr[fromIndex];
+                        if (!fromObj && missingItems) {
+                            fromObj = missingItems.find(item => item.collectionIndex === fromIndex);
+                        }
+                        if (!fromObj) {
+                            console.warn('Could not find aset with collectionIndex', fromIndex);
+                            afterModCb(arr, toIndex, 'remove');
+                        }
                         tempObj[toIndex] = arr[toIndex];
 
                         if ((arr[toIndex] && arr[toIndex].collectionIndex !== undefined) &&
                             (fromObj && fromObj.collectionIndex !== undefined)) {
                             fromObj.collectionIndex = arr[toIndex].collectionIndex;
                         }
-                        arr[toIndex] = fromObj;
+                        if (toIndex <= arr.length - 1 && toIndex >= 0) {
+                            arr[toIndex] = fromObj;
+                        }
+
                         if (reInsertedCollectionIndex !== undefined) {
                             arr[fromIndex] = {
                                 collectionIndex: reInsertedCollectionIndex
                             }
                         }
+                        arr = arr.filter(item => item !== undefined);
                     });
             }
 
@@ -197,9 +212,5 @@ export function collectionArrayObserverHandler(changeDetails, arr,
             });
             return resolve(arr);
         }
-        return performUpdate();
     });
-
-
-
 }

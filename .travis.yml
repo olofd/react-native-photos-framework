@@ -15,7 +15,7 @@ install:
   - cd example && $yarn install && cd ..
 
 script:
-  - if [[ "$TEST_TYPE" = objc-ios ]]; then make test; fi
+  - if [[ "$TEST_TYPE" = objc-ios ]]; then xcodebuild test -workspace ios/RNPhotosFramework.xcworkspace -scheme RNPhotosFramework -destination 'platform=iOS Simulator,name=iPhone 5s'; fi
   - if [[ "$TEST_TYPE" = js ]]; then npm test -- --maxWorkers=1; fi
 
 env:

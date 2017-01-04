@@ -4,7 +4,7 @@
     "type": "git",
     "url": "https://github.com/olofd/react-native-photos-framework.git"
   },
-  "version": "0.0.63",
+  "version": "0.0.64",
   "description": "Use Apples Photos Framework with react-native to fetch media from CameraRoll and iCloud",
   "author": "Olof Dahlbom olof.dahlbom@me.com",
   "nativePackage": true,
@@ -35,7 +35,7 @@
   "dependencies": {},
   "scripts": {
     "test": "jest",
-    "test-ios" : "set -o pipefail && xcodebuild test -verbose -project example/ios/Example.xcodeproj -scheme Example -destination 'id=E40727B3-41FB-4D6E-B4CB-BFA87109EB12' | xcpretty",
+    "test-ios": "set -o pipefail && xcodebuild test -verbose -project example/ios/Example.xcodeproj -scheme Example -destination 'id=E40727B3-41FB-4D6E-B4CB-BFA87109EB12' | xcpretty",
     "update": "git add . && git commit -m \"Updated\" && npm version patch && git push --tags && git push origin master && npm publish",
     "update-small": "git add . && git commit -m \"Updated\" && git push origin master"
   },

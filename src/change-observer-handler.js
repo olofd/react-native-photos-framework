@@ -63,16 +63,17 @@ function getObjectIndex(updatedObj, indexTranslater, arr, operation) {
         objectIndex, arr, operation) : objectIndex;
 }
 
-function getMissingIndecies(changeDetails, arr,
-    createNewObjFunc, requestNewItemsCb, indexTranslater) {
+function getMissingIndecies(changeDetails, arr, indexTranslater) {
     const missingIndecies = [];
     enumerateMoves(arr, changeDetails,
         indexTranslater, (fromIndex, toIndex, originalFromIndex, originalToIndex) => {
-
             const fromIndexIsOutsideOfRange = (fromIndex > (arr.length - 1) || fromIndex < 0);
             const toIndexIsWithinRange = (toIndex <= (arr.length - 1) && toIndex >= 0);
             if ((fromIndexIsOutsideOfRange && toIndexIsWithinRange) &&
                 missingIndecies.indexOf(originalFromIndex) === -1) {
+                //This might seem wrong (to push toIndex and not fromIndex), 
+                //but we need to ask for the item we don't have in it's new position.
+                //In native the collection is already up to date:
                 missingIndecies.push(originalToIndex);
             }
         });
@@ -136,25 +137,10 @@ export function collectionArrayObserverHandler(changeDetails, arr,
             !changeDetails.hasIncrementalChanges) {
             return resolve(arr);
         }
-        if (requestNewItemsCb) {
-            const missingIndecies = getMissingIndecies(changeDetails, arr,
-                createNewObjFunc, requestNewItemsCb, indexTranslater);
-            stepCompletedCb && stepCompletedCb('fetch', missingIndecies);
-            if (missingIndecies && missingIndecies.length) {
-                requestNewItemsCb(missingIndecies, (missingItems) => {
-                    return performUpdate(missingItems);
-                });
-            } else {
-                return performUpdate();
-            }
-        } else {
-            return performUpdate();
-        }
+        performUpdate();
 
-        function performUpdate(missingItems) {
+        function performUpdate() {
             let lastIndex = (arr.length - 1);
-
-
             updateHandler(changeDetails.removedObjects, (updatedObj) => {
                 const index = getObjectIndex(updatedObj, indexTranslater, arr, 'remove');
                 if (index <= lastIndex && index >= 0) {
@@ -185,6 +171,23 @@ export function collectionArrayObserverHandler(changeDetails, arr,
             });
             stepCompletedCb && stepCompletedCb('insert', arr);
 
+
+            if (requestNewItemsCb) {
+                const missingIndecies = getMissingIndecies(changeDetails, arr, indexTranslater);
+                stepCompletedCb && stepCompletedCb('fetch', missingIndecies);
+                if (missingIndecies && missingIndecies.length) {
+                    requestNewItemsCb(missingIndecies, (missingItems) => {
+                        return performMoveAndChange(missingItems);
+                    });
+                } else {
+                    return performMoveAndChange();
+                }
+            } else {
+                return performMoveAndChange();
+            }
+        }
+
+        function performMoveAndChange(missingItems) {
             //Moves will only happen if you update a property that affects the original sort order.
             if (changeDetails.moves) {
                 let tempObj = {};
@@ -206,7 +209,7 @@ export function collectionArrayObserverHandler(changeDetails, arr,
                             fromObj = missingItems.find(item => item.collectionIndex === originalToIndex);
                         }
                         if (!fromObj) {
-                            console.warn('Could not find aset with collectionIndex', fromIndex);
+                            console.warn('Could not find aset with collectionIndex', orginalFromIndex);
                             afterModCb(arr, toIndex, 'remove');
                         }
                         tempObj[toIndex] = arr[toIndex];
@@ -230,7 +233,7 @@ export function collectionArrayObserverHandler(changeDetails, arr,
             }
             stepCompletedCb && stepCompletedCb('move', arr);
 
-            lastIndex = (arr.length - 1);
+            let lastIndex = (arr.length - 1);
             updateHandler(changeDetails.changedObjects, (updatedObj) => {
                 const index = getObjectIndex(updatedObj, indexTranslater, arr, 'change');
                 if (index <= lastIndex && index >= 0) {

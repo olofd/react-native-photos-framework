@@ -400,18 +400,19 @@ describe('PLURALIS REMOVE', () => {
     it('remove multiple in middle of assetCollection with reversed order', () => {
         const changeDetails = {
             removedObjects: [
-            //2b1a
-            {
-                obj: {
-                    id: 'c',
-                    collectionIndex: 3
+                //2b1a
+                {
+                    obj: {
+                        id: 'c',
+                        collectionIndex: 3
+                    }
+                }, {
+                    obj: {
+                        id: 'a',
+                        collectionIndex: 1
+                    }
                 }
-            }, {
-                obj: {
-                    id: 'a',
-                    collectionIndex: 1
-                }
-            }]
+            ]
         };
         const arr = [{
             id: 'c',
@@ -993,7 +994,7 @@ describe('MIXED OPERATIONS', () => {
         });
     });
 
-    xit('Handle a mixed operation with REMOVE, INSERT, MOVE and CHANGE with normal indecies and fetches', () => {
+    it('Handle a mixed operation with REMOVE, INSERT, MOVE and CHANGE with normal indecies and fetches', () => {
         const changeDetails = {
             insertedObjects: [
                 //6g5f4d
@@ -1015,7 +1016,7 @@ describe('MIXED OPERATIONS', () => {
             collectionIndex: 3
         }, {
             id: 'f',
-            collectionIndex: 4 
+            collectionIndex: 4
         }, {
             id: 'g',
             collectionIndex: 5
@@ -1025,14 +1026,14 @@ describe('MIXED OPERATIONS', () => {
             return obj;
         }, () => {}, 'normal', (step, arr) => {
             if (step === 'insert') {
-                expect(toNumberedCollectionIndex(arr)).toBe('4e5e6f7g');
+                expect(toNumberedCollectionIndex(arr)).toBe('4e5d6f7g');
             }
         }).then((result) => {
-            // expect(toNumberedCollectionIndex(result)).toBe('0a1k2d');
+            expect(toNumberedCollectionIndex(result)).toBe('4e5d6f7g');
         });
     });
 
-    xit('Handle a mixed operation with REMOVE, INSERT, MOVE and CHANGE with reverse indecies and fetches', () => {
+    it('Handle a mixed operation with REMOVE, INSERT, MOVE and CHANGE with reverse indecies and fetches', () => {
         const changeDetails = {
             insertedObjects: [
                 //6g5f4d
@@ -1067,11 +1068,11 @@ describe('MIXED OPERATIONS', () => {
                 expect(toNumberedCollectionIndex(arr)).toBe('7g6f5d4e');
             }
         }).then((result) => {
-            // expect(toNumberedCollectionIndex(result)).toBe('0a1k2d');
+            expect(toNumberedCollectionIndex(result)).toBe('7g6f5d4e');
         });
     });
 
-    xit('Handle a mixed operation with REMOVE, INSERT, MOVE and CHANGE with reverse indecies and fetches', () => {
+    it('Handle a mixed operation with REMOVE, INSERT, MOVE and CHANGE with reverse indecies and fetches', () => {
         const changeDetails = {
             removedObjects: [{
                 obj: {
@@ -1100,7 +1101,7 @@ describe('MIXED OPERATIONS', () => {
                     collectionIndex: 4
                 }
             }],
-            moves: [4, 3, 3, 4, 9, 7, 7, 9],
+            moves: [3, 4, 4, 3],
             changedObjects: [{
                 obj: {
                     id: 'k',
@@ -1110,41 +1111,38 @@ describe('MIXED OPERATIONS', () => {
         };
         const arr = [{
             id: 'a',
-            collectionIndex: 5
+            collectionIndex: 3
         }, {
             id: 'c',
             collectionIndex: 4
-        }, { 
+        }, {
             id: 'd',
-            collectionIndex: 3
+            collectionIndex: 5
         }];
 
         return assetArrayObserverHandler(changeDetails, arr, (obj) => {
             return obj;
-        }, () => {}, 'normal', (step, arr) => {
+        }, (indecies, finnishFunc) => {
+            expect(indecies[0]).toBe(4);
+            finnishFunc([{
+                collectionIndex: 4,
+                id: 'q'
+            }]);
+        }, 'normal', (step, arr) => {
             if (step === 'remove') {
-                expect(toNumberedCollectionIndex(arr)).toBe('4a3c');
+                expect(toNumberedCollectionIndex(arr)).toBe('3c4d');
             }
             if (step === 'insert') {
-                expect(toNumberedCollectionIndex(arr)).toBe('6a5h4c');
+                expect(toNumberedCollectionIndex(arr)).toBe('4h5c6d7g');
             }
             if (step === 'move') {
-                // expect(toNumberedCollectionIndex(arr)).toBe('5a4c3h');
+                expect(toNumberedCollectionIndex(arr)).toBe('4q5c6d7g');
             }
             if (step === 'change') {
-                //expect(toNumberedCollectionIndex(arr)).toBe('0a1k2d');
+                expect(toNumberedCollectionIndex(arr)).toBe('4q5k6d7g');
             }
-            /* if (step === 'insert') {
-                 expect(toNumberedCollectionIndex(arr)).toBe('0x1a2d');
-             }
-             if (step === 'move') {
-                 expect(toNumberedCollectionIndex(arr)).toBe('0a1x2d');
-             }
-             if (step === 'change') {
-                 expect(toNumberedCollectionIndex(arr)).toBe('0a1k2d');
-             }*/
         }).then((result) => {
-            // expect(toNumberedCollectionIndex(result)).toBe('0a1k2d');
+             expect(toNumberedCollectionIndex(result)).toBe('4q5k6d7g');
         });
     });
 });
@@ -1159,7 +1157,7 @@ it('should do nothing to input if hasIncrementalChanges is false', () => {
             }
         }]
     };
-    const arr = [{ 
+    const arr = [{
         id: 'a',
         collectionIndex: 0
     }, {

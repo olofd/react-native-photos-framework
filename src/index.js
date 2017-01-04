@@ -86,8 +86,8 @@ class CameraRollRNPhotosFramework {
       .getAssetsWithIndecies(params)
       .then((assetsResponse) => {
         return assetsResponse
-            .assets
-            .map(p => new Asset(p));
+          .assets
+          .map(p => new Asset(p));
       });
   }
 
@@ -207,8 +207,7 @@ class CameraRollRNPhotosFramework {
         images: params.images,
         videos: params.videos,
         albumLocalIdentifier: params.album ?
-          params.album.localIdentifier :
-          undefined,
+          params.album.localIdentifier : undefined,
         includeMetaData: params.includeMetaData
       })
       .then((result) => {

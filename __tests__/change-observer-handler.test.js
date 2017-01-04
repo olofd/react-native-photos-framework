@@ -1159,7 +1159,7 @@ it('should do nothing to input if hasIncrementalChanges is false', () => {
             }
         }]
     };
-    const arr = [{
+    const arr = [{ 
         id: 'a',
         collectionIndex: 0
     }, {

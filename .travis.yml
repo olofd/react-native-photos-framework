@@ -15,11 +15,13 @@ install:
   - cd example && $yarn install && cd ..
 
 script:
+  - if [[ "$TEST_TYPE" = objc-ios-example ]]; then set -o pipefail && xcodebuild test -project example/ios/Example.xcodeproj -scheme Example -destination 'platform=iOS Simulator,name=iPhone 7' | xcpretty; fi
   - if [[ "$TEST_TYPE" = objc-ios ]]; then set -o pipefail && xcodebuild test -workspace ios/RNPhotosFramework.xcworkspace -scheme RNPhotosFramework -destination 'platform=iOS Simulator,name=iPhone 5s' | xcpretty; fi
   - if [[ "$TEST_TYPE" = js ]]; then npm test -- --maxWorkers=1; fi
 
 env:
   matrix:
+    - TEST_TYPE=objc-ios-example
     - TEST_TYPE=objc-ios
     - TEST_TYPE=js
 

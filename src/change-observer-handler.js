@@ -23,7 +23,7 @@ function enumerateMoves(arr, changeDetails, indexTranslater, cb) {
 }
 
 export function indeciesIsReversedNormalOrScrambled(arr, changeDetails, preferedOrder) {
-    if (!arr || arr.length === 0) {
+    if (!arr || arr.length <= 1) {
         return preferedOrder || 'normal';
     }
     const indecies = arr.map(x => x.collectionIndex);
@@ -56,52 +56,6 @@ export function indeciesIsReversedNormalOrScrambled(arr, changeDetails, prefered
     return order;
 }
 
-export function assetArrayObserverHandler(changeDetails, arr, createNewObjFunc, requestNewItemsCb, preferedOrder) {
-    const arrayOrder = indeciesIsReversedNormalOrScrambled(arr, changeDetails, preferedOrder);
-    if (arrayOrder === 'scrambled') {
-        throw new Error(
-            '[RNPhotosFramework] You can not use the automatic update function for change observing with scrambled or undefined indecies (property collectionIndex). Please submit the assets in their original order or do the update manully'
-        );
-        return;
-    }
-    let startIndex = 0;
-    if (arr.length > 0) {
-        startIndex = arrayOrder === 'normal' || arr.length === 0 ? arr[0].collectionIndex : arr[
-            arr.length - 1].collectionIndex;
-    }
-
-    return collectionArrayObserverHandler(changeDetails, arr, createNewObjFunc, requestNewItemsCb,
-        (index, arr, operation) => {
-            let indexAffected = index - startIndex;
-            if (arrayOrder === 'reversed') {
-                indexAffected = (arr.length - (operation === 'insert' ? 0 : 1)) -
-                    indexAffected;
-            }
-            return indexAffected;
-        }, (arr, index, operation, newObj) => {
-            if (arrayOrder === 'normal') {
-                for (let i = index + 1; i < arr.length; i++) {
-                    modifyIndex(arr, i, operation);
-                }
-            } else if (arrayOrder === 'reversed') {
-                for (let i = index - 1; i >= 0; i--) {
-                    modifyIndex(arr, i, operation);
-                }
-            }
-        });
-}
-
-function modifyIndex(arr, index, operation) {
-    const affectedObj = arr[index];
-    if (affectedObj) {
-        if (operation === 'insert') {
-            affectedObj.collectionIndex++;
-        } else if (operation === 'remove') {
-            affectedObj.collectionIndex--;
-        }
-    }
-}
-
 function getObjectIndex(updatedObj, indexTranslater, arr, operation) {
     const objectIndex = updatedObj.obj !== undefined && (updatedObj.obj.collectionIndex !==
         undefined) ? updatedObj.obj.collectionIndex : updatedObj.index;
@@ -125,15 +79,67 @@ function getMissingIndecies(changeDetails, arr,
     return missingIndecies;
 }
 
+export function assetArrayObserverHandler(changeDetails, arr, createNewObjFunc, requestNewItemsCb, preferedOrder, stepCompletedCb) {
+    const arrayOrder = indeciesIsReversedNormalOrScrambled(arr, changeDetails, preferedOrder);
+    if (arrayOrder === 'scrambled') {
+        throw new Error(
+            '[RNPhotosFramework] You can not use the automatic update function for change observing with scrambled or undefined indecies (property collectionIndex). Please submit the assets in their original order or do the update manully'
+        );
+        return;
+    }
+
+    return collectionArrayObserverHandler(changeDetails, arr, createNewObjFunc, requestNewItemsCb,
+        (index, arr, operation) => {
+            let startIndex = 0;
+            const arrWithoutUndefined = arr.filter(x => !!x);
+            if (arrWithoutUndefined.length > 0) {
+                startIndex = arrayOrder === 'normal' ? arrWithoutUndefined[0].collectionIndex : arrWithoutUndefined[
+                    arrWithoutUndefined.length - 1].collectionIndex;
+            }
+            let indexAffected = index - startIndex;
+            if (arrayOrder === 'reversed') {
+                indexAffected = ((arr.length - (operation === 'insert' ? 0 : 1)) -
+                    indexAffected);
+            }
+            return indexAffected;
+        }, (arr, index, operation, newObj) => {
+            if (arrayOrder === 'normal') {
+                for (let i = index + 1; i < arr.length; i++) {
+                    modifyIndex(arr, i, operation);
+                }
+            } else if (arrayOrder === 'reversed') {
+                for (let i = index - 1; i >= 0; i--) {
+                    modifyIndex(arr, i, operation);
+                }
+            }
+        }, stepCompletedCb);
+}
+
+function modifyIndex(arr, index, operation) {
+    const affectedObj = arr[index];
+    if (affectedObj) {
+        if (operation === 'insert') {
+            affectedObj.collectionIndex++;
+        } else if (operation === 'remove') {
+            affectedObj.collectionIndex--;
+        }
+    }
+}
+
+
 export function collectionArrayObserverHandler(changeDetails, arr,
-    createNewObjFunc, requestNewItemsCb, indexTranslater, afterModCb) {
+    createNewObjFunc, requestNewItemsCb, indexTranslater, afterModCb, stepCompletedCb) {
     //This function is constructed from Apple's documentation on how to apply
     //incremental changes.
     return new Promise((resolve, reject) => {
-        let fetchedResources;
+        if (changeDetails.hasIncrementalChanges !== undefined &&
+            !changeDetails.hasIncrementalChanges) {
+            return resolve(arr);
+        }
         if (requestNewItemsCb) {
             const missingIndecies = getMissingIndecies(changeDetails, arr,
                 createNewObjFunc, requestNewItemsCb, indexTranslater);
+            stepCompletedCb && stepCompletedCb('fetch', missingIndecies);
             if (missingIndecies && missingIndecies.length) {
                 requestNewItemsCb(missingIndecies, (missingItems) => {
                     return performUpdate(missingItems);
@@ -147,6 +153,8 @@ export function collectionArrayObserverHandler(changeDetails, arr,
 
         function performUpdate(missingItems) {
             let lastIndex = (arr.length - 1);
+
+
             updateHandler(changeDetails.removedObjects, (updatedObj) => {
                 const index = getObjectIndex(updatedObj, indexTranslater, arr, 'remove');
                 if (index <= lastIndex && index >= 0) {
@@ -158,6 +166,7 @@ export function collectionArrayObserverHandler(changeDetails, arr,
                 }
             });
             arr = arr.filter(obj => (obj !== undefined));
+            stepCompletedCb && stepCompletedCb('remove', arr);
 
             lastIndex = (arr.length - 1);
             updateHandler(changeDetails.insertedObjects, (updatedObj) => {
@@ -174,6 +183,7 @@ export function collectionArrayObserverHandler(changeDetails, arr,
                 }
                 lastIndex = (arr.length - 1);
             });
+            stepCompletedCb && stepCompletedCb('insert', arr);
 
             //Moves will only happen if you update a property that affects the original sort order.
             if (changeDetails.moves) {
@@ -183,7 +193,7 @@ export function collectionArrayObserverHandler(changeDetails, arr,
                     indexTranslater, (fromIndex, toIndex, orginalFromIndex, originalToIndex) => {
                         const fromIndexIsOutsideOfRange = (fromIndex > (arr.length - 1) || fromIndex < 0);
                         const toIndexIsWithinRange = (toIndex <= (arr.length - 1) && toIndex >= 0);
-                        if(fromIndexIsOutsideOfRange && !toIndexIsWithinRange) {
+                        if (fromIndexIsOutsideOfRange && !toIndexIsWithinRange) {
                             return;
                         }
                         let reInsertedCollectionIndex;
@@ -218,6 +228,7 @@ export function collectionArrayObserverHandler(changeDetails, arr,
                         arr = arr.filter(item => item !== undefined);
                     });
             }
+            stepCompletedCb && stepCompletedCb('move', arr);
 
             lastIndex = (arr.length - 1);
             updateHandler(changeDetails.changedObjects, (updatedObj) => {
@@ -226,6 +237,7 @@ export function collectionArrayObserverHandler(changeDetails, arr,
                     arr[index] = createNewObjFunc(updatedObj.obj);
                 }
             });
+            stepCompletedCb && stepCompletedCb('change', arr);
             return resolve(arr);
         }
     });

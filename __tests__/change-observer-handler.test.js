@@ -9,7 +9,7 @@ function toNumberedCollectionIndex(arr) {
             return 'ERROR';
         }
         return str += asset.collectionIndex.toString() + asset.id.toString();
-    }, ''); 
+    }, '');
 }
 
 //START--------------------BASIC FUNCTIONALLITY--------------------START
@@ -362,17 +362,22 @@ describe('SINGULAR REMOVE', () => {
 describe('PLURALIS REMOVE', () => {
     it('remove multiple in middle of assetCollection with normal order', () => {
         const changeDetails = {
-            removedObjects: [{
-                obj: {
-                    id: 'a',
-                    collectionIndex: 1
+            removedObjects: [
+                //1b2c
+                {
+                    obj: {
+                        id: 'a',
+                        collectionIndex: 1
+                    }
+                },
+                //1b
+                {
+                    obj: {
+                        id: 'c',
+                        collectionIndex: 3
+                    }
                 }
-            }, {
-                obj: {
-                    id: 'c',
-                    collectionIndex: 3
-                }
-            }]
+            ]
         };
         const arr = [{
             id: 'a',
@@ -394,7 +399,9 @@ describe('PLURALIS REMOVE', () => {
 
     it('remove multiple in middle of assetCollection with reversed order', () => {
         const changeDetails = {
-            removedObjects: [{
+            removedObjects: [
+            //2b1a
+            {
                 obj: {
                     id: 'c',
                     collectionIndex: 3
@@ -678,6 +685,34 @@ describe('ERRONEOUS INPUT', () => {
         }).toThrow();
     });
 });
+
+it('should do nothing to input if hasIncrementalChanges is false', () => {
+    const changeDetails = {
+        hasIncrementalChanges: false,
+        insertedObjects: [{
+            obj: {
+                id: 'b',
+                collectionIndex: 1
+            }
+        }]
+    };
+    const arr = [{
+        id: 'a',
+        collectionIndex: 0
+    }, {
+        id: 'c',
+        collectionIndex: 1
+    }, {
+        id: 'd',
+        collectionIndex: 2
+    }];
+
+    return assetArrayObserverHandler(changeDetails, arr, (obj) => {
+        return obj;
+    }).then((result) => {
+        expect(toNumberedCollectionIndex(result)).toBe('0a1c2d');
+    });
+});
 //END---------EDGES--------------END
 
 //START---------OUTSIDE INDEX MOVE--------------START
@@ -901,6 +936,248 @@ describe('OUTSIDE INDEX MOVE', () => {
 });
 
 //END---------OUTSIDE INDEX MOVE--------------END
+
+//START---------MIXED OPAERTAIONS--------------START
+
+describe('MIXED OPERATIONS', () => {
+    it('Handle a mixed operation with REMOVE, INSERT, MOVE and CHANGE', () => {
+        const changeDetails = {
+            removedObjects: [{
+                obj: {
+                    id: 'c',
+                    collectionIndex: 1
+                }
+            }],
+            insertedObjects: [{
+                obj: {
+                    id: 'x',
+                    collectionIndex: 0
+                }
+            }],
+            moves: [0, 1, 1, 0, 9, 7, 7, 9],
+            changedObjects: [{
+                obj: {
+                    id: 'k',
+                    collectionIndex: 1
+                }
+            }]
+        };
+        const arr = [{
+            id: 'a',
+            collectionIndex: 0
+        }, {
+            id: 'c',
+            collectionIndex: 1
+        }, {
+            id: 'd',
+            collectionIndex: 2
+        }];
+
+        return assetArrayObserverHandler(changeDetails, arr, (obj) => {
+            return obj;
+        }, () => {}, 'normal', (step, arr) => {
+            if (step === 'remove') {
+                expect(toNumberedCollectionIndex(arr)).toBe('0a1d');
+            }
+            if (step === 'insert') {
+                expect(toNumberedCollectionIndex(arr)).toBe('0x1a2d');
+            }
+            if (step === 'move') {
+                expect(toNumberedCollectionIndex(arr)).toBe('0a1x2d');
+            }
+            if (step === 'change') {
+                expect(toNumberedCollectionIndex(arr)).toBe('0a1k2d');
+            }
+        }).then((result) => {
+            expect(toNumberedCollectionIndex(result)).toBe('0a1k2d');
+        });
+    });
+
+    xit('Handle a mixed operation with REMOVE, INSERT, MOVE and CHANGE with normal indecies and fetches', () => {
+        const changeDetails = {
+            insertedObjects: [
+                //6g5f4d
+                {
+                    obj: {
+                        id: 'a',
+                        collectionIndex: 0
+                    }
+                }, {
+                    obj: {
+                        id: 'e',
+                        collectionIndex: 4
+                    }
+                }
+            ]
+        };
+        const arr = [{
+            id: 'd',
+            collectionIndex: 3
+        }, {
+            id: 'f',
+            collectionIndex: 4 
+        }, {
+            id: 'g',
+            collectionIndex: 5
+        }];
+
+        return assetArrayObserverHandler(changeDetails, arr, (obj) => {
+            return obj;
+        }, () => {}, 'normal', (step, arr) => {
+            if (step === 'insert') {
+                expect(toNumberedCollectionIndex(arr)).toBe('4e5e6f7g');
+            }
+        }).then((result) => {
+            // expect(toNumberedCollectionIndex(result)).toBe('0a1k2d');
+        });
+    });
+
+    xit('Handle a mixed operation with REMOVE, INSERT, MOVE and CHANGE with reverse indecies and fetches', () => {
+        const changeDetails = {
+            insertedObjects: [
+                //6g5f4d
+                {
+                    obj: {
+                        id: 'a',
+                        collectionIndex: 0
+                    }
+                }, {
+                    obj: {
+                        id: 'e',
+                        collectionIndex: 4
+                    }
+                }
+            ]
+        };
+        const arr = [{
+            id: 'g',
+            collectionIndex: 5
+        }, {
+            id: 'f',
+            collectionIndex: 4
+        }, {
+            id: 'd',
+            collectionIndex: 3
+        }];
+
+        return assetArrayObserverHandler(changeDetails, arr, (obj) => {
+            return obj;
+        }, () => {}, 'normal', (step, arr) => {
+            if (step === 'insert') {
+                expect(toNumberedCollectionIndex(arr)).toBe('7g6f5d4e');
+            }
+        }).then((result) => {
+            // expect(toNumberedCollectionIndex(result)).toBe('0a1k2d');
+        });
+    });
+
+    xit('Handle a mixed operation with REMOVE, INSERT, MOVE and CHANGE with reverse indecies and fetches', () => {
+        const changeDetails = {
+            removedObjects: [{
+                obj: {
+                    id: 'd',
+                    collectionIndex: 3
+                }
+            }],
+            insertedObjects: [{
+                obj: {
+                    id: 'q',
+                    collectionIndex: 0
+                }
+            }, {
+                obj: {
+                    id: 'x',
+                    collectionIndex: 9
+                }
+            }, {
+                obj: {
+                    id: 'g',
+                    collectionIndex: 6
+                }
+            }, {
+                obj: {
+                    id: 'h',
+                    collectionIndex: 4
+                }
+            }],
+            moves: [4, 3, 3, 4, 9, 7, 7, 9],
+            changedObjects: [{
+                obj: {
+                    id: 'k',
+                    collectionIndex: 5
+                }
+            }]
+        };
+        const arr = [{
+            id: 'a',
+            collectionIndex: 5
+        }, {
+            id: 'c',
+            collectionIndex: 4
+        }, { 
+            id: 'd',
+            collectionIndex: 3
+        }];
+
+        return assetArrayObserverHandler(changeDetails, arr, (obj) => {
+            return obj;
+        }, () => {}, 'normal', (step, arr) => {
+            if (step === 'remove') {
+                expect(toNumberedCollectionIndex(arr)).toBe('4a3c');
+            }
+            if (step === 'insert') {
+                expect(toNumberedCollectionIndex(arr)).toBe('6a5h4c');
+            }
+            if (step === 'move') {
+                // expect(toNumberedCollectionIndex(arr)).toBe('5a4c3h');
+            }
+            if (step === 'change') {
+                //expect(toNumberedCollectionIndex(arr)).toBe('0a1k2d');
+            }
+            /* if (step === 'insert') {
+                 expect(toNumberedCollectionIndex(arr)).toBe('0x1a2d');
+             }
+             if (step === 'move') {
+                 expect(toNumberedCollectionIndex(arr)).toBe('0a1x2d');
+             }
+             if (step === 'change') {
+                 expect(toNumberedCollectionIndex(arr)).toBe('0a1k2d');
+             }*/
+        }).then((result) => {
+            // expect(toNumberedCollectionIndex(result)).toBe('0a1k2d');
+        });
+    });
+});
+
+it('should do nothing to input if hasIncrementalChanges is false', () => {
+    const changeDetails = {
+        hasIncrementalChanges: false,
+        insertedObjects: [{
+            obj: {
+                id: 'b',
+                collectionIndex: 1
+            }
+        }]
+    };
+    const arr = [{ 
+        id: 'a',
+        collectionIndex: 0
+    }, {
+        id: 'c',
+        collectionIndex: 1
+    }, {
+        id: 'd',
+        collectionIndex: 2
+    }];
+
+    return assetArrayObserverHandler(changeDetails, arr, (obj) => {
+        return obj;
+    }).then((result) => {
+        expect(toNumberedCollectionIndex(result)).toBe('0a1c2d');
+    });
+});
+
+//END---------MIXED OPAERTAIONS--------------END
 
 
 //END--------------------EDGE CASES AND OUTSIDE INDEX CHANGES--------------------END

@@ -21,6 +21,9 @@ export default [{
         subType: 'smartAlbumScreenshots'
     }, {
         type: 'smartAlbum',
+        subType: 'smartAlbumDepthEffect'
+    }, {
+        type: 'smartAlbum',
         subType: 'smartAlbumTimelapses'
     }, {
         type: 'smartAlbum',

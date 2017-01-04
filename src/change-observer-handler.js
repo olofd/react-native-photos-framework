@@ -137,9 +137,9 @@ export function collectionArrayObserverHandler(changeDetails, arr,
             !changeDetails.hasIncrementalChanges) {
             return resolve(arr);
         }
-        performUpdate();
+        performInsertAndDelete();
 
-        function performUpdate() {
+        function performInsertAndDelete() {
             let lastIndex = (arr.length - 1);
             updateHandler(changeDetails.removedObjects, (updatedObj) => {
                 const index = getObjectIndex(updatedObj, indexTranslater, arr, 'remove');
@@ -238,10 +238,10 @@ export function collectionArrayObserverHandler(changeDetails, arr,
                 const index = getObjectIndex(updatedObj, indexTranslater, arr, 'change');
                 if (index <= lastIndex && index >= 0) {
                     arr[index] = createNewObjFunc(updatedObj.obj);
-                }
+                } 
             });
             stepCompletedCb && stepCompletedCb('change', arr);
             return resolve(arr);
         }
     });
-}
+} 

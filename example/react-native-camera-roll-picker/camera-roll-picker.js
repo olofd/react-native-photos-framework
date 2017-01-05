@@ -86,7 +86,7 @@ class CameraRollPicker extends Component {
     props
       .album
       .getAssets({
-        includeResourcesMetadata : true,
+        // includeMetadata : true,
         trackInsertsAndDeletes: true,
         trackAssetsChanges: true,
         startIndex: 0,
@@ -101,19 +101,6 @@ class CameraRollPicker extends Component {
         assetDisplayStartToEnd: false
       })
       .then((data) => {
-        if (data.assets[0]) {
-          console.log(data.assets[0].creationDate);
-          data.assets[0].getMetadata().then((asset) => {
-            console.log(data.assets[0].creationDate);
-            console.log(asset);
-          });
-          data.assets[0].getAssetResourcesMetadata().then((asset) => {
-            console.log(data.assets[0].creationDate);
-            console.log(asset);
-          });
-        }
-
-        console.log(data);
         console.log(data.assets.map(x => x.collectionIndex));
         simple_timer.stop('fetch_timer');
         console.log('react-native-photos-framework fetch request took %s milliseconds.', simple_timer.get('fetch_timer').delta)

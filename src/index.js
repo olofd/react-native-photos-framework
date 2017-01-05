@@ -10,12 +10,15 @@ import Album from './album';
 import AlbumQueryResult from './album-query-result';
 import AlbumQueryResultCollection from './album-query-result-collection';
 import EventEmitter from '../event-emitter';
+import ImageAsset from './image-asset';
+import VideoAsset from './video-asset';
+
 const RCTCameraRollRNPhotosFrameworkManager = NativeModules.CameraRollRNPhotosFrameworkManager;
 export const eventEmitter = new EventEmitter();
 
 // Main JS-implementation Most methods are written to handle array of input
 // operations.
-class CameraRollRNPhotosFramework {
+class RNPhotosFramework {
 
   constructor() {
     var subscription = NativeAppEventEmitter.addListener('RNPFObjectChange', (changeDetails) => {
@@ -28,9 +31,9 @@ class CameraRollRNPhotosFramework {
     //We need to make sure we clean cache in native before any calls
     //go into RNPF. This is important when running in DEV because we reastart
     //often in RN. (Live reload).
-    const methodsWithoutCacheCleanBlock = ['constructor', 'cleanCache', 'authorizationStatus', 'requestAuthorization'];
+    const methodsWithoutCacheCleanBlock = ['constructor', 'cleanCache', 'authorizationStatus', 'requestAuthorization', 'createJsAsset'];
     const methodNames = (
-      Object.getOwnPropertyNames(CameraRollRNPhotosFramework.prototype)
+      Object.getOwnPropertyNames(RNPhotosFramework.prototype)
       .filter(method => methodsWithoutCacheCleanBlock.indexOf(method) === -1)
     );
     methodNames.forEach(methodName => {
@@ -75,7 +78,7 @@ class CameraRollRNPhotosFramework {
         return {
           assets: assetsResponse
             .assets
-            .map(p => new Asset(p)),
+            .map(this.createJsAsset),
           includesLastAsset: assetsResponse.includesLastAsset
         };
       });
@@ -87,7 +90,7 @@ class CameraRollRNPhotosFramework {
       .then((assetsResponse) => {
         return assetsResponse
           .assets
-          .map(p => new Asset(p));
+          .map(this.createJsAsset);
       });
   }
 
@@ -177,6 +180,14 @@ class CameraRollRNPhotosFramework {
     return RCTCameraRollRNPhotosFrameworkManager.getAssetsMetadata(assetsLocalIdentifiers);
   }
 
+  getAssetsResourcesMetadata(assetsLocalIdentifiers) {
+    return RCTCameraRollRNPhotosFrameworkManager.getAssetsResourcesMetadata(assetsLocalIdentifiers);
+  }
+
+  getImageAssetsMetadata(assetsLocalIdentifiers) {
+    return RCTCameraRollRNPhotosFrameworkManager.getImageAssetsMetadata(assetsLocalIdentifiers);
+  }
+
   deleteAssets(assets) {
     return RCTCameraRollRNPhotosFrameworkManager.deleteAssets(assets.map(asset => asset.localIdentifier));
   }
@@ -213,7 +224,7 @@ class CameraRollRNPhotosFramework {
       .then((result) => {
         return result
           .assets
-          .map(asset => new Asset(asset, undefined, eventEmitter));
+          .map(this.createJsAsset);
       });
   }
 
@@ -234,6 +245,17 @@ class CameraRollRNPhotosFramework {
     return new AlbumQueryResultCollection(albumQueryResultList, params, eventEmitter);
   }
 
+  createJsAsset(nativeObj, options) {
+    switch (nativeObj.mediaType) {
+      case "image":
+        return new ImageAsset(nativeObj, options);
+        break;
+      case "video":
+        return new VideoAsset(nativeObj, options);
+        break;
+    }
+  }
+
 }
 
-export default new CameraRollRNPhotosFramework();
+export default new RNPhotosFramework();

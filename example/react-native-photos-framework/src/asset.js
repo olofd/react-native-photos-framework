@@ -13,28 +13,15 @@ export default class Asset {
         this._assetObj = assetObj;
     }
 
-    get image() {
-        if (this._imageRef) {
-            return this._imageRef;
-        }
-        const {
-            width,
-            height,
-            uri
-        } = this;
-        this._imageRef = {
-            width,
-            height,
-            uri
-        };
-        return this._imageRef;
-    }
-
     getMetadata() {
-        return this._fetchExtraData('getAssetsMetadata', 'creationDate');
+        return this._fetchExtraData('getAssetsMetadata', 'creationDate', 'metadata');
     }
 
-    _fetchExtraData(nativeMethod, alreadyLoadedProperty) {
+    getResourcesMetadata() {
+        return this._fetchExtraData('getAssetsResourcesMetadata', 'resourcesMetadata');
+    }
+
+    _fetchExtraData(nativeMethod, alreadyLoadedProperty, propertyToAssignToSelf) {
         return new Promise((resolve, reject) => {
             if (this[alreadyLoadedProperty]) {
                 //This means we alread have fetched metadata.
@@ -45,7 +32,11 @@ export default class Asset {
             return resolve(NativeApi[nativeMethod]([this.localIdentifier])
                 .then((metadataObjs) => {
                     if (metadataObjs && metadataObjs[0]) {
-                        Object.assign(this, metadataObjs[0]);
+                        if(propertyToAssignToSelf) {
+                            Object.assign(this, metadataObjs[0][propertyToAssignToSelf]);
+                        } else {
+                            Object.assign(this, metadataObjs[0]);
+                        }
                     }
                     return this;
                 }));
@@ -64,7 +55,7 @@ export default class Asset {
     }
 
     withOptions(options) {
-        return new Asset(this._assetObj, options);
+        return NativeApi.createJsAsset(this._assetObj, options);
     }
 
     delete() {

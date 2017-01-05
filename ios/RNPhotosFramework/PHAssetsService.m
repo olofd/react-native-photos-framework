@@ -80,10 +80,10 @@
                                              assetIndex, @"collectionIndex",
                                              nil];
         if(includeMetadata) {
-            [self extendAssetDicWithAssetMetadata:responseDict andPHAsset:asset];
+            [self extendAssetDictWithAssetMetadata:responseDict andPHAsset:asset];
         }
         if(includeResourcesMetadata) {
-            [self extendAssetDicWithAssetResourcesMetadata:responseDict andPHAsset:asset];
+            [self extendAssetDictWithAssetResourcesMetadata:responseDict andPHAsset:asset];
         }
 
         [uriArray addObject:responseDict];
@@ -93,7 +93,7 @@
     return uriArray;
 }
 
-+(NSMutableDictionary *)extendAssetDicWithAssetMetadata:(NSMutableDictionary *)dictToExtend andPHAsset:(PHAsset *)asset {
++(NSMutableDictionary *)extendAssetDictWithAssetMetadata:(NSMutableDictionary *)dictToExtend andPHAsset:(PHAsset *)asset {
 
     [dictToExtend setObject:@([PHHelpers getTimeSince1970:[asset creationDate]]) forKey:@"creationDate"];
     [dictToExtend setObject:@([PHHelpers getTimeSince1970:[asset modificationDate]])forKey:@"modificationDate"];
@@ -114,7 +114,7 @@
     return dictToExtend;
 }
 
-+(NSMutableDictionary *)extendAssetDicWithAssetResourcesMetadata:(NSMutableDictionary *)dictToExtend andPHAsset:(PHAsset *)asset {
++(NSMutableDictionary *)extendAssetDictWithAssetResourcesMetadata:(NSMutableDictionary *)dictToExtend andPHAsset:(PHAsset *)asset {
 
     NSArray<PHAssetResource *> *resources = [PHAssetResource assetResourcesForAsset:asset];
     NSMutableArray *arrayWithResourcesMetadata = [NSMutableArray new];
@@ -134,6 +134,13 @@
     return dictToExtend;
 }
 
++(void)extendAssetDictWithPhotoAssetEditionMetadata:(NSMutableDictionary *)dictToExtend andPHAsset:(PHAsset *)asset andCompletionBlock:(void(^)(NSMutableDictionary * dict))completeBlock  {
+    __block NSMutableDictionary * dictionaryToExtendBlocked = dictToExtend;
+    [PHAssetsService requestEditingMetadataWithCompletionBlock:^(NSDictionary<NSString *,id> *dict) {
+        [dictionaryToExtendBlocked addEntriesFromDictionary:dict];
+        completeBlock(dictionaryToExtendBlocked);
+    } andAsset:asset];
+}
 
 
 +(NSMutableArray<PHAssetWithCollectionIndex*> *) getAssetsForFetchResult:(PHFetchResult *)assetsFetchResult startIndex:(int)startIndex endIndex:(int)endIndex assetDisplayStartToEnd:(BOOL)assetDisplayStartToEnd andAssetDisplayBottomUp:(BOOL)assetDisplayBottomUp {
@@ -223,12 +230,15 @@
 }
 
 +(void)requestEditingMetadataWithCompletionBlock:(void(^)(NSDictionary<NSString *,id> * dict))completeBlock andAsset:(PHAsset *)asset{
-        PHContentEditingInputRequestOptions *editOptions = [[PHContentEditingInputRequestOptions alloc]init];
-        editOptions.networkAccessAllowed = YES;
-        [asset requestContentEditingInputWithOptions:editOptions completionHandler:^(PHContentEditingInput *contentEditingInput, NSDictionary *info) {
-            CIImage *image = [CIImage imageWithContentsOfURL:contentEditingInput.fullSizeImageURL];
-            completeBlock(image.properties);
-        }];
+    PHImageRequestOptions *options = [PHImageRequestOptions new];
+    options.networkAccessAllowed = YES;
+    options.synchronous = NO;
+    options.version = PHImageRequestOptionsVersionOriginal;
+    PHImageManager *manager = [[PHImageManager alloc] init];
+    [manager requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info){
+        CIImage *image = [CIImage imageWithData:imageData];
+        completeBlock(image.properties);
+    }];
 }
 
 -(void)requestImageDataWithCompletionBlockAndAsset:(PHAsset *)asset {
@@ -248,6 +258,8 @@
              //NSURL *path = [info objectForKey:@"PHImageFileURLKey"];
          }
      }];
+    
+    
 }
 
 +(void)updateLocation:(CLLocation*)location creationDate:(NSDate*)creationDate completionBlock:(void(^)(BOOL success))completionBlock andAsset:(PHAsset *)asset {

@@ -109,7 +109,7 @@ import RNPhotosFramework from 'react-native-photos-framework';
 | startIndex | 0 | `number` | startIndex-offset for fetching |
 | endIndex | 0 | `number` | endIndex-offset stop for fetching |
 | includeMetadata | false | `boolean` | Include a lot of metadata about the asset (See below). You can also choose to get this metaData at a later point by calling asset.getMetadata (See below) |
-| includeResourcesMetadata | false | `boolean` | Include metadata about the orginal resources that make up the asset. Like type and original filename. |
+| includeResourcesMetadata | false | `boolean` | Include metadata about the orginal resources that make up the asset. Like type and original filename. You can also choose to get this metaData at a later point by calling asset.getResourcesMetadata. You can also choose to get this metaData at a later point by calling asset.getResourcesMetadata (See below) |
 | prepareForSizeDisplay | - | `Rect(width, height)` | The size of the image you soon will display after running the query. This is highly optional and only there for optimizations of big lists. Prepares the images for display in Photos by using PHCachingImageManager |
 | prepareScale | 2.0 | `number` | The scale to prepare the image in. |
 | assetDisplayStartToEnd | false | `boolean` | Retrieves assets from the beginning of the library when set to true. Using this sorting option preserves the native order of assets as they are viewed in the Photos app.  |
@@ -304,7 +304,34 @@ This includes all resizeModes.
 ~~~~
   asset.getMetadata().then((mutatedAssetWithMetadata) => {});
 ~~~~
-Fetch meta data for a specific asset. You can also include metadata on all assets in the first `getAsset`-call by explicitly setting option `includeMetadata: true`.
+Fetch metadata for a specific asset. You can also include metadata on all assets in the first `getAsset`-call by explicitly setting option `includeMetadata: true`.
+
+###getResourcesMetadata
+~~~~
+  asset.getResourcesMetadata().then((mutatedAssetWithResourcesMetadata) => {
+    console.log(mutatedAssetWithResourcesMetadata.resourcesMetadata);
+  });
+~~~~
+Fetch resource-metadata for a specific asset, this includes original filename, type, uti (uniformTypeIdentifier) and localidentifier. You can also include resource-metadata on all assets in the first `getAsset`-call by explicitly setting option `includeResourcesMetadata: true`.
+
+###delete
+~~~~
+  asset.delete().then((status) => {
+  });
+~~~~
+Delete asset.
+
+##ImageAsset instance-methods:
+###getImageMetadata
+~~~~
+  asset.getImageMetadata().then((mutatedAssetWithImageMetadata) => {
+    console.log(mutatedAssetWithResourcesMetadata.imageMetadata);
+  });
+~~~~
+Fetch image specific metadata for a specific image-asset, this includes formats and sizes.
+
+##withOptions
+See below (ImageLoader Concept).
 
 ###ImageLoader Concept:
 ~~~~

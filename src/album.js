@@ -6,6 +6,7 @@ import changeObserverHandler, {
 } from './change-observer-handler';
 import EventEmitter from '../event-emitter';
 
+
 export default class Album extends EventEmitter {
 
     constructor(obj, fetchOptions, eventEmitter) {
@@ -15,22 +16,19 @@ export default class Album extends EventEmitter {
         if (this.previewAssets) {
             this.previewAssets = this
                 .previewAssets
-                .map((assetNativeObj) => new Asset(assetNativeObj));
+                .map(NativeApi.createJsAsset);
             if (this.previewAssets.length) {
                 this.previewAsset = this.previewAssets[0];
             }
         }
-        
+
         eventEmitter.addListener('onObjectChange', (changeDetails) => {
             if (changeDetails._cacheKey === this._cacheKey) {
                 this._emitChange(changeDetails, (assetArray, callback, fetchOptions) => {
                     if (assetArray) {
                         return assetArrayObserverHandler(
                             changeDetails, assetArray,
-                            (nativeObj) => {
-                                return new Asset(
-                                    nativeObj);
-                            }, (indecies, callback) => {
+                            NativeApi.createJsAsset, (indecies, callback) => {
                                 //The update algo has requested new assets.
                                 return this.newAssetsRequested(indecies, fetchOptions, callback);
                             }, this.perferedSortOrder).then(updatedArray => {

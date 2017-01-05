@@ -275,9 +275,57 @@ RCT_EXPORT_METHOD(getAssetsMetadata:(NSArray<NSString *> *)arrayWithLocalIdentif
     PHFetchResult<PHAsset *> * arrayWithAssets = [PHAssetsService getAssetsFromArrayOfLocalIdentifiers:arrayWithLocalIdentifiers];
     NSMutableArray<NSDictionary *>  *arrayWithMetadataObjs = [NSMutableArray arrayWithCapacity:arrayWithAssets.count];
     [arrayWithAssets enumerateObjectsUsingBlock:^(PHAsset * _Nonnull asset, NSUInteger idx, BOOL * _Nonnull stop) {
-        [arrayWithMetadataObjs addObject:[PHAssetsService extendAssetDicWithAssetMetadata:[NSMutableDictionary dictionaryWithObject:asset.localIdentifier forKey:@"localIdentifier"] andPHAsset:asset]];
+        [arrayWithMetadataObjs addObject:[NSMutableDictionary dictionaryWithObjectsAndKeys:asset.localIdentifier, @"localIdentifier", [PHAssetsService extendAssetDictWithAssetMetadata:[NSMutableDictionary new] andPHAsset:asset], @"metadata", nil]];
+
     }];
     resolve(arrayWithMetadataObjs);
+}
+
+RCT_EXPORT_METHOD(getAssetsResourcesMetadata:(NSArray<NSString *> *)arrayWithLocalIdentifiers
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+    PHFetchResult<PHAsset *> * arrayWithAssets = [PHAssetsService getAssetsFromArrayOfLocalIdentifiers:arrayWithLocalIdentifiers];
+    NSMutableArray<NSDictionary *> *arrayWithMetadataObjs = [NSMutableArray arrayWithCapacity:arrayWithAssets.count];
+    [arrayWithAssets enumerateObjectsUsingBlock:^(PHAsset * _Nonnull asset, NSUInteger idx, BOOL * _Nonnull stop) {
+        [arrayWithMetadataObjs addObject:[NSMutableDictionary dictionaryWithObjectsAndKeys:asset.localIdentifier, @"localIdentifier", [[PHAssetsService extendAssetDictWithAssetResourcesMetadata:[NSMutableDictionary new] andPHAsset:asset] objectForKey:@"resourcesMetadata"], @"resourcesMetadata", nil]];
+    }];
+    resolve(arrayWithMetadataObjs);
+}
+
+RCT_EXPORT_METHOD(getImageAssetsMetadata:(NSArray<NSString *> *)arrayWithLocalIdentifiers
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+    PHFetchResult<PHAsset *> * arrayWithAssets = [PHAssetsService getAssetsFromArrayOfLocalIdentifiers:arrayWithLocalIdentifiers];
+    NSMutableArray *mutableArrayWithAssets = [NSMutableArray arrayWithCapacity:arrayWithAssets.count];
+    NSMutableArray<NSDictionary *> *arrayWithMetadataObjs = [NSMutableArray arrayWithCapacity:arrayWithAssets.count];
+    [arrayWithAssets enumerateObjectsUsingBlock:^(PHAsset * _Nonnull asset, NSUInteger idx, BOOL * _Nonnull stop) {
+        [mutableArrayWithAssets addObject:asset];
+    }];
+    [self getImageAssetsMetaData:mutableArrayWithAssets andResultArray:arrayWithMetadataObjs andCompleteBLock:^(NSMutableArray<NSDictionary *> *resultArray) {
+        resolve(resultArray);
+    }];
+}
+
+-(void) getImageAssetsMetaData:(NSMutableArray<PHAsset *> *)assets andResultArray:(NSMutableArray<NSDictionary *> *)resultArray andCompleteBLock:(nullable void(^)(NSMutableArray<NSDictionary *> * resultArray))completeBlock {
+    
+    if(assets.count == 0){
+        return completeBlock(resultArray);
+    }
+    PHAsset *currentAsset = [assets objectAtIndex:0];
+    [assets removeObject:currentAsset];
+    if(currentAsset != nil) {
+        __weak RCTCameraRollRNPhotosFrameworkManager *weakSelf = self;
+        [PHAssetsService extendAssetDictWithPhotoAssetEditionMetadata:[NSMutableDictionary new] andPHAsset:currentAsset andCompletionBlock:^(NSMutableDictionary *dict) {
+            
+            [resultArray addObject:[NSMutableDictionary dictionaryWithObjectsAndKeys:currentAsset.localIdentifier, @"localIdentifier", dict, @"imageMetadata", nil]];
+            
+            return [weakSelf getImageAssetsMetaData:assets andResultArray:resultArray andCompleteBLock:completeBlock];
+        }];
+    }else {
+        return [self getImageAssetsMetaData:assets andResultArray:resultArray andCompleteBLock:completeBlock];
+    }
 }
 
 

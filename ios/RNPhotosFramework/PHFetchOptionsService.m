@@ -1,5 +1,5 @@
 #import "PHFetchOptionsService.h"
-#import "RCTConvert.h"
+#import <React/RCTConvert.h>
 #import "RCTConvert+RNPhotosFramework.h"
 @import Photos;
 @implementation PHFetchOptionsService

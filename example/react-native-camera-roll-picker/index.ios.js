@@ -1,16 +1,17 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   AppRegistry,
   StyleSheet,
   Text,
   View,
   TouchableOpacity,
-  AlertIOS
+  AlertIOS,
+  Image
 } from 'react-native';
 import CameraRollPicker from './camera-roll-picker';
-import {Actions} from 'react-native-router-flux';
+import { Actions } from 'react-native-router-flux';
 import RNPhotosFramework from 'react-native-photos-framework';
-import Icon from 'react-native-vector-icons/Ionicons';
+import TrashIcon from '../images/trash2.png';
 
 export default class ReactNativeCameraRollPicker extends Component {
   constructor(props) {
@@ -48,7 +49,7 @@ export default class ReactNativeCameraRollPicker extends Component {
             .state
             .selected
             .filter(x => status.localIdentifiers.some(y => y === x.localIdentfier));
-          this.setState({selected: remaining});
+          this.setState({ selected: remaining });
           Actions.refresh({
             renderRightButton: this
               .renderRightButton
@@ -79,7 +80,7 @@ export default class ReactNativeCameraRollPicker extends Component {
         onPress: () => console.log('Cancel Pressed'),
         style: 'cancel'
       }
-    ],);
+    ], );
   }
 
   renderRightButton(edit, hasSelectedMedia) {
@@ -91,23 +92,23 @@ export default class ReactNativeCameraRollPicker extends Component {
           ? (
             <TouchableOpacity
               onPress={this
-              .removeSelectedImages
-              .bind(this)}>
-              <Icon name='ios-trash' style={styles.trashIcon}></Icon>
+                .removeSelectedImages
+                .bind(this)}>
+              <Image source={TrashIcon} style={styles.trashIcon}></Image>
             </TouchableOpacity>
           )
           : null}
 
         <TouchableOpacity
           style={{
-          marginLeft: 24
-        }}
+            marginLeft: 24
+          }}
           onPress={this
-          .onEditAlbum
-          .bind(this)}>
+            .onEditAlbum
+            .bind(this)}>
           <Text style={styles.changeButton}>{(edit
-              ? 'Done'
-              : 'Edit')}</Text>
+            ? 'Done'
+            : 'Edit')}</Text>
         </TouchableOpacity>
       </View>
 
@@ -132,7 +133,7 @@ export default class ReactNativeCameraRollPicker extends Component {
 
   getSelectedImages(images, current) {
     var num = images.length;
-    this.setState({num: num, selected: images});
+    this.setState({ num: num, selected: images });
     Actions.refresh({
       renderRightButton: this
         .renderRightButton
@@ -145,7 +146,7 @@ export default class ReactNativeCameraRollPicker extends Component {
       images: [
         {
           uri: 'https://static1.squarespace.com/static/54864b83e4b0c89104abed87/t/54c6102fe4b02c' +
-              'f35cfb7e97/1422266417481/stock-photo-vancouver-sunrise-27499741.jpg?format=1500w'
+          'f35cfb7e97/1422266417481/stock-photo-vancouver-sunrise-27499741.jpg?format=1500w'
         }, {
           uri: 'https://d1wtqaffaaj63z.cloudfront.net/images/E-0510.JPG'
         }, {
@@ -154,7 +155,7 @@ export default class ReactNativeCameraRollPicker extends Component {
           uri: 'https://www.w3.org/MarkUp/Test/xhtml-print/20050519/tests/jpeg420exif.jpg'
         }, {
           uri: 'https://screensaver.riotgames.com/latest/content/original/Runeterra/Ionia/ionia-' +
-              '01.jpg'
+          '01.jpg'
         }
       ]
     }).then((assets) => {
@@ -162,7 +163,7 @@ export default class ReactNativeCameraRollPicker extends Component {
         .props
         .album
         .addAssets(assets)
-        .then((status) => {});
+        .then((status) => { });
     });
   }
 
@@ -178,7 +179,7 @@ export default class ReactNativeCameraRollPicker extends Component {
         .props
         .album
         .addAssets(assets)
-        .then((status) => {});
+        .then((status) => { });
     });
   }
 
@@ -197,7 +198,7 @@ export default class ReactNativeCameraRollPicker extends Component {
         .props
         .album
         .addAssets(assets)
-        .then((status) => {});
+        .then((status) => { });
     });
   }
 
@@ -225,7 +226,7 @@ export default class ReactNativeCameraRollPicker extends Component {
         onPress: () => console.log('Cancel Pressed'),
         style: 'cancel'
       }
-    ],);
+    ], );
   }
 
   render() {
@@ -242,19 +243,19 @@ export default class ReactNativeCameraRollPicker extends Component {
           imagesPerRow={3}
           imageMargin={5}
           callback={this
-          .getSelectedImages
-          .bind(this)}/>
+            .getSelectedImages
+            .bind(this)} />
 
         <View style={[styles.addMediaContainer, {
-            opacity : this
-              .props
-              .album.addContentPermitted() ? 1 : 0
-          }]}>
+          opacity: this
+            .props
+            .album.addContentPermitted() ? 1 : 0
+        }]}>
           <TouchableOpacity
             style={styles.addMediaButton}
             onPress={this
-            .downloadDialog
-            .bind(this)}>
+              .downloadDialog
+              .bind(this)}>
             <Text style={styles.addMediaText}>Add media</Text>
           </TouchableOpacity>
         </View>
@@ -268,13 +269,13 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: 65
   },
-  addMediaContainer : {
-    position : 'absolute',
-    bottom : 0,
-    left : 0,
-    right : 0,
-    backgroundColor : 'rgba(255, 255, 255, 0.6)',
-    padding : 10
+  addMediaContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(255, 255, 255, 0.6)',
+    padding: 10
   },
   addMediaButton: {
     padding: 20,
@@ -312,16 +313,15 @@ const styles = StyleSheet.create({
   },
   addButtonPlus: {
     width: 30,
-    height: 40,
+    height: 40, 
     top: -10,
     fontSize: 32,
     color: 'rgb(0, 113, 255)',
     backgroundColor: 'transparent'
   },
   trashIcon: {
-    top: -10,
-    color: 'rgb(0, 113, 255)',
-    fontSize: 36
+    width : 25,
+    height : 25
   },
   changeButton: {
     fontSize: 18,

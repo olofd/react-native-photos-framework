@@ -431,12 +431,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DEVELOPMENT_TEAM = 5BEG6QJ94B;
-				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/../../react-native/React/**",
-					"$(SRCROOT)/../../react-native/Libraries/Image",
-					"$(SRCROOT)/../example/node_modules/react-native/React/**",
-					"$(SRCROOT)/../example/node_modules/react-native/Libraries/Image",
-				);
+				HEADER_SEARCH_PATHS = "";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -447,12 +442,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DEVELOPMENT_TEAM = 5BEG6QJ94B;
-				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/../../react-native/React/**",
-					"$(SRCROOT)/../../react-native/Libraries/Image",
-					"$(SRCROOT)/../example/node_modules/react-native/React/**",
-					"$(SRCROOT)/../example/node_modules/react-native/Libraries/Image",
-				);
+				HEADER_SEARCH_PATHS = "";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;

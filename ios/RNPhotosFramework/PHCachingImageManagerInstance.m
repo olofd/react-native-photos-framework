@@ -9,6 +9,7 @@
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     sharedMyManager = [[PHCachingImageManager alloc] init];
+    [sharedMyManager setAllowsCachingHighQualityImages:NO];
   });
   return sharedMyManager;
 }

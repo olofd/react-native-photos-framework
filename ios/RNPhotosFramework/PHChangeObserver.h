@@ -1,5 +1,5 @@
 #import <Foundation/Foundation.h>
-#import "RCTBridge.h"
+#import <React/RCTBridge.h>
 #import "RCTCachedFetchResult.h"
 #import "RCTCachedFetchResult.h"
 @import Photos;

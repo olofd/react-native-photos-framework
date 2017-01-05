@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   CameraRoll,
   Platform,
@@ -9,7 +9,7 @@ import {
   ActivityIndicator
 } from 'react-native';
 import ImageItem from './ImageItem';
-import RNPhotosFramework from 'react-native-photos-framework';
+import RNPhotosFramework from '../react-native-photos-framework';
 var simple_timer = require('simple-timer')
 
 class CameraRollPicker extends Component {
@@ -29,7 +29,7 @@ class CameraRollPicker extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({selected: nextProps.selected});
+    this.setState({ selected: nextProps.selected });
     if (nextProps.album !== this.props.album) {
       this.setState({
         images: [],
@@ -62,13 +62,13 @@ class CameraRollPicker extends Component {
         update(this.state.images, (images) => {
           this.state.images = images;
           this.state.dataSource = this
-          .state
-          .dataSource
-          .cloneWithRows(this._nEveryRow(this.state.images, this.props.imagesPerRow));
-          this.setState({images: this.state.images, dataSource: this.state.dataSource});
+            .state
+            .dataSource
+            .cloneWithRows(this._nEveryRow(this.state.images, this.props.imagesPerRow));
+          this.setState({ images: this.state.images, dataSource: this.state.dataSource });
         }, {
-          includeMetadata : true
-        });
+            includeMetadata: true
+          });
 
       });
   }
@@ -86,22 +86,33 @@ class CameraRollPicker extends Component {
     props
       .album
       .getAssets({
-        includeMetadata : true,
-        includeAssetResourcesMetadata : true,
-        trackInsertsAndDeletes : true,
-        trackAssetsChanges : true,
+        includeResourcesMetadata : true,
+        trackInsertsAndDeletes: true,
+        trackAssetsChanges: true,
         startIndex: 0,
         endIndex: this.state.images.length + 20,
         fetchOptions: {
-          sortDescriptors : [{
-            key : 'creationDate',
-            ascending : true
+          sortDescriptors: [{
+            key: 'creationDate',
+            ascending: true
           }]
         },
-        assetDisplayBottomUp : false,
-        assetDisplayStartToEnd : false
+        assetDisplayBottomUp: false,
+        assetDisplayStartToEnd: false
       })
       .then((data) => {
+        if (data.assets[0]) {
+          console.log(data.assets[0].creationDate);
+          data.assets[0].getMetadata().then((asset) => {
+            console.log(data.assets[0].creationDate);
+            console.log(asset);
+          });
+          data.assets[0].getAssetResourcesMetadata().then((asset) => {
+            console.log(data.assets[0].creationDate);
+            console.log(asset);
+          });
+        }
+
         console.log(data);
         console.log(data.assets.map(x => x.collectionIndex));
         simple_timer.stop('fetch_timer');
@@ -150,40 +161,40 @@ class CameraRollPicker extends Component {
     var listViewOrEmptyText = dataSource.getRowCount() > 0
       ? (<ListView
         style={{
-        flex: 1
-      }}
+          flex: 1
+        }}
         scrollRenderAheadDistance={scrollRenderAheadDistance}
         initialListSize={initialListSize}
         pageSize={pageSize}
         removeClippedSubviews={removeClippedSubviews}
         renderFooter={this
-        ._renderFooterSpinner
-        .bind(this)}
+          ._renderFooterSpinner
+          .bind(this)}
         onEndReached={this
-        ._onEndReached
-        .bind(this)}
+          ._onEndReached
+          .bind(this)}
         onEndReachedThreshold={2000}
         dataSource={dataSource}
-        renderRow={rowData => this._renderRow(rowData)}/>)
+        renderRow={rowData => this._renderRow(rowData)} />)
       : (
         <Text
           style={[
-          {
-            textAlign: 'center'
-          },
-          emptyTextStyle
-        ]}>{emptyText}</Text>
+            {
+              textAlign: 'center'
+            },
+            emptyTextStyle
+          ]}>{emptyText}</Text>
       );
 
     return (
       <View
         style={[
-        styles.wrapper, {
-          padding: imageMargin,
-          paddingRight: 0,
-          backgroundColor: backgroundColor
-        }
-      ]}>
+          styles.wrapper, {
+            padding: imageMargin,
+            paddingRight: 0,
+            backgroundColor: backgroundColor
+          }
+        ]}>
         {listViewOrEmptyText}
       </View>
     );
@@ -207,8 +218,8 @@ class CameraRollPicker extends Component {
       imagesPerRow={imagesPerRow}
       containerWidth={containerWidth}
       onClick={this
-      ._selectImage
-      .bind(this)}/>);
+        ._selectImage
+        .bind(this)} />);
   }
 
   _renderRow(rowData) {
@@ -228,14 +239,14 @@ class CameraRollPicker extends Component {
 
   _renderFooterSpinner() {
     if (!this.state.noMore) {
-      return <ActivityIndicator style={styles.spinner}/>;
+      return <ActivityIndicator style={styles.spinner} />;
     }
     return null;
   }
 
   _onEndReached() {
     if (!this.state.noMore) {
-       this.fetch();
+      this.fetch();
     }
   }
 

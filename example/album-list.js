@@ -10,7 +10,7 @@ import {
   TextInput,
   AlertIOS
 } from 'react-native'
-import RNPhotosFramework from 'react-native-photos-framework';
+import RNPhotosFramework from './react-native-photos-framework';
 import { Actions } from 'react-native-router-flux';
 import minusIcon from './images/minus.png';
 //ion-ios-remove-circle

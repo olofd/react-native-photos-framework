@@ -55,7 +55,7 @@
     return [PHAsset fetchAssetsWithOptions:options];
 }
 
-+(NSArray<NSDictionary *> *) assetsArrayToUriArray:(NSArray<id> *)assetsArray andincludeMetadata:(BOOL)includeMetadata andIncludeAssetResourcesMetadata:(BOOL)includeAssetResourcesMetadata {
++(NSArray<NSDictionary *> *) assetsArrayToUriArray:(NSArray<id> *)assetsArray andincludeMetadata:(BOOL)includeMetadata andIncludeAssetResourcesMetadata:(BOOL)includeResourcesMetadata {
     RCT_PROFILE_BEGIN_EVENT(0, @"-[RCTCameraRollRNPhotosFrameworkManager assetsArrayToUriArray", nil);
 
     NSMutableArray *uriArray = [NSMutableArray arrayWithCapacity:assetsArray.count];
@@ -82,7 +82,7 @@
         if(includeMetadata) {
             [self extendAssetDicWithAssetMetadata:responseDict andPHAsset:asset];
         }
-        if(includeAssetResourcesMetadata) {
+        if(includeResourcesMetadata) {
             [self extendAssetDicWithAssetResourcesMetadata:responseDict andPHAsset:asset];
         }
 
@@ -117,11 +117,11 @@
 +(NSMutableDictionary *)extendAssetDicWithAssetResourcesMetadata:(NSMutableDictionary *)dictToExtend andPHAsset:(PHAsset *)asset {
 
     NSArray<PHAssetResource *> *resources = [PHAssetResource assetResourcesForAsset:asset];
-    NSMutableArray *arrayWithAssetResourcesMetadata = [NSMutableArray new];
+    NSMutableArray *arrayWithResourcesMetadata = [NSMutableArray new];
 
     for(int i = 0; i < resources.count;i++) {
         PHAssetResource *resourceMetadata = [resources objectAtIndex:i];
-        [arrayWithAssetResourcesMetadata addObject:@{
+        [arrayWithResourcesMetadata addObject:@{
                                                      @"originalFilename" : resourceMetadata.originalFilename,
                                                      @"assetLocalIdentifier" : resourceMetadata.assetLocalIdentifier,
                                                      @"uniformTypeIdentifier" : resourceMetadata.uniformTypeIdentifier,
@@ -129,7 +129,7 @@
                                                      }];
     }
 
-    [dictToExtend setObject:arrayWithAssetResourcesMetadata forKey:@"assetResourcesMetadata"];
+    [dictToExtend setObject:arrayWithResourcesMetadata forKey:@"resourcesMetadata"];
 
     return dictToExtend;
 }
@@ -168,7 +168,6 @@
             [assets addObject:[[PHAssetWithCollectionIndex alloc] initWithAsset:asset andCollectionIndex:@(collectionIndex)]];
 
         }
-
     }
     return assets;
 }

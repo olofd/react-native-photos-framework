@@ -1,5 +1,5 @@
 #import "RCTCameraRollRNPhotosFrameworkManager.h"
-#import "RCTUtils.h"
+#import "<RCT/"
 #import "PHCachingImageManagerInstance.h"
 #import "RCTConvert.h"
 #import "RCTImageLoader.h"

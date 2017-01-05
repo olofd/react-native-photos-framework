@@ -1,5 +1,5 @@
 #import <XCTest/XCTest.h>
-#import "RCTConvert.h"
+#import <React/RCTConvert.h>
 #import "RCTConvert+RNPhotosFramework.h"
 
 @interface RCTConvert_RNPhotosFrameworkTests : XCTestCase

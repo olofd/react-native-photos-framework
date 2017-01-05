@@ -12,8 +12,8 @@ import {
 } from 'react-native'
 import RNPhotosFramework from 'react-native-photos-framework';
 import { Actions } from 'react-native-router-flux';
+import minusIcon from './images/minus.png';
 //ion-ios-remove-circle
-import Icon from 'react-native-vector-icons/Ionicons';
 var simple_timer = require('simple-timer');
 
 export default class AlbumList extends Component {
@@ -251,7 +251,7 @@ export default class AlbumList extends Component {
       <TouchableOpacity
         style={styles.removeIconContainer}
         onPress={() => album.delete()}>
-        <Icon style={styles.removeIcon} name='ios-remove-circle'></Icon>
+        <Image source={minusIcon} style={styles.minusIcon}></Image>
       </TouchableOpacity>
     );
   }
@@ -325,17 +325,14 @@ const styles = StyleSheet.create({
   },
   removeIconContainer: {
     position: 'absolute',
-    top: 5,
+    top: 0,
     left: 0,
-    backgroundColor: 'white',
     borderRadius: 14,
     height: 20,
     width: 23
   },
-  removeIcon: {
-    top: -5,
-    fontSize: 28,
-    color: 'red',
-    backgroundColor: 'transparent'
+  minusIcon : {
+    width : 25,
+    height : 25
   }
 })

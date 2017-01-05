@@ -1,12 +1,12 @@
 #import "PHAssetsService.h"
-#import "RCTConvert.h"
+#import <React/RCTConvert.h>
 #import "RCTConvert+RNPhotosFramework.h"
 #import "PHFetchOptionsService.h"
 #import "PHChangeObserver.h"
 #import "PHHelpers.h"
-#import "RCTConvert.h"
+#import <React/RCTConvert.h>
 #import "RCTConvert+RNPhotosFramework.h"
-#import "RCTProfile.h"
+#import <React/RCTProfile.h>
 #import "PHAssetWithCollectionIndex.h"
 
 @import Photos;

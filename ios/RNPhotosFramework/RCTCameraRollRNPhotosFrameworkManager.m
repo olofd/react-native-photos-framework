@@ -60,7 +60,9 @@ RCT_EXPORT_METHOD(getAssets:(NSDictionary *)params
     
     NSString *startIndexParam = params[@"startIndex"];
     NSString *endIndexParam = params[@"endIndex"];
-    BOOL includeMetaData = [RCTConvert BOOL:params[@"includeMetaData"]];
+    BOOL includeMetadata = [RCTConvert BOOL:params[@"includeMetadata"]];
+    BOOL includeAssetResourcesMetadata = [RCTConvert BOOL:params[@"includeAssetResourcesMetadata"]];
+
     
     int startIndex = [RCTConvert int:startIndexParam];
     int endIndex = endIndexParam != nil ? [RCTConvert int:endIndexParam] : (int)(assetsFetchResult.count -1);
@@ -72,7 +74,7 @@ RCT_EXPORT_METHOD(getAssets:(NSDictionary *)params
     NSInteger assetCount = assetsFetchResult.count;
     BOOL includesLastAsset = assetCount == 0 || endIndex >= (assetCount -1);
     resolve(@{
-              @"assets" : [PHAssetsService assetsArrayToUriArray:assets andIncludeMetaData:includeMetaData],
+              @"assets" : [PHAssetsService assetsArrayToUriArray:assets andincludeMetadata:includeMetadata andIncludeAssetResourcesMetadata:includeAssetResourcesMetadata],
               @"includesLastAsset" : @(includesLastAsset)
               });
     RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
@@ -82,12 +84,14 @@ RCT_EXPORT_METHOD(getAssetsWithIndecies:(NSDictionary *)params
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-    BOOL includeMetaData = [RCTConvert BOOL:params[@"includeMetaData"]];
+    BOOL includeMetadata = [RCTConvert BOOL:params[@"includeMetadata"]];
+    BOOL includeAssetResourcesMetadata = [RCTConvert BOOL:params[@"includeAssetResourcesMetadata"]];
+
     PHFetchResult<PHAsset *> *assetsFetchResult = [PHAssetsService getAssetsForParams:params];
     NSArray<PHAssetWithCollectionIndex *> *assets = [PHAssetsService getAssetsForFetchResult:assetsFetchResult atIndecies:[RCTConvert NSArray:params[@"indecies"]]];
     [self prepareAssetsForDisplayWithParams:params andAssets:assets];
     resolve(@{
-              @"assets" : [PHAssetsService assetsArrayToUriArray:assets andIncludeMetaData:includeMetaData],
+              @"assets" : [PHAssetsService assetsArrayToUriArray:assets andincludeMetadata:includeMetadata andIncludeAssetResourcesMetadata:includeAssetResourcesMetadata],
               });
 }
 
@@ -264,16 +268,16 @@ RCT_EXPORT_METHOD(deleteAlbums:(NSArray *)albumsLocalIdentifiers
     }];
 }
 
-RCT_EXPORT_METHOD(getAssetsMetaData:(NSArray<NSString *> *)arrayWithLocalIdentifiers
+RCT_EXPORT_METHOD(getAssetsMetadata:(NSArray<NSString *> *)arrayWithLocalIdentifiers
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
     PHFetchResult<PHAsset *> * arrayWithAssets = [PHAssetsService getAssetsFromArrayOfLocalIdentifiers:arrayWithLocalIdentifiers];
-    NSMutableArray<NSDictionary *>  *arrayWithMetaDataObjs = [NSMutableArray arrayWithCapacity:arrayWithAssets.count];
+    NSMutableArray<NSDictionary *>  *arrayWithMetadataObjs = [NSMutableArray arrayWithCapacity:arrayWithAssets.count];
     [arrayWithAssets enumerateObjectsUsingBlock:^(PHAsset * _Nonnull asset, NSUInteger idx, BOOL * _Nonnull stop) {
-        [arrayWithMetaDataObjs addObject:[PHAssetsService extendAssetDicWithAssetMetaData:[NSMutableDictionary dictionaryWithObject:asset.localIdentifier forKey:@"localIdentifier"] andPHAsset:asset]];
+        [arrayWithMetadataObjs addObject:[PHAssetsService extendAssetDicWithAssetMetadata:[NSMutableDictionary dictionaryWithObject:asset.localIdentifier forKey:@"localIdentifier"] andPHAsset:asset]];
     }];
-    resolve(arrayWithMetaDataObjs);
+    resolve(arrayWithMetadataObjs);
 }
 
 
@@ -308,8 +312,12 @@ RCT_EXPORT_METHOD(createAssets:(NSDictionary *)params
     
     [self saveImages:[images mutableCopy] andLocalIdentifers:[NSMutableArray arrayWithCapacity:images.count] andCollection:collection andCompleteBLock:^(BOOL success, NSError * _Nullable error, NSMutableArray<NSString *> *localIdentifiers) {
         if(localIdentifiers && localIdentifiers.count != 0) {
+            BOOL includeMetadata = [RCTConvert BOOL:params[@"includeMetadata"]];
+            BOOL includeAssetResourcesMetadata = [RCTConvert BOOL:params[@"includeAssetResourcesMetadata"]];
+            
+            
             PHFetchResult<PHAsset *> *newAssets = [PHAssetsService getAssetsFromArrayOfLocalIdentifiers:localIdentifiers];
-            NSArray<NSDictionary *> *assetResponse = [PHAssetsService assetsArrayToUriArray:(NSArray<id> *)newAssets andIncludeMetaData:[RCTConvert BOOL:params[@"includeMetaData"]]];
+            NSArray<NSDictionary *> *assetResponse = [PHAssetsService assetsArrayToUriArray:(NSArray<id> *)newAssets andincludeMetadata:includeMetadata andIncludeAssetResourcesMetadata:includeAssetResourcesMetadata];
             return resolve(@{@"assets" : assetResponse, @"success" : @(success) });
         }
         return reject(@"Error creating assets", nil, error);

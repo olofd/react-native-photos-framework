@@ -30,18 +30,18 @@ export default class Asset {
         return this._imageRef;
     }
 
-    getMetaData() {
+    getMetadata() {
         return new Promise((resolve, reject) => {
             if (this.creationDate) {
-                //This means we alread have fetched metaData.
+                //This means we alread have fetched metadata.
                 //Resolve directly
                 resolve(this);
                 return;
             }
-            return resolve(NativeApi.getAssetsMetaData([this.localIdentifier])
-                .then((metaDataObjs) => {
-                    if (metaDataObjs && metaDataObjs[0]) {
-                        Object.assign(this, metaDataObjs[0]);
+            return resolve(NativeApi.getAssetsMetadata([this.localIdentifier])
+                .then((metadataObjs) => {
+                    if (metadataObjs && metadataObjs[0]) {
+                        Object.assign(this, metadataObjs[0]);
                     }
                     return this;
                 }));

@@ -67,7 +67,7 @@ class CameraRollPicker extends Component {
           .cloneWithRows(this._nEveryRow(this.state.images, this.props.imagesPerRow));
           this.setState({images: this.state.images, dataSource: this.state.dataSource});
         }, {
-          includeMetaData : true
+          includeMetadata : true
         });
 
       });
@@ -86,20 +86,28 @@ class CameraRollPicker extends Component {
     props
       .album
       .getAssets({
+        includeMetadata : true,
+        includeAssetResourcesMetadata : true,
         trackInsertsAndDeletes : true,
         trackAssetsChanges : true,
         startIndex: 0,
         endIndex: this.state.images.length + 20,
-        fetchOptions: {}, 
+        fetchOptions: {
+          sortDescriptors : [{
+            key : 'creationDate',
+            ascending : true
+          }]
+        },
         assetDisplayBottomUp : false,
         assetDisplayStartToEnd : false
-      }) 
+      })
       .then((data) => {
+        console.log(data);
         console.log(data.assets.map(x => x.collectionIndex));
         simple_timer.stop('fetch_timer');
         console.log('react-native-photos-framework fetch request took %s milliseconds.', simple_timer.get('fetch_timer').delta)
         this._appendImages(data);
-      }, (e) => console.log(e));  
+      }, (e) => console.log(e));
   }
 
   _appendImages(data) {
@@ -184,7 +192,6 @@ class CameraRollPicker extends Component {
   _renderImage(item) {
     var {selected} = this.state;
     var {imageMargin, selectedMarker, imagesPerRow, containerWidth} = this.props;
-
     var uri = item.uri;
     var isSelected = (this._arrayObjectIndexOf(selected, 'uri', uri) >= 0)
       ? true
@@ -192,6 +199,7 @@ class CameraRollPicker extends Component {
 
     return (<ImageItem
       key={uri}
+      displayDates={true}
       item={item}
       selected={isSelected}
       imageMargin={imageMargin}

@@ -16,6 +16,8 @@ typedef NS_ENUM(NSInteger, RNPFAssetCountType) {
 + (PHAssetCollectionSubtype)PHAssetCollectionSubtype:(id)json;
 + (PHAssetSourceType)PHAssetSourceType:(id)json;
 + (PHAuthorizationStatus)PHAuthorizationStatus:(id)json;
++ (PHAssetResourceType)PHAssetResourceType:(id)json;
+
 
 + (NSArray<NSNumber *> *)PHAssetMediaTypes:(NSArray<NSString *> *)arrayWithMediaTypeStrings;
 + (NSMutableArray * ) PHAssetMediaSubtypes:(NSArray<NSString *> *)arrayWithSubMediaTypeStrings;
@@ -31,11 +33,6 @@ typedef NS_ENUM(NSInteger, RNPFAssetCountType) {
 + (NSDictionary *)PHAssetCollectionTypeValuesReversed;
 + (NSDictionary *)PHAssetCollectionSubtypeValuesReversed;
 + (NSDictionary *)PHAuthorizationStatusValuesReversed;
-
-
-
-
-
-
++ (NSDictionary *)PHAssetResourceTypeValuesReversed;
 
 @end

@@ -33,7 +33,7 @@
     "install.js"
   ],
   "dependencies": {},
-  "scripts": {
+  "scripts": { 
     "postinstall": "node install.js",
     "test": "jest",
     "test-ios": "set -o pipefail && xcodebuild test -verbose -project example/ios/Example.xcodeproj -scheme Example -destination 'id=E40727B3-41FB-4D6E-B4CB-BFA87109EB12' | xcpretty",

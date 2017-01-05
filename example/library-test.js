@@ -21,7 +21,7 @@ export default class LibraryTest {
   addTestImagesToAlbumTwo(album) {
     return RNPhotosFramework.createAssets({
       album: album,
-      includeMetaData: true,
+      includeMetadata: true,
       images: [
         {
           uri: 'https://c1.staticflickr.com/6/5337/8940995208_5da979c52f.jpg'
@@ -34,7 +34,7 @@ export default class LibraryTest {
     });
   }
 
- 
+
 
   _componentWillMount() {
     RNPhotosFramework

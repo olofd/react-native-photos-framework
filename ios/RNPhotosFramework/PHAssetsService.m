@@ -15,14 +15,14 @@
 +(PHFetchResult<PHAsset *> *) getAssetsForParams:(NSDictionary *)params  {
     NSString * cacheKey = [RCTConvert NSString:params[@"_cacheKey"]];
     NSString * albumLocalIdentifier = [RCTConvert NSString:params[@"albumLocalIdentifier"]];
-    
+
     if(cacheKey != nil) {
         RCTCachedFetchResult *cachedResultSet = [[PHChangeObserver sharedChangeObserver] getFetchResultFromCacheWithuuid:cacheKey];
         if(cachedResultSet != nil) {
             return [cachedResultSet fetchResult];
         }
     }
-    
+
     PHFetchResult<PHAsset *> *fetchResult;
     if(albumLocalIdentifier != nil) {
         fetchResult = [self getAssetsForParams:params andAlbumLocalIdentifier:albumLocalIdentifier];
@@ -30,7 +30,7 @@
     if(fetchResult == nil) {
         fetchResult = [PHAssetsService getAllAssetsForParams:params];
     }
-    
+
     if(cacheKey != nil && fetchResult != nil) {
         [[PHChangeObserver sharedChangeObserver] cacheFetchResultWithUUID:fetchResult andObjectType:[PHAsset class] andUUID:cacheKey andOrginalFetchParams:params];
     }
@@ -41,7 +41,7 @@
 +(PHFetchResult<PHAsset *> *)getAssetsForParams:(NSDictionary *)params andAlbumLocalIdentifier:(NSString *)albumLocalIdentifier {
     PHFetchOptions *options = [PHFetchOptionsService getAssetFetchOptionsFromParams:params];
     PHFetchResult<PHAssetCollection *> *collections = [PHAssetCollection fetchAssetCollectionsWithLocalIdentifiers:@[albumLocalIdentifier] options:nil];
-    
+
     PHFetchResult<PHAsset *> * assets = [PHAsset fetchAssetsInAssetCollection:collections.firstObject options:options];
     return assets;
 }
@@ -55,7 +55,7 @@
     return [PHAsset fetchAssetsWithOptions:options];
 }
 
-+(NSArray<NSDictionary *> *) assetsArrayToUriArray:(NSArray<id> *)assetsArray andIncludeMetaData:(BOOL)includeMetaData {
++(NSArray<NSDictionary *> *) assetsArrayToUriArray:(NSArray<id> *)assetsArray andincludeMetadata:(BOOL)includeMetadata andIncludeAssetResourcesMetadata:(BOOL)includeAssetResourcesMetadata {
     RCT_PROFILE_BEGIN_EVENT(0, @"-[RCTCameraRollRNPhotosFrameworkManager assetsArrayToUriArray", nil);
 
     NSMutableArray *uriArray = [NSMutableArray arrayWithCapacity:assetsArray.count];
@@ -79,10 +79,13 @@
                                              [reveredMediaTypes objectForKey:@([asset mediaType])], @"mediaType",
                                              assetIndex, @"collectionIndex",
                                              nil];
-        if(includeMetaData) {
-            [self extendAssetDicWithAssetMetaData:responseDict andPHAsset:asset];
+        if(includeMetadata) {
+            [self extendAssetDicWithAssetMetadata:responseDict andPHAsset:asset];
         }
-        
+        if(includeAssetResourcesMetadata) {
+            [self extendAssetDicWithAssetResourcesMetadata:responseDict andPHAsset:asset];
+        }
+
         [uriArray addObject:responseDict];
     }
     RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
@@ -90,7 +93,8 @@
     return uriArray;
 }
 
-+(NSMutableDictionary *)extendAssetDicWithAssetMetaData:(NSMutableDictionary *)dictToExtend andPHAsset:(PHAsset *)asset {
++(NSMutableDictionary *)extendAssetDicWithAssetMetadata:(NSMutableDictionary *)dictToExtend andPHAsset:(PHAsset *)asset {
+
     [dictToExtend setObject:@([PHHelpers getTimeSince1970:[asset creationDate]]) forKey:@"creationDate"];
     [dictToExtend setObject:@([PHHelpers getTimeSince1970:[asset modificationDate]])forKey:@"modificationDate"];
     [dictToExtend setObject:[PHHelpers CLLocationToJson:[asset location]] forKey:@"location"];
@@ -110,20 +114,42 @@
     return dictToExtend;
 }
 
++(NSMutableDictionary *)extendAssetDicWithAssetResourcesMetadata:(NSMutableDictionary *)dictToExtend andPHAsset:(PHAsset *)asset {
+
+    NSArray<PHAssetResource *> *resources = [PHAssetResource assetResourcesForAsset:asset];
+    NSMutableArray *arrayWithAssetResourcesMetadata = [NSMutableArray new];
+
+    for(int i = 0; i < resources.count;i++) {
+        PHAssetResource *resourceMetadata = [resources objectAtIndex:i];
+        [arrayWithAssetResourcesMetadata addObject:@{
+                                                     @"originalFilename" : resourceMetadata.originalFilename,
+                                                     @"assetLocalIdentifier" : resourceMetadata.assetLocalIdentifier,
+                                                     @"uniformTypeIdentifier" : resourceMetadata.uniformTypeIdentifier,
+                                                     @"type" : [[RCTConvert PHAssetResourceTypeValuesReversed] objectForKey:@(resourceMetadata.type)]
+                                                     }];
+    }
+
+    [dictToExtend setObject:arrayWithAssetResourcesMetadata forKey:@"assetResourcesMetadata"];
+
+    return dictToExtend;
+}
+
+
+
 +(NSMutableArray<PHAssetWithCollectionIndex*> *) getAssetsForFetchResult:(PHFetchResult *)assetsFetchResult startIndex:(int)startIndex endIndex:(int)endIndex assetDisplayStartToEnd:(BOOL)assetDisplayStartToEnd andAssetDisplayBottomUp:(BOOL)assetDisplayBottomUp {
-    
+
     NSMutableArray<PHAssetWithCollectionIndex *> *assets = [NSMutableArray new];
     int assetCount = (int)assetsFetchResult.count;
-    
+
     if(assetCount != 0) {
-        
+
         NSIndexSet *indexSet = [self getIndexSetForAssetEnumerationWithAssetCount:(int)assetsFetchResult.count startIndex:startIndex endIndex:endIndex assetDisplayStartToEnd:assetDisplayStartToEnd];
-        
+
         NSEnumerationOptions enumerationOptionsStartToEnd = assetDisplayBottomUp ? NSEnumerationReverse : NSEnumerationConcurrent;
         NSEnumerationOptions enumerationOptionsEndToStart = assetDisplayBottomUp ? NSEnumerationConcurrent : NSEnumerationReverse;
         // display assets from the bottom to top of page if assetDisplayBottomUp is true
         NSEnumerationOptions enumerationOptions = assetDisplayStartToEnd ? enumerationOptionsStartToEnd : enumerationOptionsEndToStart;
-        
+
         [assetsFetchResult enumerateObjectsAtIndexes:indexSet options:enumerationOptions usingBlock:^(PHAsset *asset, NSUInteger idx, BOOL * _Nonnull stop) {
             [assets addObject:[[PHAssetWithCollectionIndex alloc] initWithAsset:asset andCollectionIndex:@(idx)]];
         }];

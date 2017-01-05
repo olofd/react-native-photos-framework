@@ -94,13 +94,13 @@ export default class AlbumList extends Component {
   }
 
   componentWillMount() {
-    simple_timer.start('first_album_fetch');
+   simple_timer.start('first_album_fetch');
     RNPhotosFramework
       .requestAuthorization()
       .then((status) => {
         RNPhotosFramework.getAlbumsCommon({
           assetCount: 'exact',
-          includeMetaData: true,
+          includeMetadata: true,
           previewAssets: 2,
           trackInsertsAndDeletes: true,
           trackChanges: true

@@ -173,8 +173,8 @@ class CameraRollRNPhotosFramework {
     return RCTCameraRollRNPhotosFrameworkManager.updateAlbumTitle(params);
   }
 
-  getAssetsMetaData(assetsLocalIdentifiers) {
-    return RCTCameraRollRNPhotosFrameworkManager.getAssetsMetaData(assetsLocalIdentifiers);
+  getAssetsMetadata(assetsLocalIdentifiers) {
+    return RCTCameraRollRNPhotosFrameworkManager.getAssetsMetadata(assetsLocalIdentifiers);
   }
 
   deleteAssets(assets) {
@@ -208,7 +208,7 @@ class CameraRollRNPhotosFramework {
         videos: params.videos,
         albumLocalIdentifier: params.album ?
           params.album.localIdentifier : undefined,
-        includeMetaData: params.includeMetaData
+        includeMetadata: params.includeMetadata
       })
       .then((result) => {
         return result

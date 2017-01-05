@@ -38,21 +38,17 @@ RCT_ENUM_CONVERTER_WITH_REVERSED(PHAuthorizationStatus, (@{
 
 
 RCT_ENUM_CONVERTER_WITH_REVERSED(RNPFAssetCountType, (@{
-                                                        // New values
                                                         @"estimated": @(RNPFAssetCountTypeEstimated),
                                                         @"exact": @(RNPFAssetCountTypeExact)
                                                         }), RNPFAssetCountTypeEstimated, integerValue)
 
 RCT_ENUM_CONVERTER_WITH_REVERSED(PHAssetBurstSelectionType, (@{
-                                                        // New values
                                                         @"none": @(PHAssetBurstSelectionTypeNone),
                                                         @"autoPick": @(PHAssetBurstSelectionTypeAutoPick),
                                                         @"userPick": @(PHAssetBurstSelectionTypeUserPick)
                                                         }), PHAssetBurstSelectionTypeNone, integerValue)
 
 RCT_ENUM_CONVERTER_WITH_REVERSED(PHAssetMediaType, (@{
-                                        
-                                        // New values
                                         @"image": @(PHAssetMediaTypeImage),
                                         @"video": @(PHAssetMediaTypeVideo),
                                         @"audio": @(PHAssetMediaTypeAudio),
@@ -108,14 +104,27 @@ RCT_ENUM_CONVERTER_WITH_REVERSED(PHAssetCollectionSubtype, (@{
                                                 }), PHCollectionListSubtypeAny, integerValue)
 
 RCT_ENUM_CONVERTER_WITH_REVERSED(PHAssetSourceType, (@{
-                                         
-                                         // New values
                                          @"none": @(PHAssetSourceTypeNone),
                                          @"userLibrary": @(PHAssetSourceTypeUserLibrary),
                                          @"cloudShared": @(PHAssetSourceTypeCloudShared),
                                          @"itunesSynced": @(PHAssetSourceTypeiTunesSynced)
                                          
                                          }), PHAssetSourceTypeNone, integerValue)
+
+RCT_ENUM_CONVERTER_WITH_REVERSED(PHAssetResourceType, (@{
+                                                       @"photo": @(PHAssetResourceTypePhoto),
+                                                       @"video": @(PHAssetResourceTypeVideo),
+                                                       @"audio": @(PHAssetResourceTypeAudio),
+                                                       @"alternatePhoto": @(PHAssetResourceTypeAlternatePhoto),
+                                                       @"fullSizePhoto": @(PHAssetResourceTypeFullSizePhoto),
+                                                       @"fullSizeVideo": @(PHAssetResourceTypeFullSizeVideo),
+                                                       @"adjustmentData": @(PHAssetResourceTypeAdjustmentData),
+                                                       @"adjustmentBasePhoto": @(PHAssetResourceTypeAdjustmentBasePhoto),
+                                                       @"pairedVideo": @(PHAssetResourceTypePairedVideo),
+                                                       @"fullSizePairedVideo": @(PHAssetResourceTypeFullSizePairedVideo),
+                                                       @"adjustmentBasePairedVideo": @(PHAssetResourceTypeAdjustmentBasePairedVideo)
+                                                       
+                                                       }), PHAssetResourceTypePhoto, integerValue)
 
 + (NSArray<NSNumber *> *)PHAssetMediaTypes:(NSArray<NSString *> *)arrayWithMediaTypeStrings
 {

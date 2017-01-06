@@ -5,8 +5,8 @@ osx_image: xcode8.2
 install:
   - nvm use 6.9.1
   - wget https://github.com/yarnpkg/yarn/releases/download/v0.18.1/yarn-0.18.1.js
-  - export yarn="node $(pwd)/yarn-0.16.0.js"
-  - $yarn install --ignore-scripts
+  - export yarn="node $(pwd)/yarn-0.18.1.js"
+  - $yarn install
   - cd example && $yarn install && cd ..
 
 script:

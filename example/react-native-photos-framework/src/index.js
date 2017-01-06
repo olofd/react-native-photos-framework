@@ -13,7 +13,10 @@ import EventEmitter from '../event-emitter';
 import ImageAsset from './image-asset';
 import VideoAsset from './video-asset';
 
-const RCTCameraRollRNPhotosFrameworkManager = NativeModules.CameraRollRNPhotosFrameworkManager;
+const RNPFManager = NativeModules.RNPFManager;
+if(!RNPFManager) {
+  throw new Error("Could not find react-native-photos-framework's native module. It seems it's not linked correctly in your xcode-project.");
+}
 export const eventEmitter = new EventEmitter();
 
 // Main JS-implementation Most methods are written to handle array of input
@@ -40,7 +43,7 @@ class RNPhotosFramework {
       const originalMethod = this[methodName];
       this[methodName] = function (...args) {
         if (!this.cleanCachePromise) {
-          this.cleanCachePromise = RCTCameraRollRNPhotosFrameworkManager.cleanCache();
+          this.cleanCachePromise = RNPFManager.cleanCache();
         }
         return this.cleanCachePromise.then(() => originalMethod.apply(this, args));
       }.bind(this);
@@ -52,27 +55,27 @@ class RNPhotosFramework {
   }
 
   cleanCache() {
-    return RCTCameraRollRNPhotosFrameworkManager.cleanCache();
+    return RNPFManager.cleanCache();
   }
 
   authorizationStatus() {
-    return RCTCameraRollRNPhotosFrameworkManager.authorizationStatus();
+    return RNPFManager.authorizationStatus();
   }
 
   requestAuthorization() {
-    return RCTCameraRollRNPhotosFrameworkManager.requestAuthorization();
+    return RNPFManager.requestAuthorization();
   }
 
   addAssetsToAlbum(params) {
-    return RCTCameraRollRNPhotosFrameworkManager.addAssetsToAlbum(params);
+    return RNPFManager.addAssetsToAlbum(params);
   }
 
   removeAssetsFromAlbum(params) {
-    return RCTCameraRollRNPhotosFrameworkManager.removeAssetsFromAlbum(params);
+    return RNPFManager.removeAssetsFromAlbum(params);
   }
 
   getAssets(params) {
-    return RCTCameraRollRNPhotosFrameworkManager
+    return RNPFManager
       .getAssets(params)
       .then((assetsResponse) => {
         return {
@@ -85,7 +88,7 @@ class RNPhotosFramework {
   }
 
   getAssetsWithIndecies(params) {
-    return RCTCameraRollRNPhotosFrameworkManager
+    return RNPFManager
       .getAssetsWithIndecies(params)
       .then((assetsResponse) => {
         return assetsResponse
@@ -130,7 +133,7 @@ class RNPhotosFramework {
   }
 
   _getAlbumsManyRaw(params) {
-    return RCTCameraRollRNPhotosFrameworkManager.getAlbumsMany(params);
+    return RNPFManager.getAlbumsMany(params);
   }
 
   getAlbumsByTitle(title) {
@@ -148,7 +151,7 @@ class RNPhotosFramework {
   // param should include property called albumTitles : array<string> But can also
   // include things like fetchOptions and type/subtype.
   getAlbumsWithParams(params) {
-    return RCTCameraRollRNPhotosFrameworkManager
+    return RNPFManager
       .getAlbumsByTitles(params)
       .then((albumQueryResult) => {
         return new AlbumQueryResult(albumQueryResult, params, eventEmitter);
@@ -164,7 +167,7 @@ class RNPhotosFramework {
   }
 
   createAlbums(albumTitles) {
-    return RCTCameraRollRNPhotosFrameworkManager
+    return RNPFManager
       .createAlbums(albumTitles)
       .then((albums) => {
         return albums.map(album => new Album(album, undefined, eventEmitter));
@@ -173,27 +176,27 @@ class RNPhotosFramework {
 
   updateAlbumTitle(params) {
     //minimum params: {newTitle : 'x', albumLocalIdentifier : 'guid'}
-    return RCTCameraRollRNPhotosFrameworkManager.updateAlbumTitle(params);
+    return RNPFManager.updateAlbumTitle(params);
   }
 
   getAssetsMetadata(assetsLocalIdentifiers) {
-    return RCTCameraRollRNPhotosFrameworkManager.getAssetsMetadata(assetsLocalIdentifiers);
+    return RNPFManager.getAssetsMetadata(assetsLocalIdentifiers);
   }
 
   getAssetsResourcesMetadata(assetsLocalIdentifiers) {
-    return RCTCameraRollRNPhotosFrameworkManager.getAssetsResourcesMetadata(assetsLocalIdentifiers);
+    return RNPFManager.getAssetsResourcesMetadata(assetsLocalIdentifiers);
   }
 
   getImageAssetsMetadata(assetsLocalIdentifiers) {
-    return RCTCameraRollRNPhotosFrameworkManager.getImageAssetsMetadata(assetsLocalIdentifiers);
+    return RNPFManager.getImageAssetsMetadata(assetsLocalIdentifiers);
   }
 
   deleteAssets(assets) {
-    return RCTCameraRollRNPhotosFrameworkManager.deleteAssets(assets.map(asset => asset.localIdentifier));
+    return RNPFManager.deleteAssets(assets.map(asset => asset.localIdentifier));
   }
 
   deleteAlbums(albums) {
-    return RCTCameraRollRNPhotosFrameworkManager.deleteAlbums(albums.map(album => album.localIdentifier));
+    return RNPFManager.deleteAlbums(albums.map(album => album.localIdentifier));
   }
 
   createImageAsset(image) {
@@ -213,7 +216,7 @@ class RNPhotosFramework {
   }
 
   createAssets(params) {
-    return RCTCameraRollRNPhotosFrameworkManager
+    return RNPFManager
       .createAssets({
         images: params.images,
         videos: params.videos,
@@ -231,7 +234,7 @@ class RNPhotosFramework {
   stopTracking(cacheKey) {
     return new Promise((resolve, reject) => {
       if (cacheKey) {
-        return resolve(RCTCameraRollRNPhotosFrameworkManager.stopTracking(cacheKey));
+        return resolve(RNPFManager.stopTracking(cacheKey));
       } else {
         resolve({
           success: true,

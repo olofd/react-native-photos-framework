@@ -3,7 +3,7 @@
 #import "RCTConvert+RNPhotosFramework.h"
 #import "PHFetchOptionsService.h"
 #import "PHChangeObserver.h"
-#import "PHHelpers.h"
+#import "RNPFHelpers.h"
 #import <React/RCTConvert.h>
 #import "RCTConvert+RNPhotosFramework.h"
 #import <React/RCTProfile.h>
@@ -17,7 +17,7 @@
     NSString * albumLocalIdentifier = [RCTConvert NSString:params[@"albumLocalIdentifier"]];
 
     if(cacheKey != nil) {
-        RCTCachedFetchResult *cachedResultSet = [[PHChangeObserver sharedChangeObserver] getFetchResultFromCacheWithuuid:cacheKey];
+        PHCachedFetchResult *cachedResultSet = [[PHChangeObserver sharedChangeObserver] getFetchResultFromCacheWithuuid:cacheKey];
         if(cachedResultSet != nil) {
             return [cachedResultSet fetchResult];
         }
@@ -95,18 +95,18 @@
 
 +(NSMutableDictionary *)extendAssetDictWithAssetMetadata:(NSMutableDictionary *)dictToExtend andPHAsset:(PHAsset *)asset {
 
-    [dictToExtend setObject:@([PHHelpers getTimeSince1970:[asset creationDate]]) forKey:@"creationDate"];
-    [dictToExtend setObject:@([PHHelpers getTimeSince1970:[asset modificationDate]])forKey:@"modificationDate"];
-    [dictToExtend setObject:[PHHelpers CLLocationToJson:[asset location]] forKey:@"location"];
-    [dictToExtend setObject:[PHHelpers nsOptionsToArray:[asset mediaSubtypes] andBitSize:32 andReversedEnumDict:[RCTConvert PHAssetMediaSubtypeValuesReversed]] forKey:@"mediaSubTypes"];
+    [dictToExtend setObject:@([RNPFHelpers getTimeSince1970:[asset creationDate]]) forKey:@"creationDate"];
+    [dictToExtend setObject:@([RNPFHelpers getTimeSince1970:[asset modificationDate]])forKey:@"modificationDate"];
+    [dictToExtend setObject:[RNPFHelpers CLLocationToJson:[asset location]] forKey:@"location"];
+    [dictToExtend setObject:[RNPFHelpers nsOptionsToArray:[asset mediaSubtypes] andBitSize:32 andReversedEnumDict:[RCTConvert PHAssetMediaSubtypeValuesReversed]] forKey:@"mediaSubTypes"];
     [dictToExtend setObject:@([asset isFavorite]) forKey:@"isFavorite"];
     [dictToExtend setObject:@([asset isHidden]) forKey:@"isHidden"];
-    [dictToExtend setObject:[PHHelpers nsOptionsToValue:[asset sourceType] andBitSize:32 andReversedEnumDict:[RCTConvert PHAssetSourceTypeValuesReversed]] forKey:@"sourceType"];
+    [dictToExtend setObject:[RNPFHelpers nsOptionsToValue:[asset sourceType] andBitSize:32 andReversedEnumDict:[RCTConvert PHAssetSourceTypeValuesReversed]] forKey:@"sourceType"];
     NSString *burstIdentifier = [asset burstIdentifier];
     if(burstIdentifier != nil) {
         [dictToExtend setObject:burstIdentifier forKey:@"burstIdentifier"];
         [dictToExtend setObject:@([asset representsBurst]) forKey:@"representsBurst"];
-        [dictToExtend setObject:[PHHelpers nsOptionsToArray:[asset burstSelectionTypes] andBitSize:32 andReversedEnumDict:[RCTConvert PHAssetBurstSelectionTypeValuesReversed]] forKey:@"burstSelectionTypes"];
+        [dictToExtend setObject:[RNPFHelpers nsOptionsToArray:[asset burstSelectionTypes] andBitSize:32 andReversedEnumDict:[RCTConvert PHAssetBurstSelectionTypeValuesReversed]] forKey:@"burstSelectionTypes"];
     }
     if([asset mediaType] == PHAssetMediaTypeVideo || [asset mediaType] == PHAssetMediaTypeAudio) {
         [dictToExtend setObject:@([asset duration]) forKey:@"duration"];

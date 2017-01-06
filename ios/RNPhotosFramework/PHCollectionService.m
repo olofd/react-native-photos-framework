@@ -5,7 +5,7 @@
 #import "PHChangeObserver.h"
 #import <React/RCTConvert.h>
 #import "RCTConvert+RNPhotosFramework.h"
-#import "PHHelpers.h"
+#import "RNPFHelpers.h"
 #import <React/RCTImageLoader.h>
 #import "PHAssetsService.h"
 
@@ -147,9 +147,9 @@ static id ObjectOrNull(id object)
             [albumDictionary setObject:[[RCTConvert PHAssetCollectionSubtypeValuesReversed] objectForKey:@(subType)] forKey:@"subType"];
         }
         if(includeMetadata) {
-            [albumDictionary setObject:@([PHHelpers getTimeSince1970:phAssetCollection.startDate])forKey:@"startDate"];
-            [albumDictionary setObject:@([PHHelpers getTimeSince1970:phAssetCollection.endDate]) forKey:@"endDate"];
-            [albumDictionary setObject:[PHHelpers CLLocationToJson:phAssetCollection.approximateLocation] forKey:@"approximateLocation"];
+            [albumDictionary setObject:@([RNPFHelpers getTimeSince1970:phAssetCollection.startDate])forKey:@"startDate"];
+            [albumDictionary setObject:@([RNPFHelpers getTimeSince1970:phAssetCollection.endDate]) forKey:@"endDate"];
+            [albumDictionary setObject:[RNPFHelpers CLLocationToJson:phAssetCollection.approximateLocation] forKey:@"approximateLocation"];
             [albumDictionary setObject:ObjectOrNull(phAssetCollection.localizedLocationNames) forKey:@"localizedLocationNames"];
         }
         if(countType == RNPFAssetCountTypeEstimated) {

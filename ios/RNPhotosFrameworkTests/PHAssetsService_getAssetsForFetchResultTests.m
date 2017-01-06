@@ -33,6 +33,10 @@ NSMutableArray *scenarioAssets;
     [super tearDown];
 }
 
+- (void)testLoad {
+    
+}
+
 - (void)testShouldReturnEqualAmountOfAssets {
     NSArray *resultYesYes = [PHAssetsService getAssetsForFetchResult:arrayWithFakeAssets startIndex:5 endIndex:15 assetDisplayStartToEnd:YES andAssetDisplayBottomUp:YES];
     [self setUp];

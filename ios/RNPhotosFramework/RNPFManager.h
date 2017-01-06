@@ -4,6 +4,6 @@
 @import UIKit;
 @import Photos;
 
-@interface RCTCameraRollRNPhotosFrameworkManager : NSObject <RCTBridgeModule>
+@interface RNPFManager : NSObject <RCTBridgeModule>
 
 @end

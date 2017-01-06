@@ -1,6 +1,6 @@
 #import <Foundation/Foundation.h>
 @import Photos;
-@interface RCTCachedFetchResult : NSObject
+@interface PHCachedFetchResult : NSObject
 
 - (instancetype)initWithFetchResult:(PHFetchResult *)fetcHResult andObjectType:(Class)objectType andOriginalFetchParams:(NSDictionary *)params;
 

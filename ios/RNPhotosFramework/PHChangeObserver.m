@@ -2,7 +2,7 @@
 #import <React/RCTBridge.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTEventDispatcher.h>
-#import "RCTCachedFetchResult.h"
+#import "PHCachedFetchResult.h"
 #import "PHCollectionService.h"
 #import "PHAssetsService.h"
 @implementation PHChangeObserver
@@ -34,9 +34,9 @@
         //Let me know if you know how we can avoid this.
         RCTBridge * bridge = [RCTBridge currentBridge];
         
-        NSMutableDictionary<NSString *, RCTCachedFetchResult *> *previousFetches = [[PHChangeObserver sharedChangeObserver] fetchResults];
+        NSMutableDictionary<NSString *, PHCachedFetchResult *> *previousFetches = [[PHChangeObserver sharedChangeObserver] fetchResults];
         
-        [previousFetches enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull uuid, RCTCachedFetchResult * _Nonnull cachedFetchResult, BOOL * _Nonnull stop) {
+        [previousFetches enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull uuid, PHCachedFetchResult * _Nonnull cachedFetchResult, BOOL * _Nonnull stop) {
             
             PHFetchResultChangeDetails *changeDetails = [changeInstance changeDetailsForFetchResult:cachedFetchResult.fetchResult];
             
@@ -192,12 +192,12 @@
 
 -(NSString *) cacheFetchResultAndReturnUUID:(PHFetchResult *)fetchResult andObjectType:(Class)objectType andOrginalFetchParams:(NSDictionary *)params {
     NSString *uuid = [[NSUUID UUID] UUIDString];
-    [self.fetchResults setObject:[[RCTCachedFetchResult alloc] initWithFetchResult:fetchResult andObjectType:objectType andOriginalFetchParams:params] forKey:uuid];
+    [self.fetchResults setObject:[[PHCachedFetchResult alloc] initWithFetchResult:fetchResult andObjectType:objectType andOriginalFetchParams:params] forKey:uuid];
     return uuid;
 }
 
 -(NSString *) cacheFetchResultWithUUID:(PHFetchResult *)fetchResult andObjectType:(Class)objectType andUUID:(NSString *)uuid andOrginalFetchParams:(NSDictionary *)params  {
-    [self.fetchResults setObject:[[RCTCachedFetchResult alloc] initWithFetchResult:fetchResult andObjectType:objectType andOriginalFetchParams:params] forKey:uuid];
+    [self.fetchResults setObject:[[PHCachedFetchResult alloc] initWithFetchResult:fetchResult andObjectType:objectType andOriginalFetchParams:params] forKey:uuid];
     return uuid;
 }
 
@@ -205,7 +205,7 @@
     [self.fetchResults removeObjectForKey:uuid];
 }
 
--(RCTCachedFetchResult *) getFetchResultFromCacheWithuuid:(NSString *)uuid {
+-(PHCachedFetchResult *) getFetchResultFromCacheWithuuid:(NSString *)uuid {
     return [self.fetchResults objectForKey:uuid];
 }
 

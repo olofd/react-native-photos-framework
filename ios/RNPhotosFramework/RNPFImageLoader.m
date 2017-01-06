@@ -1,8 +1,8 @@
-#import "RCTImageLoaderRNPhotosFramework.h"
+#import "RNPFImageLoader.h"
 #import <Photos/Photos.h>
 #import <React/RCTUtils.h>
 
-@implementation RCTImageLoaderRNPhotosFramework
+@implementation RNPFImageLoader
 
 RCT_EXPORT_MODULE()
 

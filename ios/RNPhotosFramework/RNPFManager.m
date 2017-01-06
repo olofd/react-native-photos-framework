@@ -1,21 +1,23 @@
-#import "RCTCameraRollRNPhotosFrameworkManager.h"
-#import "PHCachingImageManagerInstance.h"
 #import <React/RCTConvert.h>
 #import <React/RCTImageLoader.h>
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
+#import <React/RCTProfile.h>
+
+#import "RNPFManager.h"
+#import "PHCachingImageManagerInstance.h"
 #import "RCTConvert+RNPhotosFramework.h"
 #import "PHChangeObserver.h"
 #import "PHFetchOptionsService.h"
 #import "PHAssetsService.h"
 #import "PHCollectionService.h"
-#import "RCTCachedFetchResult.h"
-#import <React/RCTProfile.h>
+#import "PHCachedFetchResult.h"
 #import "PHSaveAssetRequest.h"
-#import "PHHelpers.h"
+#import "RNPFHelpers.h"
+
 @import Photos;
 
-@implementation RCTCameraRollRNPhotosFrameworkManager
+@implementation RNPFManager
 RCT_EXPORT_MODULE()
 
 @synthesize bridge = _bridge;
@@ -54,7 +56,7 @@ RCT_EXPORT_METHOD(getAssets:(NSDictionary *)params
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-    RCT_PROFILE_BEGIN_EVENT(0, @"-[RCTCameraRollRNPhotosFrameworkManager getAssets", nil);
+    RCT_PROFILE_BEGIN_EVENT(0, @"-[RNPFManager getAssets", nil);
     
     PHFetchResult<PHAsset *> *assetsFetchResult = [PHAssetsService getAssetsForParams:params];
     
@@ -316,7 +318,7 @@ RCT_EXPORT_METHOD(getImageAssetsMetadata:(NSArray<NSString *> *)arrayWithLocalId
     PHAsset *currentAsset = [assets objectAtIndex:0];
     [assets removeObject:currentAsset];
     if(currentAsset != nil) {
-        __weak RCTCameraRollRNPhotosFrameworkManager *weakSelf = self;
+        __weak RNPFManager *weakSelf = self;
         [PHAssetsService extendAssetDictWithPhotoAssetEditionMetadata:[NSMutableDictionary new] andPHAsset:currentAsset andCompletionBlock:^(NSMutableDictionary *dict) {
             
             [resultArray addObject:[NSMutableDictionary dictionaryWithObjectsAndKeys:currentAsset.localIdentifier, @"localIdentifier", dict, @"imageMetadata", nil]];
@@ -381,7 +383,7 @@ RCT_EXPORT_METHOD(createAssets:(NSDictionary *)params
     PHSaveAssetRequest *currentRequest = [requests objectAtIndex:0];
     [requests removeObject:currentRequest];
     if(currentRequest != nil) {
-        __weak RCTCameraRollRNPhotosFrameworkManager *weakSelf = self;
+        __weak RNPFManager *weakSelf = self;
         [self saveImage:currentRequest toCollection:collection andCompleteBLock:^(BOOL success, NSError * _Nullable error, NSString * _Nullable localIdentifier) {
             if(success) {
                 [localIdentifiers addObject:localIdentifier];

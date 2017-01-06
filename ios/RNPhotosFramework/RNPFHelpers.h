@@ -1,7 +1,7 @@
 #import <Foundation/Foundation.h>
 #import <CoreLocation/CLLocation.h>
 
-@interface PHHelpers : NSObject
+@interface RNPFHelpers : NSObject
 +(NSDateFormatter *)getISODateFormatter;
 +(NSString *)NSDateToJsonString:(NSDate *)date andDateFormatter:(NSDateFormatter *)dateFormatter;
 +(NSTimeInterval)getTimeSince1970:(NSDate *)date;

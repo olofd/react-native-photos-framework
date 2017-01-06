@@ -1,14 +1,6 @@
-//
-//  RCTCachedFetchResult.m
-//  RNPhotosFramework
-//
-//  Created by Olof Dahlbom on 2016-10-24.
-//  Copyright © 2016 Olof Dahlbom. All rights reserved.
-//
+#import "PHCachedFetchResult.h"
 
-#import "RCTCachedFetchResult.h"
-
-@implementation RCTCachedFetchResult
+@implementation PHCachedFetchResult
 - (instancetype)initWithFetchResult:(PHFetchResult *)fetcHResult andObjectType:(Class)objectType andOriginalFetchParams:(NSDictionary *)params
 {
     self = [super init];

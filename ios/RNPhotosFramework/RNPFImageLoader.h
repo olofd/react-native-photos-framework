@@ -1,6 +1,6 @@
 #import <React/RCTImageLoader.h>
 #import "PHCachingImageManagerInstance.h"
 
-@interface RCTImageLoaderRNPhotosFramework : NSObject <RCTImageURLLoader>
+@interface RNPFImageLoader : NSObject <RCTImageURLLoader>
 
 @end

@@ -1,9 +1,9 @@
-#import "PHHelpers.h"
+#import "RNPFHelpers.h"
 #import <CoreLocation/CLLocation.h>
 #import <React/RCTConvert.h>
 #import "RCTConvert+RNPhotosFramework.h"
 
-@implementation PHHelpers
+@implementation RNPFHelpers
 
 +(NSDateFormatter *)getISODateFormatter {
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];

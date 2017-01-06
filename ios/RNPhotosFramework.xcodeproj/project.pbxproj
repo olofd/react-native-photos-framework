@@ -12,17 +12,17 @@
 		632D5ED51DF19458006A862C /* libRNPhotosFramework.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 632F8C131DB758E7007E83E1 /* libRNPhotosFramework.a */; };
 		632D5EDD1DF19526006A862C /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 632D5EDC1DF19526006A862C /* libReact.a */; };
 		632F8C251DB75A4A007E83E1 /* PHCachingImageManagerInstance.m in Sources */ = {isa = PBXBuildFile; fileRef = 632F8C201DB75A4A007E83E1 /* PHCachingImageManagerInstance.m */; };
-		632F8C261DB75A4A007E83E1 /* RCTCameraRollRNPhotosFrameworkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 632F8C221DB75A4A007E83E1 /* RCTCameraRollRNPhotosFrameworkManager.m */; };
-		632F8C271DB75A4A007E83E1 /* RCTImageLoaderRNPhotosFramework.m in Sources */ = {isa = PBXBuildFile; fileRef = 632F8C241DB75A4A007E83E1 /* RCTImageLoaderRNPhotosFramework.m */; };
+		632F8C261DB75A4A007E83E1 /* RNPFManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 632F8C221DB75A4A007E83E1 /* RNPFManager.m */; };
+		632F8C271DB75A4A007E83E1 /* RNPFImageLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 632F8C241DB75A4A007E83E1 /* RNPFImageLoader.m */; };
 		6342E0701DC346E300F7765E /* PHSaveAssetRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 6342E06F1DC346E300F7765E /* PHSaveAssetRequest.m */; };
 		63880A7B1E1281F3007532B2 /* RCTConvert+RNPhotosFrameworkTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 63880A7A1E1281F3007532B2 /* RCTConvert+RNPhotosFrameworkTests.m */; };
 		639BE3591DB82A7C00A2BE6F /* RCTConvert+RNPhotosFramework.m in Sources */ = {isa = PBXBuildFile; fileRef = 639BE3581DB82A7C00A2BE6F /* RCTConvert+RNPhotosFramework.m */; };
 		639BE3661DBB902E00A2BE6F /* PHChangeObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 639BE3651DBB902E00A2BE6F /* PHChangeObserver.m */; };
-		63A33AA51DBE94350022B5FF /* RCTCachedFetchResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 63A33AA41DBE94350022B5FF /* RCTCachedFetchResult.m */; };
+		63A33AA51DBE94350022B5FF /* PHCachedFetchResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 63A33AA41DBE94350022B5FF /* PHCachedFetchResult.m */; };
 		63A33AA81DBE9D3F0022B5FF /* PHAssetsService.m in Sources */ = {isa = PBXBuildFile; fileRef = 63A33AA71DBE9D3F0022B5FF /* PHAssetsService.m */; };
 		63A33AAE1DBE9DB80022B5FF /* PHFetchOptionsService.m in Sources */ = {isa = PBXBuildFile; fileRef = 63A33AAD1DBE9DB80022B5FF /* PHFetchOptionsService.m */; };
 		63A33AB11DBEA06C0022B5FF /* PHCollectionService.m in Sources */ = {isa = PBXBuildFile; fileRef = 63A33AB01DBEA06C0022B5FF /* PHCollectionService.m */; };
-		63C543481DC00BDA004BFE57 /* PHHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 63C543471DC00BDA004BFE57 /* PHHelpers.m */; };
+		63C543481DC00BDA004BFE57 /* RNPFHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 63C543471DC00BDA004BFE57 /* RNPFHelpers.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,10 +57,10 @@
 		632F8C131DB758E7007E83E1 /* libRNPhotosFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNPhotosFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		632F8C1F1DB75A4A007E83E1 /* PHCachingImageManagerInstance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHCachingImageManagerInstance.h; sourceTree = "<group>"; };
 		632F8C201DB75A4A007E83E1 /* PHCachingImageManagerInstance.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHCachingImageManagerInstance.m; sourceTree = "<group>"; };
-		632F8C211DB75A4A007E83E1 /* RCTCameraRollRNPhotosFrameworkManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTCameraRollRNPhotosFrameworkManager.h; sourceTree = "<group>"; };
-		632F8C221DB75A4A007E83E1 /* RCTCameraRollRNPhotosFrameworkManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTCameraRollRNPhotosFrameworkManager.m; sourceTree = "<group>"; };
-		632F8C231DB75A4A007E83E1 /* RCTImageLoaderRNPhotosFramework.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTImageLoaderRNPhotosFramework.h; sourceTree = "<group>"; };
-		632F8C241DB75A4A007E83E1 /* RCTImageLoaderRNPhotosFramework.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageLoaderRNPhotosFramework.m; sourceTree = "<group>"; };
+		632F8C211DB75A4A007E83E1 /* RNPFManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNPFManager.h; sourceTree = "<group>"; };
+		632F8C221DB75A4A007E83E1 /* RNPFManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNPFManager.m; sourceTree = "<group>"; };
+		632F8C231DB75A4A007E83E1 /* RNPFImageLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNPFImageLoader.h; sourceTree = "<group>"; };
+		632F8C241DB75A4A007E83E1 /* RNPFImageLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNPFImageLoader.m; sourceTree = "<group>"; };
 		6342E06E1DC346E300F7765E /* PHSaveAssetRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHSaveAssetRequest.h; sourceTree = "<group>"; };
 		6342E06F1DC346E300F7765E /* PHSaveAssetRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHSaveAssetRequest.m; sourceTree = "<group>"; };
 		63880A7A1E1281F3007532B2 /* RCTConvert+RNPhotosFrameworkTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+RNPhotosFrameworkTests.m"; sourceTree = "<group>"; };
@@ -68,16 +68,16 @@
 		639BE3581DB82A7C00A2BE6F /* RCTConvert+RNPhotosFramework.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+RNPhotosFramework.m"; sourceTree = "<group>"; };
 		639BE3641DBB902E00A2BE6F /* PHChangeObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHChangeObserver.h; sourceTree = "<group>"; };
 		639BE3651DBB902E00A2BE6F /* PHChangeObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHChangeObserver.m; sourceTree = "<group>"; };
-		63A33AA31DBE94350022B5FF /* RCTCachedFetchResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTCachedFetchResult.h; sourceTree = "<group>"; };
-		63A33AA41DBE94350022B5FF /* RCTCachedFetchResult.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTCachedFetchResult.m; sourceTree = "<group>"; };
+		63A33AA31DBE94350022B5FF /* PHCachedFetchResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHCachedFetchResult.h; sourceTree = "<group>"; };
+		63A33AA41DBE94350022B5FF /* PHCachedFetchResult.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHCachedFetchResult.m; sourceTree = "<group>"; };
 		63A33AA61DBE9D3F0022B5FF /* PHAssetsService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHAssetsService.h; sourceTree = "<group>"; };
 		63A33AA71DBE9D3F0022B5FF /* PHAssetsService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHAssetsService.m; sourceTree = "<group>"; };
 		63A33AAC1DBE9DB80022B5FF /* PHFetchOptionsService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHFetchOptionsService.h; sourceTree = "<group>"; };
 		63A33AAD1DBE9DB80022B5FF /* PHFetchOptionsService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHFetchOptionsService.m; sourceTree = "<group>"; };
 		63A33AAF1DBEA06C0022B5FF /* PHCollectionService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHCollectionService.h; sourceTree = "<group>"; };
 		63A33AB01DBEA06C0022B5FF /* PHCollectionService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHCollectionService.m; sourceTree = "<group>"; };
-		63C543461DC00BDA004BFE57 /* PHHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHHelpers.h; sourceTree = "<group>"; };
-		63C543471DC00BDA004BFE57 /* PHHelpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHHelpers.m; sourceTree = "<group>"; };
+		63C543461DC00BDA004BFE57 /* RNPFHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNPFHelpers.h; sourceTree = "<group>"; };
+		63C543471DC00BDA004BFE57 /* RNPFHelpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNPFHelpers.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -140,32 +140,56 @@
 		632F8C151DB758E7007E83E1 /* RNPhotosFramework */ = {
 			isa = PBXGroup;
 			children = (
-				632F8C1F1DB75A4A007E83E1 /* PHCachingImageManagerInstance.h */,
-				632F8C201DB75A4A007E83E1 /* PHCachingImageManagerInstance.m */,
-				632F8C211DB75A4A007E83E1 /* RCTCameraRollRNPhotosFrameworkManager.h */,
-				632F8C221DB75A4A007E83E1 /* RCTCameraRollRNPhotosFrameworkManager.m */,
-				632F8C231DB75A4A007E83E1 /* RCTImageLoaderRNPhotosFramework.h */,
-				632F8C241DB75A4A007E83E1 /* RCTImageLoaderRNPhotosFramework.m */,
+				8CA929DD1E1FAE0200F79455 /* PHServices */,
+				8CA929DC1E1FADDA00F79455 /* Models */,
+				8CA929DB1E1FADB900F79455 /* Base */,
+				632F8C231DB75A4A007E83E1 /* RNPFImageLoader.h */,
+				632F8C241DB75A4A007E83E1 /* RNPFImageLoader.m */,
+				632F8C211DB75A4A007E83E1 /* RNPFManager.h */,
+				632F8C221DB75A4A007E83E1 /* RNPFManager.m */,
+			);
+			path = RNPhotosFramework;
+			sourceTree = "<group>";
+		};
+		8CA929DB1E1FADB900F79455 /* Base */ = {
+			isa = PBXGroup;
+			children = (
 				639BE3571DB82A7C00A2BE6F /* RCTConvert+RNPhotosFramework.h */,
 				639BE3581DB82A7C00A2BE6F /* RCTConvert+RNPhotosFramework.m */,
-				639BE3641DBB902E00A2BE6F /* PHChangeObserver.h */,
-				639BE3651DBB902E00A2BE6F /* PHChangeObserver.m */,
+				63C543461DC00BDA004BFE57 /* RNPFHelpers.h */,
+				63C543471DC00BDA004BFE57 /* RNPFHelpers.m */,
+			);
+			name = Base;
+			sourceTree = "<group>";
+		};
+		8CA929DC1E1FADDA00F79455 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				6302902B1E0C7A1900A39835 /* PHAssetWithCollectionIndex.h */,
+				6302902C1E0C7A1900A39835 /* PHAssetWithCollectionIndex.m */,
+				63A33AA31DBE94350022B5FF /* PHCachedFetchResult.h */,
+				63A33AA41DBE94350022B5FF /* PHCachedFetchResult.m */,
+				6342E06E1DC346E300F7765E /* PHSaveAssetRequest.h */,
+				6342E06F1DC346E300F7765E /* PHSaveAssetRequest.m */,
+			);
+			name = Models;
+			sourceTree = "<group>";
+		};
+		8CA929DD1E1FAE0200F79455 /* PHServices */ = {
+			isa = PBXGroup;
+			children = (
 				63A33AA61DBE9D3F0022B5FF /* PHAssetsService.h */,
 				63A33AA71DBE9D3F0022B5FF /* PHAssetsService.m */,
 				63A33AAC1DBE9DB80022B5FF /* PHFetchOptionsService.h */,
 				63A33AAD1DBE9DB80022B5FF /* PHFetchOptionsService.m */,
 				63A33AAF1DBEA06C0022B5FF /* PHCollectionService.h */,
 				63A33AB01DBEA06C0022B5FF /* PHCollectionService.m */,
-				63C543461DC00BDA004BFE57 /* PHHelpers.h */,
-				63C543471DC00BDA004BFE57 /* PHHelpers.m */,
-				6342E06E1DC346E300F7765E /* PHSaveAssetRequest.h */,
-				6342E06F1DC346E300F7765E /* PHSaveAssetRequest.m */,
-				63A33AA31DBE94350022B5FF /* RCTCachedFetchResult.h */,
-				63A33AA41DBE94350022B5FF /* RCTCachedFetchResult.m */,
-				6302902B1E0C7A1900A39835 /* PHAssetWithCollectionIndex.h */,
-				6302902C1E0C7A1900A39835 /* PHAssetWithCollectionIndex.m */,
+				639BE3641DBB902E00A2BE6F /* PHChangeObserver.h */,
+				639BE3651DBB902E00A2BE6F /* PHChangeObserver.m */,
+				632F8C1F1DB75A4A007E83E1 /* PHCachingImageManagerInstance.h */,
+				632F8C201DB75A4A007E83E1 /* PHCachingImageManagerInstance.m */,
 			);
-			path = RNPhotosFramework;
+			name = PHServices;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -271,15 +295,15 @@
 			files = (
 				632F8C251DB75A4A007E83E1 /* PHCachingImageManagerInstance.m in Sources */,
 				63A33AAE1DBE9DB80022B5FF /* PHFetchOptionsService.m in Sources */,
-				63A33AA51DBE94350022B5FF /* RCTCachedFetchResult.m in Sources */,
+				63A33AA51DBE94350022B5FF /* PHCachedFetchResult.m in Sources */,
 				6302902D1E0C7A1900A39835 /* PHAssetWithCollectionIndex.m in Sources */,
 				63A33AB11DBEA06C0022B5FF /* PHCollectionService.m in Sources */,
 				639BE3591DB82A7C00A2BE6F /* RCTConvert+RNPhotosFramework.m in Sources */,
-				63C543481DC00BDA004BFE57 /* PHHelpers.m in Sources */,
-				632F8C261DB75A4A007E83E1 /* RCTCameraRollRNPhotosFrameworkManager.m in Sources */,
+				63C543481DC00BDA004BFE57 /* RNPFHelpers.m in Sources */,
+				632F8C261DB75A4A007E83E1 /* RNPFManager.m in Sources */,
 				6342E0701DC346E300F7765E /* PHSaveAssetRequest.m in Sources */,
 				63A33AA81DBE9D3F0022B5FF /* PHAssetsService.m in Sources */,
-				632F8C271DB75A4A007E83E1 /* RCTImageLoaderRNPhotosFramework.m in Sources */,
+				632F8C271DB75A4A007E83E1 /* RNPFImageLoader.m in Sources */,
 				639BE3661DBB902E00A2BE6F /* PHChangeObserver.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

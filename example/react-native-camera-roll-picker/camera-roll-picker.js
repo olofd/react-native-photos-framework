@@ -86,7 +86,7 @@ class CameraRollPicker extends Component {
     props
       .album
       .getAssets({
-        // includeMetadata : true,
+        includeMetadata : true,
         trackInsertsAndDeletes: true,
         trackAssetsChanges: true,
         startIndex: 0,

@@ -18,7 +18,10 @@ export default class AlbumQueryResultCollection extends AlbumQueryResultBase {
     }
 
     onQueryResultChange(changeDetails, updateFunc, queryResult) {
-        this.emit('onChange', changeDetails, updateFunc, queryResult);
+        this.emit('onChange', changeDetails, (callback) => {
+            updateFunc();
+            callback && callback(this);
+        }, queryResult);
     }
 
     stopTracking() {

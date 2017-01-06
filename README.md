@@ -108,8 +108,8 @@ import RNPhotosFramework from 'react-native-photos-framework';
 | fetchOptions | - | `object` | See above. |
 | startIndex | 0 | `number` | startIndex-offset for fetching |
 | endIndex | 0 | `number` | endIndex-offset stop for fetching |
-| includeMetadata | false | `boolean` | Include a lot of metadata about the asset (See below). You can also choose to get this metaData at a later point by calling asset.getMetadata (See below) |
-| includeResourcesMetadata | false | `boolean` | Include metadata about the orginal resources that make up the asset. Like type and original filename. You can also choose to get this metaData at a later point by calling asset.getResourcesMetadata. You can also choose to get this metaData at a later point by calling asset.getResourcesMetadata (See below) |
+| includeMetadata | false | `boolean` | Include a lot of metadata about the asset (See below). You can also choose to get this metaData at a later point by calling `asset.getMetadata()` (See below) |
+| includeResourcesMetadata | false | `boolean` | Include metadata about the orginal resources that make up the asset. Like type and original filename. You can also choose to get this metaData at a later point by calling `asset.getResourcesMetadata()`. |
 | prepareForSizeDisplay | - | `Rect(width, height)` | The size of the image you soon will display after running the query. This is highly optional and only there for optimizations of big lists. Prepares the images for display in Photos by using PHCachingImageManager |
 | prepareScale | 2.0 | `number` | The scale to prepare the image in. |
 | assetDisplayStartToEnd | false | `boolean` | Retrieves assets from the beginning of the library when set to true. Using this sorting option preserves the native order of assets as they are viewed in the Photos app.  |

@@ -419,7 +419,6 @@ andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error, NSSt
         // It's unclear if thread-safe
         dispatch_async(dispatch_get_main_queue(), ^{
             [NSException raise:@"Not implementeted exception" format:@"Sry"];
-            
         });
     } else {
 

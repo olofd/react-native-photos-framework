@@ -241,27 +241,6 @@
     }];
 }
 
--(void)requestImageDataWithCompletionBlockAndAsset:(PHAsset *)asset {
-    PHImageRequestOptions * imageRequestOptions = [[PHImageRequestOptions alloc] init];
-    imageRequestOptions.networkAccessAllowed = YES;
-    [[PHImageManager defaultManager]
-     requestImageDataForAsset:asset
-     options:imageRequestOptions
-     resultHandler:^(NSData *imageData, NSString *dataUTI,
-                     UIImageOrientation orientation,
-                     NSDictionary *info)
-     {
-         NSLog(@"info = %@", info);
-         if ([info objectForKey:@"PHImageFileURLKey"]) {
-             // path looks like this -
-             // file:///var/mobile/Media/DCIM/###APPLE/IMG_####.JPG
-             //NSURL *path = [info objectForKey:@"PHImageFileURLKey"];
-         }
-     }];
-    
-    
-}
-
 +(void)updateLocation:(CLLocation*)location creationDate:(NSDate*)creationDate completionBlock:(void(^)(BOOL success))completionBlock andAsset:(PHAsset *)asset {
     [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
         PHAssetChangeRequest *assetRequest = [PHAssetChangeRequest changeRequestForAsset:asset];

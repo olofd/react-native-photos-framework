@@ -4,7 +4,6 @@ import {AppRegistry, StyleSheet, Text, View, TouchableOpacity, AlertIOS} from 'r
 import AlbumList from './album-list';
 import {Scene, Router} from 'react-native-router-flux';
 import CameraRollPicker from './react-native-camera-roll-picker';
-import RNPhotosFramework from 'react-native-photos-framework';
 import {Actions} from 'react-native-router-flux'
 
 

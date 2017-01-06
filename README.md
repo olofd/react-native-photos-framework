@@ -108,13 +108,14 @@ import RNPhotosFramework from 'react-native-photos-framework';
 | fetchOptions | - | `object` | See above. |
 | startIndex | 0 | `number` | startIndex-offset for fetching |
 | endIndex | 0 | `number` | endIndex-offset stop for fetching |
-| includeMetaData | false | `boolean` | Include a lot of meta data about the asset (See below). You can also choose to get this metaData at a later point by calling asset.getMetaData (See below) |
+| includeMetadata | false | `boolean` | Include a lot of metadata about the asset (See below). You can also choose to get this metaData at a later point by calling asset.getMetadata (See below) |
+| includeResourcesMetadata | false | `boolean` | Include metadata about the orginal resources that make up the asset. Like type and original filename. You can also choose to get this metaData at a later point by calling asset.getResourcesMetadata. You can also choose to get this metaData at a later point by calling asset.getResourcesMetadata (See below) |
 | prepareForSizeDisplay | - | `Rect(width, height)` | The size of the image you soon will display after running the query. This is highly optional and only there for optimizations of big lists. Prepares the images for display in Photos by using PHCachingImageManager |
 | prepareScale | 2.0 | `number` | The scale to prepare the image in. |
 | assetDisplayStartToEnd | false | `boolean` | Retrieves assets from the beginning of the library when set to true. Using this sorting option preserves the native order of assets as they are viewed in the Photos app.  |
 | assetDisplayBottomUp | false | `boolean` | Used to arrange assets from the bottom to top of screen when scrolling up to view paginated results. |
 
-###Example of asset response with `includeMetaData : true`
+###Example of asset response with `includeMetadata : true`
 ~~~~
 creationDate : 1466766146
 duration : 17.647 (video)
@@ -187,7 +188,7 @@ The getAlbumsMany-api can take multiple queries (array<albumquery>) and return a
 | subType | `any` | `string` | Defines what subType the album/collection you wish to retrieve should have. Converted in Native to PHAssetCollectionSubtype. Accepted enum-values: `any`, `albumRegular`, `syncedEvent`, `syncedFaces`, `syncedAlbum`, `imported`, `albumMyPhotoStream`, `albumCloudShared`, `smartAlbumGeneric`, `smartAlbumPanoramas`, `smartAlbumVideos`, `smartAlbumFavorites`, `smartAlbumTimelapses`, `smartAlbumAllHidden`, `smartAlbumRecentlyAdded`, `smartAlbumBursts`, `smartAlbumSlomoVideos`, `smartAlbumUserLibrary`, `smartAlbumSelfPortraits`, `smartAlbumScreenshots` |
 | assetCount | `estimated` | `string/enum` | You can choose to get `estimated` count of the collection or `exact`-count. Of course these have different performance-impacts. Returns -1 if the estimated count can't be fetched quickly. Remember that your of course fetchOptions affects this count. |
 | previewAssets | - | `number` | If you set this to a number, say 2, you will get the first two images from the album included in the album-response. This is so you can show a small preview-thumbnail for the album if you like to. |
-| includeMetaData | false | `boolean` | Include some meta data about the album. You can also choose to get this metaData at a later point by calling album.getMetaData (See below) |
+| includeMetadata | false | `boolean` | Include some meta data about the album. You can also choose to get this metaData at a later point by calling album.getMetadata (See below) |
 | noCache | `false` | `boolean` | If you set this flag to true. The result won't get cached or tracked for changes. |
 | preCacheAssets | `false` | `boolean` | If you set this property to true all assets of all albums your query returned will be cached and change-tracking will start. |
 | trackInsertsAndDeletes | `false` | `boolean` | If you set this to true. You will get called back on `queryResult.onChange` when a Insert or Delete happens. See observing changes below for more details. |
@@ -276,12 +277,12 @@ Change title on an album.
 Signature: album.delete() : Promise<status>.
 Delete an album.
 
-###getMetaData
+###getMetadata
 ~~~~
-  album.getMetaData().then((mutatedAlbumWithMetaData) => {});
+  album.getMetadata().then((mutatedAlbumWithMetadata) => {});
 ~~~~
 Fetch meta data for a specific album. You can also include metadata on all albums in the first `getAlbum`-call
-by explicitly setting option `includeMetaData: true`.
+by explicitly setting option `includeMetadata: true`.
 
 # Working with Assets (Images/Photos):
 When you retrieve assets from the API you will get back an Asset object.
@@ -299,11 +300,38 @@ This includes all resizeModes.
 
 ##Asset instance-methods:
 
-###getMetaData
+###getMetadata
 ~~~~
-  asset.getMetaData().then((mutatedAssetWithMetaData) => {});
+  asset.getMetadata().then((mutatedAssetWithMetadata) => {});
 ~~~~
-Fetch meta data for a specific asset. You can also include metadata on all assets in the first `getAsset`-call by explicitly setting option `includeMetaData: true`.
+Fetch metadata for a specific asset. You can also include metadata on all assets in the first `getAsset`-call by explicitly setting option `includeMetadata: true`.
+
+###getResourcesMetadata
+~~~~
+  asset.getResourcesMetadata().then((mutatedAssetWithResourcesMetadata) => {
+    console.log(mutatedAssetWithResourcesMetadata.resourcesMetadata);
+  });
+~~~~
+Fetch resource-metadata for a specific asset, this includes original filename, type, uti (uniformTypeIdentifier) and localidentifier. You can also include resource-metadata on all assets in the first `getAsset`-call by explicitly setting option `includeResourcesMetadata: true`.
+
+###delete
+~~~~
+  asset.delete().then((status) => {
+  });
+~~~~
+Delete asset.
+
+##ImageAsset instance-methods:
+###getImageMetadata
+~~~~
+  asset.getImageMetadata().then((mutatedAssetWithImageMetadata) => {
+    console.log(mutatedAssetWithResourcesMetadata.imageMetadata);
+  });
+~~~~
+Fetch image specific metadata for a specific image-asset, this includes formats and sizes.
+
+##withOptions
+See below (ImageLoader Concept).
 
 ###ImageLoader Concept:
 ~~~~
@@ -370,7 +398,7 @@ Create a image-asset
     images : [{ uri : 'https://some-uri-local-or-remote.jpg' }],
     videos : [{ uri : 'https://some-uri-local-or-remote.jpg' }]
     album : album //(OPTIONAL) some album that you want to add the asset to when it's been added to the library.
-    includeMetaData : true //The result of this function call will return new assets. should this have metadata on them? See docs of getAssets for more info.
+    includeMetadata : true //The result of this function call will return new assets. should this have metadata on them? See docs of getAssets for more info.
   });
 ~~~~
 Signature: album.createAssets(params) : Promise<array<Asset>>.

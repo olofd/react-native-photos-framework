@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "test": "jest",
-    "link-all": "wml add ~/react-native-photos-framework/src ~/react-native-photos-framework/example/node_modules/react-native-photos-framework/src && wml start"
+    "link-all": "wml add ~/react-native-photos-framework/src ~/react-native-photos-framework/example/react-native-photos-framework/src && wml start"
   },
   "dependencies": {
     "babel": "^6.5.2",

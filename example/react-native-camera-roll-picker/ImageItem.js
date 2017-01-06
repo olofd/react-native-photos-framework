@@ -1,13 +1,15 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   Image,
   StyleSheet,
   Dimensions,
   TouchableOpacity,
+  Text,
+  View
 } from 'react-native';
 
 class ImageItem extends Component {
-  constructor(props){
+  constructor(props) {
     super(props)
   }
 
@@ -15,7 +17,7 @@ class ImageItem extends Component {
     var {width} = Dimensions.get('window');
     var {imageMargin, imagesPerRow, containerWidth} = this.props;
 
-    if(typeof containerWidth != "undefined") {
+    if (typeof containerWidth != "undefined") {
       width = containerWidth;
     }
     this._imageSize = (width - (imagesPerRow + 1) * imageMargin) / imagesPerRow;
@@ -25,22 +27,35 @@ class ImageItem extends Component {
     var {item, selected, selectedMarker, imageMargin} = this.props;
 
     var marker = selectedMarker ? selectedMarker :
-        <Image
-          style={[styles.marker, {width: 25, height: 25}]}
-          source={require('./circle-check.png')}
-          />;
+      <Image
+        style={[styles.marker, { width: 25, height: 25 }]}
+        source={require('./circle-check.png')}
+        />;
 
     var image = item.image;
+    const date = new Date(item.creationDate);
+
+    var utcSecondsCreated = item.creationDate;
+    var created = new Date(0); // The 0 there is the key, which sets the date to the epoch
+    created.setUTCSeconds(utcSecondsCreated);
+
+    var utcSecondsModified = item.modificationDate;
+    var modified = new Date(0); // The 0 there is the key, which sets the date to the epoch
+    modified.setUTCSeconds(utcSecondsModified);
 
     return (
       <TouchableOpacity
-        style={{marginBottom: imageMargin, marginRight: imageMargin}}
+        style={{ marginBottom: imageMargin, marginRight: imageMargin }}
         onPress={() => this._handleClick(item)}>
         <Image
-          source={{uri: image.uri}}
-          style={{height: this._imageSize, width: this._imageSize}} >
-          { (selected) ? marker : null }
+          source={{ uri: image.uri }}
+          style={{ height: this._imageSize, width: this._imageSize }} >
+          {(selected) ? marker : null}
         </Image>
+        {this.props.displayDates ? (<View style={styles.dates}><Text style={styles.creationText}>{`Created: ${created.toDateString()}`}</Text>
+          <Text style={styles.modificationText}>{`Modified: ${modified.toDateString()}`}</Text></View>
+        ) : null}
+
       </TouchableOpacity>
     );
   }
@@ -57,6 +72,31 @@ const styles = StyleSheet.create({
     right: 5,
     backgroundColor: 'transparent',
   },
+  creationText: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    color: 'white',
+    padding: 3,
+    fontSize: 10
+  },
+  modificationText: {
+    position: 'absolute',
+    top: 35,
+    left: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    color: 'white',
+    padding: 3,
+    fontSize: 10
+  },
+  dates : {
+    position : 'absolute',
+    top : 0,
+    left : 0,
+    right : 0,
+    bottom : 0
+  }
 })
 
 ImageItem.defaultProps = {

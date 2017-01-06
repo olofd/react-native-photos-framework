@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import CameraRollPicker from './camera-roll-picker';
 import { Actions } from 'react-native-router-flux';
-import RNPhotosFramework from 'react-native-photos-framework';
+import RNPhotosFramework from '../react-native-photos-framework';
 import TrashIcon from '../images/trash2.png';
 
 export default class ReactNativeCameraRollPicker extends Component {

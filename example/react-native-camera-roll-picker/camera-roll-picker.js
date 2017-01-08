@@ -104,15 +104,6 @@ class CameraRollPicker extends Component {
         assetDisplayStartToEnd: false
       })
       .then((data) => {
-        const firstAsset = data.assets[0];
-        setTimeout(() => {
-          console.log('setting fav', firstAsset.isFavorite);
-          firstAsset.setFavorite(false).then((result) => {
-            firstAsset.refreshMetadata().then(() => {
-              console.log('setting fav', firstAsset.isFavorite);
-            });
-          });
-        }, 700);
         console.log(data.assets.map(x => x.collectionIndex));
         simple_timer.stop('fetch_timer');
         console.log('react-native-photos-framework fetch request took %s milliseconds.', simple_timer.get('fetch_timer').delta)

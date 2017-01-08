@@ -318,6 +318,20 @@ after your update-operation:
   });
 ~~~~
 
+NOTE2: You can update multiple assets at once by calling 
+~~~~
+RNPhotosFramework.updateAssets({
+  [assetOne.localIdentifier] : {
+    //Will only update properties provided:
+    hidden, favorite, creationDate, location
+  },
+  [assetTwo.localIdentifier] : {
+    hidden, favorite, creationDate, location
+  }
+  ...etc
+});
+~~~~
+
 ####setHidden
 ~~~~
   asset.setHidden(hiddenBoolean).then((resultOfOperation) => {

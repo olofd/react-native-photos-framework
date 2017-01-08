@@ -333,6 +333,55 @@ RCT_EXPORT_METHOD(getImageAssetsMetadata:(NSArray<NSString *> *)arrayWithLocalId
 }
 
 
+RCT_EXPORT_METHOD(updateAssets:(NSArray *)arrayWithLocalIdentifiers andUpdateObjs:(NSDictionary *)updateObjs
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+    PHFetchResult<PHAsset *> * arrayWithAssets = [PHAssetsService getAssetsFromArrayOfLocalIdentifiers:arrayWithLocalIdentifiers];
+    
+    if(arrayWithAssets == nil || arrayWithAssets.count == 0){
+        return resolve(@{});
+    }
+    NSMutableArray *mutableArrayWithAssets = [NSMutableArray arrayWithCapacity:arrayWithAssets.count];
+    [arrayWithAssets enumerateObjectsUsingBlock:^(PHAsset * _Nonnull asset, NSUInteger idx, BOOL * _Nonnull stop) {
+        [mutableArrayWithAssets addObject:asset];
+    }];
+    [self updateAssets:mutableArrayWithAssets andUpdateObjs:updateObjs andResultArray:[NSMutableDictionary new] andCompleteBLock:^(NSMutableDictionary *result) {
+        resolve(result);
+    }];
+    
+}
+
+-(void) updateAssets:(NSMutableArray<PHAsset *> *)assets andUpdateObjs:(NSDictionary *)updateObjs andResultArray:(NSMutableDictionary *)result andCompleteBLock:(nullable void(^)(NSMutableDictionary * result))completeBlock {
+    
+    if(assets.count == 0){
+        return completeBlock(result);
+    }
+    PHAsset *currentAsset = [assets objectAtIndex:0];
+    [assets removeObject:currentAsset];
+    if(currentAsset != nil) {
+        __weak RNPFManager *weakSelf = self;
+        NSDictionary *assetUpdateParams = [updateObjs objectForKey:currentAsset.localIdentifier];
+        if(assetUpdateParams) {
+            [PHAssetsService updateAssetWithParams:assetUpdateParams completionBlock:^(BOOL success, NSError * _Nullable error, NSString * _Nullable localIdentifier) {
+                
+                [result setObject:@{
+                                    @"success" : @(success),
+                                    @"error" : (error != nil ? error.localizedDescription : @"")
+                                    } forKey:localIdentifier];
+      
+                return [weakSelf updateAssets:assets andUpdateObjs:updateObjs andResultArray:result andCompleteBLock:completeBlock];
+                
+            } andAsset:currentAsset];
+        }
+
+    }else {
+        return [self updateAssets:assets andUpdateObjs:updateObjs andResultArray:result andCompleteBLock:completeBlock];
+    }
+}
+
+
+
 -(void) prepareAssetsForDisplayWithParams:(NSDictionary *)params andAssets:(NSArray<PHAssetWithCollectionIndex *> *)assets {
     NSString *prepareProp = params[@"prepareForSizeDisplay"];
     if(prepareProp != nil) {

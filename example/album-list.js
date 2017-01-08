@@ -94,7 +94,7 @@ export default class AlbumList extends Component {
   }
 
   componentWillMount() {
-   simple_timer.start('first_album_fetch');
+    simple_timer.start('first_album_fetch');
     RNPhotosFramework
       .requestAuthorization()
       .then((status) => {
@@ -103,7 +103,10 @@ export default class AlbumList extends Component {
           includeMetadata: true,
           previewAssets: 2,
           trackInsertsAndDeletes: true,
-          trackChanges: true
+          trackChanges: true,
+          assetFetchOptions: {
+            includeHiddenAssets: true,
+          }
         }, true).then((albumsFetchResult) => {
           albumsFetchResult.onChange((changeDetails, update, unsubscribe) => {
             if (update) {
@@ -331,8 +334,8 @@ const styles = StyleSheet.create({
     height: 20,
     width: 23
   },
-  minusIcon : {
-    width : 25,
-    height : 25
+  minusIcon: {
+    width: 25,
+    height: 25
   }
 })

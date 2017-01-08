@@ -14,7 +14,7 @@ import ImageAsset from './image-asset';
 import VideoAsset from './video-asset';
 
 const RNPFManager = NativeModules.RNPFManager;
-if(!RNPFManager) {
+if (!RNPFManager) {
   throw new Error("Could not find react-native-photos-framework's native module. It seems it's not linked correctly in your xcode-project.");
 }
 export const eventEmitter = new EventEmitter();
@@ -173,10 +173,18 @@ class RNPhotosFramework {
         return albums.map(album => new Album(album, undefined, eventEmitter));
       });
   }
-
+ 
   updateAlbumTitle(params) {
     //minimum params: {newTitle : 'x', albumLocalIdentifier : 'guid'}
     return RNPFManager.updateAlbumTitle(params);
+  }
+
+  updateAssets(assetUpdateObjs) {
+    /* assetUpdateObj : {localIdentifier : {creationDate, location, favorite, hidden}} */
+    const arrayWithLocalIdentifiers = Object.keys(assetUpdateObjs);
+    return RNPFManager.updateAssets(arrayWithLocalIdentifiers, assetUpdateObjs).then((result) => {
+      return result;
+    });
   }
 
   getAssetsMetadata(assetsLocalIdentifiers) {

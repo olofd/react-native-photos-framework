@@ -119,7 +119,7 @@
                             BOOL includeMetadata = [RCTConvert BOOL:cachedFetchResult.originalFetchParams[@"includeMetadata"]];
                             BOOL includeResourcesMetadata = [RCTConvert BOOL:cachedFetchResult.originalFetchParams[@"includeResourcesMetadata"]];
                             NSDictionary *changedObject = [[PHAssetsService assetsArrayToUriArray:@[object] andincludeMetadata:includeMetadata andIncludeAssetResourcesMetadata:includeResourcesMetadata] objectAtIndex:0];
-                            NSNumber *collectionIndex = [insertedIndexes objectAtIndex:i];
+                            NSNumber *collectionIndex = [changedIndexes objectAtIndex:i];
                             NSMutableDictionary *mutableChangedDict = [changedObject mutableCopy];
                             [mutableChangedDict setObject:collectionIndex forKey:@"collectionIndex"];
                             [changedObjects addObject:@{

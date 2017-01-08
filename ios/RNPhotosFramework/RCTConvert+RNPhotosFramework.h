@@ -35,4 +35,6 @@ typedef NS_ENUM(NSInteger, RNPFAssetCountType) {
 + (NSDictionary *)PHAuthorizationStatusValuesReversed;
 + (NSDictionary *)PHAssetResourceTypeValuesReversed;
 
++ (CLLocation *)CLLocation:(id)json;
+
 @end

@@ -47,7 +47,10 @@
 }
 
 +(PHFetchResult<PHAsset *> *) getAssetsFromArrayOfLocalIdentifiers:(NSArray<NSString *> *)arrayWithLocalIdentifiers {
-    return [PHAsset fetchAssetsWithLocalIdentifiers:arrayWithLocalIdentifiers options:nil];
+    PHFetchOptions *fetchOptions = [PHFetchOptions new];
+    fetchOptions.includeHiddenAssets = YES;
+    fetchOptions.includeAllBurstAssets = YES;
+    return [PHAsset fetchAssetsWithLocalIdentifiers:arrayWithLocalIdentifiers options:fetchOptions];
 }
 
 +(PHFetchResult<PHAsset *> *) getAllAssetsForParams:(NSDictionary *)params {
@@ -95,8 +98,8 @@
 
 +(NSMutableDictionary *)extendAssetDictWithAssetMetadata:(NSMutableDictionary *)dictToExtend andPHAsset:(PHAsset *)asset {
 
-    [dictToExtend setObject:@([RNPFHelpers getTimeSince1970:[asset creationDate]]) forKey:@"creationDate"];
-    [dictToExtend setObject:@([RNPFHelpers getTimeSince1970:[asset modificationDate]])forKey:@"modificationDate"];
+    [dictToExtend setObject:@([RNPFHelpers getTimeSince1970:[asset creationDate]]) forKey:@"creationDateUTCSeconds"];
+    [dictToExtend setObject:@([RNPFHelpers getTimeSince1970:[asset modificationDate]])forKey:@"modificationDateUTCSeconds"];
     [dictToExtend setObject:[RNPFHelpers CLLocationToJson:[asset location]] forKey:@"location"];
     [dictToExtend setObject:[RNPFHelpers nsOptionsToArray:[asset mediaSubtypes] andBitSize:32 andReversedEnumDict:[RCTConvert PHAssetMediaSubtypeValuesReversed]] forKey:@"mediaSubTypes"];
     [dictToExtend setObject:@([asset isFavorite]) forKey:@"isFavorite"];
@@ -241,19 +244,78 @@
     }];
 }
 
-+(void)updateLocation:(CLLocation*)location creationDate:(NSDate*)creationDate completionBlock:(void(^)(BOOL success))completionBlock andAsset:(PHAsset *)asset {
++(void)updateAssetWithParams:(NSDictionary *)params completionBlock:(void(^)(BOOL success, NSError * _Nullable error, NSString * _Nullable localIdentifier))completionBlock andAsset:(PHAsset *)asset {
+    if(!params || !asset) {
+        return completionBlock(NO, [NSError errorWithDomain:@"react-native-photos-framework" code:1 userInfo:@{@"info" : @"[updateAssetWithParams] params or asset was nil"}], asset.localIdentifier);
+    }
+    BOOL runUpdate = NO;
+    BOOL updateHidden = NO;
+    BOOL updateFavorite = NO;
+    BOOL updateCreationDate = NO;
+    BOOL updateLocation = NO;
+    
+    NSString *hiddenValue = [params objectForKey:@"hidden"];
+    BOOL hidden = false;
+    if(hiddenValue) {
+        hidden = [RCTConvert BOOL:params[@"hidden"]];
+        if(hidden != asset.hidden) {
+            runUpdate = YES;
+            updateHidden = YES;
+        }
+    }
+    
+    NSString *favoriteValue = [params objectForKey:@"favorite"];
+    BOOL favorite = false;
+    if(favoriteValue) {
+        favorite = [RCTConvert BOOL:params[@"favorite"]];
+        if(favorite != asset.favorite) {
+            runUpdate = YES;
+            updateFavorite = YES;
+        }
+    }
+    
+    
+    NSString *creationDateValue = [params objectForKey:@"creationDate"];
+    NSDate *creationDate = asset.creationDate;
+    if(creationDateValue) {
+        creationDate = [RCTConvert NSDate:creationDateValue];
+        if(creationDate) {
+            runUpdate = YES;
+            updateCreationDate = YES;
+        }
+    }
+    
+    NSDictionary *locationValue = [RCTConvert NSDictionary:params[@"location"]];
+    CLLocation *location = asset.location;
+    if(locationValue) {
+        location = [RCTConvert CLLocation:locationValue];
+        if(location) {
+            runUpdate = YES;
+            updateLocation = YES;
+        }
+    }
+    if(!runUpdate) {
+        return completionBlock(YES, nil, asset.localIdentifier);
+    }
     [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
         PHAssetChangeRequest *assetRequest = [PHAssetChangeRequest changeRequestForAsset:asset];
-        if(location) assetRequest.location = location;
-        if(creationDate) assetRequest.creationDate = creationDate;
-    } completionHandler:^(BOOL success, NSError *error) {
-        if(success){
-            completionBlock(YES);
-        } else {
-            completionBlock(NO);
+        if(updateHidden) {
+            assetRequest.hidden = hidden;
         }
+        if(updateFavorite) {
+            assetRequest.favorite = favorite;
+        }
+        if(updateCreationDate) {
+            assetRequest.creationDate = creationDate;
+        }
+        if(updateLocation) {
+            assetRequest.location = location;
+        }
+    } completionHandler:^(BOOL success, NSError *error) {
+        completionBlock(success, error, asset.localIdentifier);
     }];
 }
+
 
 
 /*+(void)saveImageToCameraRoll:(UIImage*)image location:(CLLocation*)location completionBlock:(PHAssetAssetBoolBlock)completionBlock{

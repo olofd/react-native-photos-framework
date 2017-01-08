@@ -55,11 +55,12 @@ class CameraRollPicker extends Component {
 
   componentWillMount() {
     this.fetch();
-    this
+    this.unsubscribe = this
       .props
       .album
-      .onChange((changeDetails, update, unsubscribe) => {
+      .onChange((changeDetails, update) => {
         update(this.state.images, (images) => {
+          console.log(images[0]);
           this.state.images = images;
           this.state.dataSource = this
             .state
@@ -78,6 +79,7 @@ class CameraRollPicker extends Component {
       .props
       .album
       .stopTracking();
+    this.unsubscribe && this.unsubscribe();
   }
 
   _fetch(reset, nextProps) {
@@ -86,12 +88,13 @@ class CameraRollPicker extends Component {
     props
       .album
       .getAssets({
-        includeMetadata : true,
+        includeMetadata: true,
         trackInsertsAndDeletes: true,
-        trackAssetsChanges: true,
+        trackChanges: true,
         startIndex: 0,
         endIndex: this.state.images.length + 20,
         fetchOptions: {
+       //   includeHiddenAssets: true,
           sortDescriptors: [{
             key: 'creationDate',
             ascending: true
@@ -101,6 +104,16 @@ class CameraRollPicker extends Component {
         assetDisplayStartToEnd: false
       })
       .then((data) => {
+        const firstAsset = data.assets[0];
+        setTimeout(() => {
+          console.log('setting hidden'); 
+          firstAsset.setLocation({lat : 58.2, lng : 17.3, speed : 200}).then((result) => {
+            console.log(result);
+            firstAsset.setLocation({lat : 59.2, lng : 12.3, speed : 100, altitude : 40, heading : 20}).then((result) => {
+              console.log(result);
+            });
+          });
+        }, 700);
         console.log(data.assets.map(x => x.collectionIndex));
         simple_timer.stop('fetch_timer');
         console.log('react-native-photos-framework fetch request took %s milliseconds.', simple_timer.get('fetch_timer').delta)

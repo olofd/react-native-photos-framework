@@ -13,6 +13,26 @@ export default class Asset {
         this._assetObj = assetObj;
     }
 
+    get creationDate() {
+        return this.toJsDate('creationDateUTCSeconds', '_creationDate');
+    }
+
+    get modificationDate() {
+        return this.toJsDate('modificationDateUTCSeconds', '_modificationDate');
+    }
+
+    toJsDate(UTCProperty, cachedProperty) {
+        if (!this[UTCProperty]) {
+            return undefined;
+        }
+        if (!this[cachedProperty]) {
+            const utcSecondsCreated = this[UTCProperty];
+            this[cachedProperty] = new Date(0);
+            this[cachedProperty].setUTCSeconds(utcSecondsCreated);
+        }
+        return this[cachedProperty];
+    }
+
     getMetadata() {
         return this._fetchExtraData('getAssetsMetadata', 'creationDate', 'metadata');
     }
@@ -32,7 +52,7 @@ export default class Asset {
             return resolve(NativeApi[nativeMethod]([this.localIdentifier])
                 .then((metadataObjs) => {
                     if (metadataObjs && metadataObjs[0]) {
-                        if(propertyToAssignToSelf) {
+                        if (propertyToAssignToSelf) {
                             Object.assign(this, metadataObjs[0][propertyToAssignToSelf]);
                         } else {
                             Object.assign(this, metadataObjs[0]);
@@ -60,5 +80,37 @@ export default class Asset {
 
     delete() {
         return NativeApi.deleteAssets([this.localIdentifier]);
+    }
+
+    setHidden(hidden) {
+        return this._updateProperty('hidden', hidden, true);
+    }
+
+    setFavorite(favorite) {
+        return this._updateProperty('favorite', favorite, true);
+    }
+
+    setCreationDate(jsDate) {
+        return this._updateProperty('creationDate', jsDate, false);
+    }
+
+    setLocation(latLngObj) {
+        return this._updateProperty('location', latLngObj, false);
+    }
+
+    _updateProperty(property, value, precheckValue) {
+        return new Promise((resolve, reject) => {
+            if (precheckValue && this[property] === value) {
+                return resolve({
+                    success: true,
+                    error: ''
+                });
+            }
+            return NativeApi.updateAssets({
+                [this.localIdentifier]: {
+                    [property]: value
+                }
+            }).then(resolve, reject);
+        });
     }
 }

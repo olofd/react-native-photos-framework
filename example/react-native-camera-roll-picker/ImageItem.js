@@ -33,15 +33,6 @@ class ImageItem extends Component {
         />;
 
     var image = item.image;
-    const date = new Date(item.creationDate);
-
-    var utcSecondsCreated = item.creationDate;
-    var created = new Date(0); // The 0 there is the key, which sets the date to the epoch
-    created.setUTCSeconds(utcSecondsCreated);
-
-    var utcSecondsModified = item.modificationDate;
-    var modified = new Date(0); // The 0 there is the key, which sets the date to the epoch
-    modified.setUTCSeconds(utcSecondsModified);
 
     return (
       <TouchableOpacity
@@ -52,8 +43,8 @@ class ImageItem extends Component {
           style={{ height: this._imageSize, width: this._imageSize }} >
           {(selected) ? marker : null}
         </Image>
-        {this.props.displayDates ? (<View style={styles.dates}><Text style={styles.creationText}>{`Created: ${created.toDateString()}`}</Text>
-          <Text style={styles.modificationText}>{`Modified: ${modified.toDateString()}`}</Text></View>
+        {this.props.displayDates ? (<View style={styles.dates}><Text style={styles.creationText}>{`Created: ${item.creationDate.toDateString()}`}</Text>
+          <Text style={styles.modificationText}>{`Modified: ${item.modificationDate.toDateString()}`}</Text></View>
         ) : null}
 
       </TouchableOpacity>

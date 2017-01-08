@@ -37,13 +37,17 @@ export default class Asset {
         return this._fetchExtraData('getAssetsMetadata', 'creationDate', 'metadata');
     }
 
+    refreshMetadata() {
+        return this._fetchExtraData('getAssetsMetadata', 'creationDate', 'metadata', true);
+    } 
+
     getResourcesMetadata() {
         return this._fetchExtraData('getAssetsResourcesMetadata', 'resourcesMetadata');
     }
 
-    _fetchExtraData(nativeMethod, alreadyLoadedProperty, propertyToAssignToSelf) {
+    _fetchExtraData(nativeMethod, alreadyLoadedProperty, propertyToAssignToSelf, force) {
         return new Promise((resolve, reject) => {
-            if (this[alreadyLoadedProperty]) {
+            if (!force && this[alreadyLoadedProperty]) {
                 //This means we alread have fetched metadata.
                 //Resolve directly
                 resolve(this);

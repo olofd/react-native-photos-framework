@@ -94,7 +94,7 @@ class CameraRollPicker extends Component {
         startIndex: 0,
         endIndex: this.state.images.length + 20,
         fetchOptions: {
-       //   includeHiddenAssets: true,
+          //   includeHiddenAssets: true,
           sortDescriptors: [{
             key: 'creationDate',
             ascending: true
@@ -106,11 +106,10 @@ class CameraRollPicker extends Component {
       .then((data) => {
         const firstAsset = data.assets[0];
         setTimeout(() => {
-          console.log('setting hidden'); 
-          firstAsset.setLocation({lat : 58.2, lng : 17.3, speed : 200}).then((result) => {
-            console.log(result);
-            firstAsset.setLocation({lat : 59.2, lng : 12.3, speed : 100, altitude : 40, heading : 20}).then((result) => {
-              console.log(result);
+          console.log('setting fav', firstAsset.isFavorite);
+          firstAsset.setFavorite(false).then((result) => {
+            firstAsset.refreshMetadata().then(() => {
+              console.log('setting fav', firstAsset.isFavorite);
             });
           });
         }, 700);

@@ -300,13 +300,70 @@ This includes all resizeModes.
 
 ##Asset instance-methods:
 
-###getMetadata
+### Updating asset metaData
+NOTE: When updating metaData, there is two ways of dealing with the result of the update operation.
+Either your asset-collection updates automatically by using `Change-Tracking` (See below).
+This means that the updated asset will be replaced in your collection, but the asset you 
+executed the change on will be unaffected. So calling `setHidden(true)` will still
+have isHidden : false, after your update, but it will be replaced with a new asset
+in your collection via `Change-Tracking`. (Remember to track changes with `trackChanges : true` when calling `getAssets`)
+
+If you choose to NOT use `Change-Tracking` you can call `refreshMetadata` on the asset
+after your update-operation:
+~~~~
+  asset.setHidden(hiddenBoolean).then((resultOfOperation) => {
+      asset.refreshMetadata().then(() => {
+          console.log('The JS-asset should now reflect your changes');
+       });
+  });
+~~~~
+
+####setHidden
+~~~~
+  asset.setHidden(hiddenBoolean).then((resultOfOperation) => {
+
+  });
+~~~~
+Hides or un-hides a specific asset. Will prompt the user when an asset is about to be hidden.
+
+####setFavorite
+~~~~
+  asset.setFavorite(favoriteBoolean).then((resultOfOperation) => {
+
+  });
+~~~~
+Marks/Unmarks the asset as favorite.
+
+####setCreationDate
+~~~~
+  asset.setCreationDate(jsDate).then((resultOfOperation) => {
+
+  });
+~~~~
+Updates the assets creationDate.
+
+####setLocation
+~~~~
+  asset.setLocation({
+    lat : Number //required,
+    lng : Number //required,
+    altitude : Number //optional, Altitue above sea-level
+    heading : Number //optional, cource/heading from 0 (North) to 359.9.
+    speed : Number //optional, speed in m/s.
+    timeStamp : JSDate //optional, timestamp. Defaults to Now.
+  }).then((resultOfOperation) => {
+
+  });
+~~~~
+Updates the assets location.
+
+####getMetadata
 ~~~~
   asset.getMetadata().then((mutatedAssetWithMetadata) => {});
 ~~~~
 Fetch metadata for a specific asset. You can also include metadata on all assets in the first `getAsset`-call by explicitly setting option `includeMetadata: true`.
 
-###getResourcesMetadata
+####getResourcesMetadata
 ~~~~
   asset.getResourcesMetadata().then((mutatedAssetWithResourcesMetadata) => {
     console.log(mutatedAssetWithResourcesMetadata.resourcesMetadata);
@@ -314,7 +371,7 @@ Fetch metadata for a specific asset. You can also include metadata on all assets
 ~~~~
 Fetch resource-metadata for a specific asset, this includes original filename, type, uti (uniformTypeIdentifier) and localidentifier. You can also include resource-metadata on all assets in the first `getAsset`-call by explicitly setting option `includeResourcesMetadata: true`.
 
-###delete
+####delete
 ~~~~
   asset.delete().then((status) => {
   });
@@ -322,7 +379,7 @@ Fetch resource-metadata for a specific asset, this includes original filename, t
 Delete asset.
 
 ##ImageAsset instance-methods:
-###getImageMetadata
+####getImageMetadata
 ~~~~
   asset.getImageMetadata().then((mutatedAssetWithImageMetadata) => {
     console.log(mutatedAssetWithResourcesMetadata.imageMetadata);
@@ -330,7 +387,7 @@ Delete asset.
 ~~~~
 Fetch image specific metadata for a specific image-asset, this includes formats and sizes.
 
-##withOptions
+###withOptions
 See below (ImageLoader Concept).
 
 ###ImageLoader Concept:
@@ -405,8 +462,7 @@ Signature: album.createAssets(params) : Promise<array<Asset>>.
 Base function for creating assets. Will return the successfully created new assets.
 If the function returns less Assets then you sent as input, the ones not returned did fail.
 
-
-#Observing library changes
+#Change-Tracking/Observing library changes
 You can register listeners for library-change-detection on different levels of the api.
 
 ##Library-level

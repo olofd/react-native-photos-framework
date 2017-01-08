@@ -23,6 +23,7 @@
 		63A33AAE1DBE9DB80022B5FF /* PHFetchOptionsService.m in Sources */ = {isa = PBXBuildFile; fileRef = 63A33AAD1DBE9DB80022B5FF /* PHFetchOptionsService.m */; };
 		63A33AB11DBEA06C0022B5FF /* PHCollectionService.m in Sources */ = {isa = PBXBuildFile; fileRef = 63A33AB01DBEA06C0022B5FF /* PHCollectionService.m */; };
 		63C543481DC00BDA004BFE57 /* RNPFHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 63C543471DC00BDA004BFE57 /* RNPFHelpers.m */; };
+		8C2A0F491E22FBB500E31596 /* PHSaveAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C2A0F481E22FBB500E31596 /* PHSaveAsset.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -78,6 +79,8 @@
 		63A33AB01DBEA06C0022B5FF /* PHCollectionService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHCollectionService.m; sourceTree = "<group>"; };
 		63C543461DC00BDA004BFE57 /* RNPFHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNPFHelpers.h; sourceTree = "<group>"; };
 		63C543471DC00BDA004BFE57 /* RNPFHelpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNPFHelpers.m; sourceTree = "<group>"; };
+		8C2A0F471E22FBB500E31596 /* PHSaveAsset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHSaveAsset.h; sourceTree = "<group>"; };
+		8C2A0F481E22FBB500E31596 /* PHSaveAsset.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHSaveAsset.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -171,6 +174,8 @@
 				63A33AA41DBE94350022B5FF /* PHCachedFetchResult.m */,
 				6342E06E1DC346E300F7765E /* PHSaveAssetRequest.h */,
 				6342E06F1DC346E300F7765E /* PHSaveAssetRequest.m */,
+				8C2A0F471E22FBB500E31596 /* PHSaveAsset.h */,
+				8C2A0F481E22FBB500E31596 /* PHSaveAsset.m */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -302,6 +307,7 @@
 				63C543481DC00BDA004BFE57 /* RNPFHelpers.m in Sources */,
 				632F8C261DB75A4A007E83E1 /* RNPFManager.m in Sources */,
 				6342E0701DC346E300F7765E /* PHSaveAssetRequest.m in Sources */,
+				8C2A0F491E22FBB500E31596 /* PHSaveAsset.m in Sources */,
 				63A33AA81DBE9D3F0022B5FF /* PHAssetsService.m in Sources */,
 				632F8C271DB75A4A007E83E1 /* RNPFImageLoader.m in Sources */,
 				639BE3661DBB902E00A2BE6F /* PHChangeObserver.m in Sources */,

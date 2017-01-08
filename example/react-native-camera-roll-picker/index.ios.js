@@ -12,6 +12,7 @@ import CameraRollPicker from './camera-roll-picker';
 import { Actions } from 'react-native-router-flux';
 import RNPhotosFramework from '../react-native-photos-framework';
 import TrashIcon from '../images/trash2.png';
+import Video from 'react-native-video';
 
 export default class ReactNativeCameraRollPicker extends Component {
   constructor(props) {
@@ -202,12 +203,35 @@ export default class ReactNativeCameraRollPicker extends Component {
     });
   }
 
+  insertLocalVideo() {
+    RNPhotosFramework.createAssets({
+      videos: [
+        {
+          uri: 'test-video',
+          type : 'MOV'
+        }
+      ]
+    }).then((assets) => {
+      this
+        .props
+        .album
+        .addAssets(assets)
+        .then((status) => { });
+    });
+  }
+
   downloadDialog() {
     AlertIOS.alert('Add media', 'Select what to add:', [
       {
         text: 'Insert local image',
         onPress: this
           .insertLocalImage
+          .bind(this)
+      },
+      {
+        text: 'Insert local video',
+        onPress: this
+          .insertLocalVideo
           .bind(this)
       },
       {
@@ -232,6 +256,21 @@ export default class ReactNativeCameraRollPicker extends Component {
   render() {
     return (
       <View style={styles.container}>
+        <Video source={{ uri: "test-video", type: 'MOV' }}   // Can be a URL or a local file.
+          ref={(ref) => {
+            this.player = ref
+          } }
+          onPlaybackRateChange={() => { } }                             // Store reference
+          rate={1.0}                     // 0 is paused, 1 is normal.
+          volume={1.0}                   // 0 is muted, 1 is normal.
+          muted={false}                  // Mutes the audio entirely.
+          paused={false}                 // Pauses playback entirely.
+          resizeMode="cover"             // Fill the whole screen at aspect ratio.
+          repeat={true}                  // Repeat forever.
+          playInBackground={false}       // Audio continues to play when app entering background.
+          playWhenInactive={false}       // [iOS] Video continues to play when control or notification center are shown.
+          progressUpdateInterval={250.0} // [iOS] Interval to fire onProgress (default to ~250ms)
+          style={styles.backgroundVideo} />
         <CameraRollPicker
           album={this.props.album}
           removeClippedSubviews={true}
@@ -313,15 +352,15 @@ const styles = StyleSheet.create({
   },
   addButtonPlus: {
     width: 30,
-    height: 40, 
+    height: 40,
     top: -10,
     fontSize: 32,
     color: 'rgb(0, 113, 255)',
     backgroundColor: 'transparent'
   },
   trashIcon: {
-    width : 25,
-    height : 25
+    width: 25,
+    height: 25
   },
   changeButton: {
     fontSize: 18,
@@ -341,5 +380,9 @@ const styles = StyleSheet.create({
     fontSize: 28,
     color: 'red',
     backgroundColor: 'transparent'
+  },
+  backgroundVideo: {
+    width: 500,
+    height: 500
   }
 });

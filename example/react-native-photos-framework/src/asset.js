@@ -13,6 +13,24 @@ export default class Asset {
         this._assetObj = assetObj;
     }
 
+    //This is here in base-class, videos can display thumb.
+    get image() {
+        if (this._imageRef) {
+            return this._imageRef;
+        }
+        const {
+            width,
+            height,
+            uri
+        } = this;
+        this._imageRef = {
+            width,
+            height,
+            uri
+        };
+        return this._imageRef;
+    }
+
     get creationDate() {
         return this.toJsDate('creationDateUTCSeconds', '_creationDate');
     }
@@ -39,7 +57,7 @@ export default class Asset {
 
     refreshMetadata() {
         return this._fetchExtraData('getAssetsMetadata', 'creationDate', 'metadata', true);
-    } 
+    }
 
     getResourcesMetadata() {
         return this._fetchExtraData('getAssetsResourcesMetadata', 'resourcesMetadata');

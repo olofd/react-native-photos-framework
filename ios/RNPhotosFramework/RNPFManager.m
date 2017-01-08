@@ -403,15 +403,15 @@ RCT_EXPORT_METHOD(createAssets:(NSDictionary *)params
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-    NSArray<PHSaveAssetRequest *> *images = [RCTConvert PHSaveAssetRequestArray:params[@"images"]];
-    NSArray<PHSaveAssetRequest *> *videos = [RCTConvert PHSaveAssetRequestArray:params[@"videos"]];
-    if((images == nil || images.count == 0) && (videos == nil || videos.count == 0)) {
+    NSArray<PHSaveAssetRequest *> *media = [RCTConvert PHSaveAssetRequestArray:params[@"media"]];
+    if(media == nil || media.count == 0) {
         return resolve(@{@"localIdentifiers" : @[], @"success" : @((BOOL)true)});
     }
     NSString *albumLocalIdentifier = [RCTConvert NSString:params[@"albumLocalIdentifier"]];
     PHAssetCollection *collection = [PHCollectionService getAssetForLocalIdentifer:albumLocalIdentifier];
     
-    [self saveImages:[images mutableCopy] andLocalIdentifers:[NSMutableArray arrayWithCapacity:images.count] andCollection:collection andCompleteBLock:^(BOOL success, NSError * _Nullable error, NSMutableArray<NSString *> *localIdentifiers) {
+    
+    [self saveMediaMany:[media mutableCopy] andLocalIdentifers:[NSMutableArray arrayWithCapacity:media.count] andCollection:collection andCompleteBLock:^(BOOL success, NSError * _Nullable error, NSMutableArray<NSString *> *localIdentifiers) {
         if(localIdentifiers && localIdentifiers.count != 0) {
             BOOL includeMetadata = [RCTConvert BOOL:params[@"includeMetadata"]];
             BOOL includeResourcesMetadata = [RCTConvert BOOL:params[@"includeResourcesMetadata"]];
@@ -426,7 +426,7 @@ RCT_EXPORT_METHOD(createAssets:(NSDictionary *)params
     }];
 }
 
--(void) saveImages:(NSMutableArray<PHSaveAssetRequest *> *)requests andLocalIdentifers:(NSMutableArray<NSString *> *)localIdentifiers andCollection:(PHAssetCollection *)collection andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error, NSMutableArray<NSString *> * localIdentifiers))completeBlock {
+-(void) saveMediaMany:(NSMutableArray<PHSaveAssetRequest *> *)requests andLocalIdentifers:(NSMutableArray<NSString *> *)localIdentifiers andCollection:(PHAssetCollection *)collection andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error, NSMutableArray<NSString *> * localIdentifiers))completeBlock {
     
     if(requests.count == 0){
         return completeBlock(YES, nil, localIdentifiers);
@@ -435,51 +435,36 @@ RCT_EXPORT_METHOD(createAssets:(NSDictionary *)params
     [requests removeObject:currentRequest];
     if(currentRequest != nil) {
         __weak RNPFManager *weakSelf = self;
-        [self saveImage:currentRequest toCollection:collection andCompleteBLock:^(BOOL success, NSError * _Nullable error, NSString * _Nullable localIdentifier) {
+        [self saveMedia:currentRequest toCollection:collection andCompleteBLock:^(BOOL success, NSError * _Nullable error, NSString * _Nullable localIdentifier) {
             if(success) {
                 [localIdentifiers addObject:localIdentifier];
-                return [weakSelf saveImages:requests andLocalIdentifers:localIdentifiers andCollection:collection andCompleteBLock:completeBlock];
+                return [weakSelf saveMediaMany:requests andLocalIdentifers:localIdentifiers andCollection:collection andCompleteBLock:completeBlock];
             }else {
                 return completeBlock(success, nil, localIdentifiers);
             }
 
         }];
     }else {
-       return [self saveImages:requests andLocalIdentifers:localIdentifiers andCollection:collection andCompleteBLock:completeBlock];
+       return [self saveMediaMany:requests andLocalIdentifers:localIdentifiers andCollection:collection andCompleteBLock:completeBlock];
     }
 
 }
 
-RCT_EXPORT_METHOD(createImageAsset:(PHSaveAssetRequest *)request
-                  resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject)
-{
-    [self saveImage:request toCollection:nil andCompleteBLock:^(BOOL success, NSError * _Nullable error, NSString * _Nullable localIdentifier) {
-        if(success) {
-            return resolve(@{ @"success" : @(success) });
-        }else {
-            return reject(@"Error creating image asset", nil, error);
-        }
-    }];
-}
-
--(void)saveImage:(PHSaveAssetRequest *)request
+-(void)saveMedia:(PHSaveAssetRequest *)request
     toCollection:(PHAssetCollection *)collection
 andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error, NSString *__nullable localIdentifier))completeBlock {
     if ([request.type isEqualToString:@"video"]) {
         // It's unclear if thread-safe
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [NSException raise:@"Not implementeted exception" format:@"Sry"];
-        });
-    } else {
-
-        [_bridge.imageLoader loadImageWithURLRequest:request.uri
-                                 size:CGSizeZero
-                                scale:1
-                              clipped:YES
-                           resizeMode:RCTResizeModeStretch
-                        progressBlock:nil
-                     partialLoadBlock:nil
+        [self saveVideo:request.source toAlbum:collection andCompleteBLock:completeBlock];
+    } else if([request.type isEqualToString:@"image"]) {
+        NSURLRequest *url = [RCTConvert NSURLRequest:request.source.uri];
+        [_bridge.imageLoader loadImageWithURLRequest:url
+                                                size:CGSizeZero
+                                               scale:1
+                                             clipped:YES
+                                          resizeMode:RCTResizeModeStretch
+                                       progressBlock:nil
+                                    partialLoadBlock:nil
                                      completionBlock:^(NSError *loadError, UIImage *loadedImage) {
                                          if (loadError) {
                                              completeBlock(NO, loadError, nil);
@@ -488,6 +473,65 @@ andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error, NSSt
                                          [PHCollectionService saveImage:loadedImage toAlbum:collection andCompleteBLock:completeBlock];
                                      }];
     }
+}
+
+-(void) saveVideo:(PHSaveAsset *)source toAlbum:(PHAssetCollection *)album andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error, NSString *__nullable localIdentifier))completeBlock {
+    
+     NSURL *url = (source.isNetwork || source.isAsset) ?
+     [NSURL URLWithString:source.uri] :
+     [[NSURL alloc] initFileURLWithPath:[[NSBundle mainBundle] pathForResource:source.uri ofType:source.type]];
+     
+     if (source.isNetwork) {
+
+     }
+     else if (source.isAsset) {
+
+     }
+     
+    
+    __block PHObjectPlaceholder *placeholder;
+    [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+        
+        PHAssetChangeRequest *assetRequest = [PHAssetChangeRequest creationRequestForAssetFromVideoAtFileURL:url];
+        placeholder = [assetRequest placeholderForCreatedAsset];
+        
+        if(album != nil) {
+            PHAssetCollectionChangeRequest *albumChangeRequest = [PHAssetCollectionChangeRequest changeRequestForAssetCollection:album];
+            [albumChangeRequest addAssets:@[placeholder]];
+            
+        }
+    } completionHandler:^(BOOL success, NSError *error) {
+        completeBlock(success, error, placeholder.localIdentifier);
+    }];
+}
+
+-(void) downloadVideo:(PHSaveAsset *)videoSource {
+    NSString *documentDir = NSTemporaryDirectory();
+    NSString *filePath = [documentDir stringByAppendingPathComponent:@"GoogleLogo.png"];
+    
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"https://www.google.com/images/srpr/logo11w.png"]];
+    [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue currentQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+        if (error) {
+            NSLog(@"Download Error:%@",error.description);
+        }
+        if (data) {
+            [data writeToFile:filePath atomically:YES];
+            NSLog(@"File is saved to %@",filePath);
+        }
+    }];
+}
+
+RCT_EXPORT_METHOD(createImageAsset:(PHSaveAssetRequest *)request
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+    [self saveMedia:request toCollection:nil andCompleteBLock:^(BOOL success, NSError * _Nullable error, NSString * _Nullable localIdentifier) {
+        if(success) {
+            return resolve(@{ @"success" : @(success) });
+        }else {
+            return reject(@"Error creating image asset", nil, error);
+        }
+    }];
 }
 
 @end

@@ -12,6 +12,7 @@ import AlbumQueryResultCollection from './album-query-result-collection';
 import EventEmitter from '../event-emitter';
 import ImageAsset from './image-asset';
 import VideoAsset from './video-asset';
+import videoPropsResolver from './video-props-resolver';
 
 const RNPFManager = NativeModules.RNPFManager;
 if (!RNPFManager) {
@@ -173,7 +174,7 @@ class RNPhotosFramework {
         return albums.map(album => new Album(album, undefined, eventEmitter));
       });
   }
- 
+
   updateAlbumTitle(params) {
     //minimum params: {newTitle : 'x', albumLocalIdentifier : 'guid'}
     return RNPFManager.updateAlbumTitle(params);
@@ -224,10 +225,24 @@ class RNPhotosFramework {
   }
 
   createAssets(params) {
+    const images = params.images;
+    const videos = params.videos !== undefined ? params.videos.map(videoPropsResolver) : params.videos;
+    let media = [];
+    if (images && images.length) {
+      media = media.concat(images.map(image => ({
+        type: 'image',
+        source: image
+      })));
+    }
+    if (videos && videos.length) {
+      media = media.concat(videos.map(video => ({
+        type: 'video',
+        source: video
+      })));
+    }
     return RNPFManager
       .createAssets({
-        images: params.images,
-        videos: params.videos,
+        media : media,
         albumLocalIdentifier: params.album ?
           params.album.localIdentifier : undefined,
         includeMetadata: params.includeMetadata

@@ -33,7 +33,8 @@
     "install.js",
     "event-emitter.js"
   ],
-  "dependencies": {},
+  "dependencies": {
+  },
   "scripts": {
     "postinstall": "node install.js",
     "test": "jest",

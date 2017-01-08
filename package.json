@@ -30,7 +30,8 @@
     "local-cli/",
     "index.js",
     "README.md",
-    "install.js"
+    "install.js",
+    "event-emitter.js"
   ],
   "dependencies": {},
   "scripts": {

@@ -81,8 +81,6 @@ function getMissingIndecies(changeDetails, arr, indexTranslater) {
 }
 
 export function assetArrayObserverHandler(changeDetails, arr, createNewObjFunc, requestNewItemsCb, preferedOrder, stepCompletedCb) {
-            console.log(changeDetails);
-
     const arrayOrder = indeciesIsReversedNormalOrScrambled(arr, changeDetails, preferedOrder);
     if (arrayOrder === 'scrambled') {
         throw new Error(
@@ -132,7 +130,6 @@ function modifyIndex(arr, index, operation) {
 
 export function collectionArrayObserverHandler(changeDetails, arr,
     createNewObjFunc, requestNewItemsCb, indexTranslater, afterModCb, stepCompletedCb) {
-        console.log(changeDetails);
     //This function is constructed from Apple's documentation on how to apply
     //incremental changes.
     return new Promise((resolve, reject) => {

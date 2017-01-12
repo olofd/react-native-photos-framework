@@ -3,7 +3,6 @@
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
 #import <React/RCTProfile.h>
-
 #import "RNPFManager.h"
 #import "PHCachingImageManagerInstance.h"
 #import "RCTConvert+RNPhotosFramework.h"
@@ -17,6 +16,7 @@
 #import "RNPFFileDownloader.h"
 #import "PHOperationResult.h"
 #import "iDebounce.h"
+#import "PHCache.h"
 
 @import Photos;
 
@@ -26,14 +26,36 @@ RCT_EXPORT_MODULE()
 NSString *const RNPHotoFrameworkErrorUnableToLoad = @"RNPHOTOSFRAMEWORK_UNABLE_TO_LOAD";
 NSString *const RNPHotoFrameworkErrorUnableToSave = @"RNPHOTOSFRAMEWORK_UNABLE_TO_SAVE";
 
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        self.changeObserver = [[PHChangeObserver alloc] initWithEventEmitter:self];
+    }
+    return self;
+}
+
+- (void)dealloc
+{
+    if(self.changeObserver) {
+        [self.changeObserver removeChangeObserver];
+    }
+}
+
 - (dispatch_queue_t)methodQueue
 {
-    self.currentQueue = dispatch_queue_create("com.facebook.React.ReactNaticePhotosFramework", DISPATCH_QUEUE_SERIAL);
+    self.currentQueue = dispatch_queue_create("com.dahlbom.React.ReactNaticePhotosFramework", DISPATCH_QUEUE_SERIAL);
     return self.currentQueue;
 }
 
 - (NSArray<NSString *> *)supportedEvents {
-    return @[@"onCreateAssetsProgress"];
+    return @[@"onCreateAssetsProgress", @"onLibraryChange", @"onObjectChange"];
+}
+
+RCT_EXPORT_METHOD(startChangeObserving:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+    self.changeObserver = [[PHChangeObserver alloc] initWithEventEmitter:self];
 }
 
 RCT_EXPORT_METHOD(authorizationStatus:(RCTPromiseResolveBlock)resolve
@@ -108,7 +130,8 @@ RCT_EXPORT_METHOD(getAssetsWithIndecies:(NSDictionary *)params
 RCT_EXPORT_METHOD(cleanCache:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-    [[PHChangeObserver sharedChangeObserver] cleanCache];
+    [[PHCache sharedPHCache] cleanCache];
+    
     resolve(@{ @"success" : @((BOOL)YES) });
 }
 
@@ -184,7 +207,7 @@ RCT_EXPORT_METHOD(stopTracking:(NSString *)cacheKey
                   reject:(RCTPromiseRejectBlock)reject)
 {
     if(cacheKey != nil) {
-        [[PHChangeObserver sharedChangeObserver] removeFetchResultFromCacheWithUUID:cacheKey];
+        [[PHCache sharedPHCache] removeFetchResultFromCacheWithUUID:cacheKey];
     }
     return resolve(@{@"success" : @(YES)});
 }

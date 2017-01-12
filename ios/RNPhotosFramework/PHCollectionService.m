@@ -2,7 +2,7 @@
 #import <React/RCTConvert.h>
 #import "RCTConvert+RNPhotosFramework.h"
 #import "PHFetchOptionsService.h"
-#import "PHChangeObserver.h"
+#import "PHCache.h"
 #import <React/RCTConvert.h>
 #import "RCTConvert+RNPhotosFramework.h"
 #import "RNPFHelpers.h"
@@ -86,7 +86,7 @@ static id ObjectOrNull(id object)
     
     NSMutableDictionary *multipleAlbumsResponse = [PHCollectionService generateAlbumsResponseFromParams:params andAlbums:collections andCacheAssets:preCacheAssets];
     if(shouldCache) {
-        NSString *uuid = [[PHChangeObserver sharedChangeObserver] cacheFetchResultAndReturnUUID:collections andObjectType:[PHAssetCollection class] andOrginalFetchParams:params];
+        NSString *uuid = [[PHCache sharedPHCache] cacheFetchResultAndReturnUUID:collections andObjectType:[PHAssetCollection class] andOrginalFetchParams:params];
         [multipleAlbumsResponse setObject:uuid forKey:@"_cacheKey"];
     }
     return multipleAlbumsResponse;
@@ -166,7 +166,7 @@ static id ObjectOrNull(id object)
             PHFetchResult<PHAsset *> * assets = [PHCollectionService getAssetForCollection:phAssetCollection andFetchParams:assetFetchParams];
             
             if(cacheAssets) {
-                NSString *uuid = [[PHChangeObserver sharedChangeObserver] cacheFetchResultAndReturnUUID:assets andObjectType:[PHAsset class] andOrginalFetchParams:assetFetchParams];
+                NSString *uuid = [[PHCache sharedPHCache] cacheFetchResultAndReturnUUID:assets andObjectType:[PHAsset class] andOrginalFetchParams:assetFetchParams];
                 [albumDictionary setObject:uuid forKey:@"_cacheKey"];
             }
             

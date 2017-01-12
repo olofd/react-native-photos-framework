@@ -28,6 +28,7 @@
 		8C2A0FC71E2788F800E31596 /* PHCreateMediaQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C2A0FC61E2788F800E31596 /* PHCreateMediaQueue.m */; };
 		8C2A0FCA1E27940300E31596 /* PHOperationResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C2A0FC91E27940300E31596 /* PHOperationResult.m */; };
 		8C2A0FCD1E2826E300E31596 /* iDebounce.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C2A0FCC1E2826E200E31596 /* iDebounce.m */; };
+		8C2A0FD01E283B6400E31596 /* PHCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C2A0FCF1E283B6400E31596 /* PHCache.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -93,6 +94,8 @@
 		8C2A0FC91E27940300E31596 /* PHOperationResult.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHOperationResult.m; sourceTree = "<group>"; };
 		8C2A0FCB1E2826E200E31596 /* iDebounce.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iDebounce.h; sourceTree = "<group>"; };
 		8C2A0FCC1E2826E200E31596 /* iDebounce.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iDebounce.m; sourceTree = "<group>"; };
+		8C2A0FCE1E283B6400E31596 /* PHCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHCache.h; sourceTree = "<group>"; };
+		8C2A0FCF1E283B6400E31596 /* PHCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHCache.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -213,6 +216,8 @@
 				639BE3651DBB902E00A2BE6F /* PHChangeObserver.m */,
 				632F8C1F1DB75A4A007E83E1 /* PHCachingImageManagerInstance.h */,
 				632F8C201DB75A4A007E83E1 /* PHCachingImageManagerInstance.m */,
+				8C2A0FCE1E283B6400E31596 /* PHCache.h */,
+				8C2A0FCF1E283B6400E31596 /* PHCache.m */,
 			);
 			name = PHServices;
 			sourceTree = "<group>";
@@ -261,7 +266,7 @@
 		632F8C0B1DB758E6007E83E1 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0800;
+				LastUpgradeCheck = 0820;
 				ORGANIZATIONNAME = "Olof Dahlbom";
 				TargetAttributes = {
 					632D5ECF1DF19458006A862C = {
@@ -328,6 +333,7 @@
 				8C2A0FC71E2788F800E31596 /* PHCreateMediaQueue.m in Sources */,
 				63C543481DC00BDA004BFE57 /* RNPFHelpers.m in Sources */,
 				632F8C261DB75A4A007E83E1 /* RNPFManager.m in Sources */,
+				8C2A0FD01E283B6400E31596 /* PHCache.m in Sources */,
 				8C2A0FCD1E2826E300E31596 /* iDebounce.m in Sources */,
 				6342E0701DC346E300F7765E /* PHSaveAssetRequest.m in Sources */,
 				8C2A0F491E22FBB500E31596 /* PHSaveAsset.m in Sources */,
@@ -411,6 +417,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -458,6 +465,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;

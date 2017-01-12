@@ -27,10 +27,10 @@ class RNPhotosFramework {
   constructor() {
 
     this.nativeEventEmitter = new NativeEventEmitter(NativeModules.RNPFManager);
-    var subscription = NativeAppEventEmitter.addListener('RNPFObjectChange', (changeDetails) => {
+    this.nativeEventEmitter.addListener('onObjectChange', (changeDetails) => {
       eventEmitter.emit('onObjectChange', changeDetails);
     });
-    var subscription = NativeAppEventEmitter.addListener('RNPFLibraryChange', (changeDetails) => {
+    this.nativeEventEmitter.addListener('onLibraryChange', (changeDetails) => {
       eventEmitter.emit('onLibraryChange', changeDetails);
     });
 

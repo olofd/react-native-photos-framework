@@ -5,6 +5,7 @@
 #import <React/RCTEventDispatcher.h> 
 #import <React/RCTEventEmitter.h>
 #import "PHOperationResult.h"
+#import "PHChangeObserver.h"
 
 @import UIKit;
 @import Photos;
@@ -15,4 +16,5 @@ typedef void(^createAssetsCompleteBlock)( NSMutableArray<PHOperationResult *> * 
 
 @interface RNPFManager : RCTEventEmitter <RCTBridgeModule>
 @property (nonatomic, strong) __nonnull dispatch_queue_t currentQueue;
+@property (nonatomic, strong)  PHChangeObserver * __nullable changeObserver;
 @end

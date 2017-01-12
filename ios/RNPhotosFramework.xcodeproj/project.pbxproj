@@ -24,6 +24,9 @@
 		63A33AB11DBEA06C0022B5FF /* PHCollectionService.m in Sources */ = {isa = PBXBuildFile; fileRef = 63A33AB01DBEA06C0022B5FF /* PHCollectionService.m */; };
 		63C543481DC00BDA004BFE57 /* RNPFHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 63C543471DC00BDA004BFE57 /* RNPFHelpers.m */; };
 		8C2A0F491E22FBB500E31596 /* PHSaveAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C2A0F481E22FBB500E31596 /* PHSaveAsset.m */; };
+		8C2A0FB81E2584F300E31596 /* RNPFFileDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C2A0FB71E2584F300E31596 /* RNPFFileDownloader.m */; };
+		8C2A0FC71E2788F800E31596 /* PHCreateMediaQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C2A0FC61E2788F800E31596 /* PHCreateMediaQueue.m */; };
+		8C2A0FCA1E27940300E31596 /* PHOperationResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C2A0FC91E27940300E31596 /* PHOperationResult.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -81,6 +84,12 @@
 		63C543471DC00BDA004BFE57 /* RNPFHelpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNPFHelpers.m; sourceTree = "<group>"; };
 		8C2A0F471E22FBB500E31596 /* PHSaveAsset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHSaveAsset.h; sourceTree = "<group>"; };
 		8C2A0F481E22FBB500E31596 /* PHSaveAsset.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHSaveAsset.m; sourceTree = "<group>"; };
+		8C2A0FB61E2584F300E31596 /* RNPFFileDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNPFFileDownloader.h; sourceTree = "<group>"; };
+		8C2A0FB71E2584F300E31596 /* RNPFFileDownloader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNPFFileDownloader.m; sourceTree = "<group>"; };
+		8C2A0FC51E2788F800E31596 /* PHCreateMediaQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHCreateMediaQueue.h; sourceTree = "<group>"; };
+		8C2A0FC61E2788F800E31596 /* PHCreateMediaQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHCreateMediaQueue.m; sourceTree = "<group>"; };
+		8C2A0FC81E27940300E31596 /* PHOperationResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHOperationResult.h; sourceTree = "<group>"; };
+		8C2A0FC91E27940300E31596 /* PHOperationResult.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHOperationResult.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -161,6 +170,8 @@
 				639BE3581DB82A7C00A2BE6F /* RCTConvert+RNPhotosFramework.m */,
 				63C543461DC00BDA004BFE57 /* RNPFHelpers.h */,
 				63C543471DC00BDA004BFE57 /* RNPFHelpers.m */,
+				8C2A0FB61E2584F300E31596 /* RNPFFileDownloader.h */,
+				8C2A0FB71E2584F300E31596 /* RNPFFileDownloader.m */,
 			);
 			name = Base;
 			sourceTree = "<group>";
@@ -176,6 +187,10 @@
 				6342E06F1DC346E300F7765E /* PHSaveAssetRequest.m */,
 				8C2A0F471E22FBB500E31596 /* PHSaveAsset.h */,
 				8C2A0F481E22FBB500E31596 /* PHSaveAsset.m */,
+				8C2A0FC51E2788F800E31596 /* PHCreateMediaQueue.h */,
+				8C2A0FC61E2788F800E31596 /* PHCreateMediaQueue.m */,
+				8C2A0FC81E27940300E31596 /* PHOperationResult.h */,
+				8C2A0FC91E27940300E31596 /* PHOperationResult.m */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -304,11 +319,14 @@
 				6302902D1E0C7A1900A39835 /* PHAssetWithCollectionIndex.m in Sources */,
 				63A33AB11DBEA06C0022B5FF /* PHCollectionService.m in Sources */,
 				639BE3591DB82A7C00A2BE6F /* RCTConvert+RNPhotosFramework.m in Sources */,
+				8C2A0FCA1E27940300E31596 /* PHOperationResult.m in Sources */,
+				8C2A0FC71E2788F800E31596 /* PHCreateMediaQueue.m in Sources */,
 				63C543481DC00BDA004BFE57 /* RNPFHelpers.m in Sources */,
 				632F8C261DB75A4A007E83E1 /* RNPFManager.m in Sources */,
 				6342E0701DC346E300F7765E /* PHSaveAssetRequest.m in Sources */,
 				8C2A0F491E22FBB500E31596 /* PHSaveAsset.m in Sources */,
 				63A33AA81DBE9D3F0022B5FF /* PHAssetsService.m in Sources */,
+				8C2A0FB81E2584F300E31596 /* RNPFFileDownloader.m in Sources */,
 				632F8C271DB75A4A007E83E1 /* RNPFImageLoader.m in Sources */,
 				639BE3661DBB902E00A2BE6F /* PHChangeObserver.m in Sources */,
 			);

@@ -14,19 +14,24 @@
 #import "PHCachedFetchResult.h"
 #import "PHSaveAssetRequest.h"
 #import "RNPFHelpers.h"
+#import "RNPFFileDownloader.h"
+#import "PHOperationResult.h"
 
 @import Photos;
 
 @implementation RNPFManager
 RCT_EXPORT_MODULE()
 
-@synthesize bridge = _bridge;
 NSString *const RNPHotoFrameworkErrorUnableToLoad = @"RNPHOTOSFRAMEWORK_UNABLE_TO_LOAD";
 NSString *const RNPHotoFrameworkErrorUnableToSave = @"RNPHOTOSFRAMEWORK_UNABLE_TO_SAVE";
 
 - (dispatch_queue_t)methodQueue
 {
     return dispatch_queue_create("com.facebook.React.ReactNaticePhotosFramework", DISPATCH_QUEUE_SERIAL);
+}
+
+- (NSArray<NSString *> *)supportedEvents {
+    return @[@"onCreateAssetsProgress"];
 }
 
 RCT_EXPORT_METHOD(authorizationStatus:(RCTPromiseResolveBlock)resolve
@@ -270,6 +275,7 @@ RCT_EXPORT_METHOD(deleteAlbums:(NSArray *)albumsLocalIdentifiers
     }];
 }
 
+
 RCT_EXPORT_METHOD(getAssetsMetadata:(NSArray<NSString *> *)arrayWithLocalIdentifiers
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
@@ -349,8 +355,8 @@ RCT_EXPORT_METHOD(updateAssets:(NSArray *)arrayWithLocalIdentifiers andUpdateObj
     [self updateAssets:mutableArrayWithAssets andUpdateObjs:updateObjs andResultArray:[NSMutableDictionary new] andCompleteBLock:^(NSMutableDictionary *result) {
         resolve(result);
     }];
-    
 }
+
 
 -(void) updateAssets:(NSMutableArray<PHAsset *> *)assets andUpdateObjs:(NSDictionary *)updateObjs andResultArray:(NSMutableDictionary *)result andCompleteBLock:(nullable void(^)(NSMutableDictionary * result))completeBlock {
     
@@ -380,8 +386,6 @@ RCT_EXPORT_METHOD(updateAssets:(NSArray *)arrayWithLocalIdentifiers andUpdateObj
     }
 }
 
-
-
 -(void) prepareAssetsForDisplayWithParams:(NSDictionary *)params andAssets:(NSArray<PHAssetWithCollectionIndex *> *)assets {
     NSString *prepareProp = params[@"prepareForSizeDisplay"];
     if(prepareProp != nil) {
@@ -403,134 +407,139 @@ RCT_EXPORT_METHOD(createAssets:(NSDictionary *)params
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
+    NSString *progressEventId = [RCTConvert NSString:params[@"onCreateAssetsProgress"]];
     NSArray<PHSaveAssetRequest *> *media = [RCTConvert PHSaveAssetRequestArray:params[@"media"]];
     if(media == nil || media.count == 0) {
         return resolve(@{@"localIdentifiers" : @[], @"success" : @((BOOL)true)});
     }
     NSString *albumLocalIdentifier = [RCTConvert NSString:params[@"albumLocalIdentifier"]];
-    PHAssetCollection *collection = [PHCollectionService getAssetForLocalIdentifer:albumLocalIdentifier];
+    NSMutableArray *arrayWithProgress = [NSMutableArray arrayWithCapacity:media.count];
     
+    for(int i = 0; i < media.count;i++) {
+        PHSaveAssetRequest *m = [media objectAtIndex:i];
+        [arrayWithProgress addObject:[NSMutableDictionary dictionaryWithObjectsAndKeys:@(0), m.source.uri, nil]];
+    }
     
-    [self saveMediaMany:[media mutableCopy] andLocalIdentifers:[NSMutableArray arrayWithCapacity:media.count] andCollection:collection andCompleteBLock:^(BOOL success, NSError * _Nullable error, NSMutableArray<NSString *> *localIdentifiers) {
-        if(localIdentifiers && localIdentifiers.count != 0) {
-            BOOL includeMetadata = [RCTConvert BOOL:params[@"includeMetadata"]];
-            BOOL includeResourcesMetadata = [RCTConvert BOOL:params[@"includeResourcesMetadata"]];
-            
-            
-            PHFetchResult<PHAsset *> *newAssets = [PHAssetsService getAssetsFromArrayOfLocalIdentifiers:localIdentifiers];
-            NSArray<NSDictionary *> *assetResponse = [PHAssetsService assetsArrayToUriArray:(NSArray<id> *)newAssets andincludeMetadata:includeMetadata andIncludeAssetResourcesMetadata:includeResourcesMetadata];
-            return resolve(@{@"assets" : assetResponse, @"success" : @(success) });
+    [self saveMediaMany:media andCollectionLocalIdentifier:albumLocalIdentifier andCompleteBLock:^(NSMutableArray<PHOperationResult *> *result) {
+        
+        NSMutableArray *arrayWithLocalIdentfiers = [[NSMutableArray alloc] initWithCapacity:result.count];
+        for(int i = 0; i < result.count;i++) {
+            PHOperationResult *operation = [result objectAtIndex:i];
+            if(operation.success) {
+                [arrayWithLocalIdentfiers addObject:operation.localIdentifier];
+            }
         }
-        return reject(@"Error creating assets", nil, error);
-
+        
+        BOOL includeMetadata = [RCTConvert BOOL:params[@"includeMetadata"]];
+        BOOL includeResourcesMetadata = [RCTConvert BOOL:params[@"includeResourcesMetadata"]];
+        
+        PHFetchResult<PHAsset *> *newAssets = [PHAssetsService getAssetsFromArrayOfLocalIdentifiers:arrayWithLocalIdentfiers];
+        NSArray<NSDictionary *> *assetResponse = [PHAssetsService assetsArrayToUriArray:(NSArray<id> *)newAssets andincludeMetadata:includeMetadata andIncludeAssetResourcesMetadata:includeResourcesMetadata];
+        return resolve(@{@"assets" : assetResponse, @"success" : @(YES) });
+        
+    } andProgressBlock:^(NSString *uri, int index, int64_t progress, int64_t total) {
+        @synchronized(arrayWithProgress)
+        {
+            NSMutableDictionary *dictForEntry = [arrayWithProgress objectAtIndex:index];
+            int64_t currentProgress = [[dictForEntry objectForKey:uri] integerValue];
+            currentProgress = ((float)progress / total) * 100;
+            NSLog(@"%lld", currentProgress);
+            [dictForEntry setObject:@(currentProgress) forKey:uri];
+        }
+        [self sendEventWithName:@"onCreateAssetsProgress" body:@{@"id" : progressEventId, @"data" : arrayWithProgress}];
     }];
 }
 
--(void) saveMediaMany:(NSMutableArray<PHSaveAssetRequest *> *)requests andLocalIdentifers:(NSMutableArray<NSString *> *)localIdentifiers andCollection:(PHAssetCollection *)collection andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error, NSMutableArray<NSString *> * localIdentifiers))completeBlock {
+-(void) saveMediaMany:(NSArray<PHSaveAssetRequest *> *)requests andCollectionLocalIdentifier:(NSString *)collectionLocalIdentifier andCompleteBLock:(createAssetsCompleteBlock)completeBlock andProgressBlock:(fileDownloadExtendedPrograessBlock)progressBlock {
     
-    if(requests.count == 0){
-        return completeBlock(YES, nil, localIdentifiers);
-    }
-    PHSaveAssetRequest *currentRequest = [requests objectAtIndex:0];
-    [requests removeObject:currentRequest];
-    if(currentRequest != nil) {
-        __weak RNPFManager *weakSelf = self;
-        [self saveMedia:currentRequest toCollection:collection andCompleteBLock:^(BOOL success, NSError * _Nullable error, NSString * _Nullable localIdentifier) {
-            if(success) {
-                [localIdentifiers addObject:localIdentifier];
-                return [weakSelf saveMediaMany:requests andLocalIdentifers:localIdentifiers andCollection:collection andCompleteBLock:completeBlock];
-            }else {
-                return completeBlock(success, nil, localIdentifiers);
+    NSMutableArray<PHOperationResult *> *resultArray = [[NSMutableArray alloc] initWithCapacity:requests.count];
+    NSOperationQueue *myOQ=[[NSOperationQueue alloc] init];
+    [myOQ setMaxConcurrentOperationCount:5];
+    assetOperationBlock onTaskFinnished = ^void(BOOL success, NSError *__nullable error, NSString  * __nullable localIdentifier) {
+        if(!myOQ.isSuspended) {
+            @synchronized(resultArray)
+            {
+                [resultArray addObject:[[PHOperationResult alloc] initWithLocalIdentifier:localIdentifier andSuccess:success andError:error]];
+                if(resultArray.count == requests.count) {
+                    [myOQ setSuspended:YES];
+                    completeBlock(resultArray);
+                }
             }
-
+        }
+    };
+    for(int i = 0; i < requests.count;i++) {
+        __block PHSaveAssetRequest *currentRequest = [requests objectAtIndex:i];
+        [myOQ addOperationWithBlock:^(void){
+            [self saveMedia:currentRequest toCollection:collectionLocalIdentifier andCompleteBLock:onTaskFinnished andProgressBlock:^(int64_t progress, int64_t total) {
+                progressBlock(currentRequest.source.uri, i, progress, total);
+            }];
         }];
-    }else {
-       return [self saveMediaMany:requests andLocalIdentifers:localIdentifiers andCollection:collection andCompleteBLock:completeBlock];
     }
-
 }
 
 -(void)saveMedia:(PHSaveAssetRequest *)request
-    toCollection:(PHAssetCollection *)collection
-andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error, NSString *__nullable localIdentifier))completeBlock {
+    toCollection:(NSString *)collectionLocalIdentifier
+    andCompleteBLock:(assetOperationBlock)completeBlock
+    andProgressBlock:(fileDownloadProgressBlock)progressBlock {
     if ([request.type isEqualToString:@"video"]) {
-        // It's unclear if thread-safe
-        [self saveVideo:request.source toAlbum:collection andCompleteBLock:completeBlock];
+        [self saveVideo:request.source toAlbum:collectionLocalIdentifier andCompleteBLock:completeBlock andProgressBlock:progressBlock];
     } else if([request.type isEqualToString:@"image"]) {
         NSURLRequest *url = [RCTConvert NSURLRequest:request.source.uri];
-        [_bridge.imageLoader loadImageWithURLRequest:url
+        [self.bridge.imageLoader loadImageWithURLRequest:url
                                                 size:CGSizeZero
                                                scale:1
                                              clipped:YES
                                           resizeMode:RCTResizeModeStretch
-                                       progressBlock:nil
+                                          progressBlock:^(int64_t progress, int64_t total) {
+                                              progressBlock(progress, total);
+                                          }
                                     partialLoadBlock:nil
                                      completionBlock:^(NSError *loadError, UIImage *loadedImage) {
                                          if (loadError) {
                                              completeBlock(NO, loadError, nil);
                                              return;
                                          }
-                                         [PHCollectionService saveImage:loadedImage toAlbum:collection andCompleteBLock:completeBlock];
+                                         [PHCollectionService saveImage:loadedImage toAlbum:collectionLocalIdentifier andCompleteBLock:completeBlock];
                                      }];
     }
 }
 
--(void) saveVideo:(PHSaveAsset *)source toAlbum:(PHAssetCollection *)album andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error, NSString *__nullable localIdentifier))completeBlock {
-    
+-(void) saveVideo:(PHSaveAsset *)source toAlbum:(NSString *)albumLocalIdentifier andCompleteBLock:(assetOperationBlock)completeBlock andProgressBlock:(fileDownloadProgressBlock)progressBlock {
+     NSString *type = source.type != nil ? [@"." stringByAppendingString:source.type] : @".mp4";
      NSURL *url = (source.isNetwork || source.isAsset) ?
      [NSURL URLWithString:source.uri] :
      [[NSURL alloc] initFileURLWithPath:[[NSBundle mainBundle] pathForResource:source.uri ofType:source.type]];
      
      if (source.isNetwork) {
-
+         RNPFFileDownloader *fileDownloader = [RNPFFileDownloader new];
+         [fileDownloader startDownload:url andSaveWithExtension:type andProgressBlock:^(int64_t progress, int64_t total) {
+             progressBlock(progress, total);
+         } andCompletionBlock:^(NSURL *downloadUrl) {
+            [self saveVideoAtURL:downloadUrl toAlbum:albumLocalIdentifier andCompleteBLock:completeBlock];
+         } andErrorBlock:^(NSError *error) {
+             completeBlock(NO, error, nil);
+         }];
      }
      else if (source.isAsset) {
-
+         [self saveVideoAtURL:url toAlbum:albumLocalIdentifier andCompleteBLock:completeBlock];
      }
-     
-    
+}
+
+-(void)saveVideoAtURL:(NSURL *)url toAlbum:(NSString *)albumLocalIdentifier andCompleteBLock:(assetOperationBlock)completeBlock {
     __block PHObjectPlaceholder *placeholder;
     [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
         
         PHAssetChangeRequest *assetRequest = [PHAssetChangeRequest creationRequestForAssetFromVideoAtFileURL:url];
         placeholder = [assetRequest placeholderForCreatedAsset];
         
-        if(album != nil) {
+        if(albumLocalIdentifier != nil) {
+            PHAssetCollection *album = [PHCollectionService getAssetForLocalIdentifer:albumLocalIdentifier];
             PHAssetCollectionChangeRequest *albumChangeRequest = [PHAssetCollectionChangeRequest changeRequestForAssetCollection:album];
             [albumChangeRequest addAssets:@[placeholder]];
-            
+
         }
     } completionHandler:^(BOOL success, NSError *error) {
         completeBlock(success, error, placeholder.localIdentifier);
-    }];
-}
-
--(void) downloadVideo:(PHSaveAsset *)videoSource {
-    NSString *documentDir = NSTemporaryDirectory();
-    NSString *filePath = [documentDir stringByAppendingPathComponent:@"GoogleLogo.png"];
-    
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"https://www.google.com/images/srpr/logo11w.png"]];
-    [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue currentQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
-        if (error) {
-            NSLog(@"Download Error:%@",error.description);
-        }
-        if (data) {
-            [data writeToFile:filePath atomically:YES];
-            NSLog(@"File is saved to %@",filePath);
-        }
-    }];
-}
-
-RCT_EXPORT_METHOD(createImageAsset:(PHSaveAssetRequest *)request
-                  resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject)
-{
-    [self saveMedia:request toCollection:nil andCompleteBLock:^(BOOL success, NSError * _Nullable error, NSString * _Nullable localIdentifier) {
-        if(success) {
-            return resolve(@{ @"success" : @(success) });
-        }else {
-            return reject(@"Error creating image asset", nil, error);
-        }
     }];
 }
 

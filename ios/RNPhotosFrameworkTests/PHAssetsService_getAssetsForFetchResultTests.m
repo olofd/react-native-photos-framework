@@ -2,6 +2,7 @@
 
 #import <XCTest/XCTest.h>
 #import "PHAssetsService.h"
+#import "RNPFHelpers.h"
 
 @interface PHAssetsServicegetAssetsForFetchResultTests : XCTestCase
 @end
@@ -34,7 +35,6 @@ NSMutableArray *scenarioAssets;
 }
 
 - (void)testLoad {
-    
 }
 
 - (void)testShouldReturnEqualAmountOfAssets {

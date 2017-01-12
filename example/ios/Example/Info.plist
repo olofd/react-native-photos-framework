@@ -44,6 +44,11 @@
 	<dict>
 		<key>NSExceptionDomains</key>
 		<dict>
+			<key>yt-dash-mse-test.commondatastorage.googleapis.com</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+			</dict>
 			<key>localhost</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>

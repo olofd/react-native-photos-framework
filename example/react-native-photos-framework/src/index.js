@@ -1,8 +1,7 @@
 import ReactPropTypes from 'react/lib/ReactPropTypes';
 import {
-  NativeAppEventEmitter
-} from 'react-native';
-import {
+  NativeAppEventEmitter,
+  NativeEventEmitter,
   NativeModules
 } from 'react-native';
 import Asset from './asset';
@@ -13,6 +12,7 @@ import EventEmitter from '../event-emitter';
 import ImageAsset from './image-asset';
 import VideoAsset from './video-asset';
 import videoPropsResolver from './video-props-resolver';
+import uuidGenerator from './uuid-generator';
 
 const RNPFManager = NativeModules.RNPFManager;
 if (!RNPFManager) {
@@ -25,6 +25,8 @@ export const eventEmitter = new EventEmitter();
 class RNPhotosFramework {
 
   constructor() {
+
+    this.nativeEventEmitter = new NativeEventEmitter(NativeModules.RNPFManager);
     var subscription = NativeAppEventEmitter.addListener('RNPFObjectChange', (changeDetails) => {
       eventEmitter.emit('onObjectChange', changeDetails);
     });
@@ -35,7 +37,7 @@ class RNPhotosFramework {
     //We need to make sure we clean cache in native before any calls
     //go into RNPF. This is important when running in DEV because we reastart
     //often in RN. (Live reload).
-    const methodsWithoutCacheCleanBlock = ['constructor', 'cleanCache', 'authorizationStatus', 'requestAuthorization', 'createJsAsset'];
+    const methodsWithoutCacheCleanBlock = ['constructor', 'cleanCache', 'authorizationStatus', 'requestAuthorization', 'createJsAsset', 'withUniqueEventListener'];
     const methodNames = (
       Object.getOwnPropertyNames(RNPhotosFramework.prototype)
       .filter(method => methodsWithoutCacheCleanBlock.indexOf(method) === -1)
@@ -224,6 +226,10 @@ class RNPhotosFramework {
       .then((result) => result[1]);
   }
 
+  loadVideoUrls(localIdentifiers) {
+    return RNPFManager.loadVideoUrls(localIdentifiers);    
+  }
+
   createAssets(params) {
     const images = params.images;
     const videos = params.videos !== undefined ? params.videos.map(videoPropsResolver) : params.videos;
@@ -240,18 +246,31 @@ class RNPhotosFramework {
         source: video
       })));
     }
-    return RNPFManager
-      .createAssets({
+    const {args, unsubscribe} = this.withUniqueEventListener('onCreateAssetsProgress', { 
         media : media,
         albumLocalIdentifier: params.album ?
           params.album.localIdentifier : undefined,
         includeMetadata: params.includeMetadata
-      })
+    }, (...args) => {
+      console.log('ONPROGREE', args);
+    });
+    return RNPFManager
+      .createAssets(args)
       .then((result) => {
         return result
           .assets
           .map(this.createJsAsset);
       });
+  }
+
+  withUniqueEventListener(eventName, params, cb) {
+    params[eventName] = uuidGenerator();
+    const subscription = this.nativeEventEmitter.addListener(eventName, (data) => {
+      if(data.id && data.id === params[eventName]) {
+        cb && cb(data);
+      }
+    });
+    return {args : params, unsubscribe : subscription};
   }
 
   stopTracking(cacheKey) {
@@ -264,7 +283,7 @@ class RNPhotosFramework {
           status: 'was-not-tracked'
         });
       }
-    });
+    }); 
   }
 
   asSingleQueryResult(albumQueryResultList, params, eventEmitter) {
@@ -275,10 +294,8 @@ class RNPhotosFramework {
     switch (nativeObj.mediaType) {
       case "image":
         return new ImageAsset(nativeObj, options);
-        break;
       case "video":
         return new VideoAsset(nativeObj, options);
-        break;
     }
   }
 

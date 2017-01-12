@@ -1,1 +1,2 @@
-module.exports = require('./src/index.js');
+import RNPFManager from './src/index';
+export default RNPFManager;

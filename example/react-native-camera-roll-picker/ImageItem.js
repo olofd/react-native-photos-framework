@@ -7,10 +7,12 @@ import {
   Text,
   View
 } from 'react-native';
+import Video from 'react-native-video';
 
 class ImageItem extends Component {
   constructor(props) {
-    super(props)
+    super(props);
+    this.state = { videoPaused: true };
   }
 
   componentWillMount() {
@@ -21,6 +23,51 @@ class ImageItem extends Component {
       width = containerWidth;
     }
     this._imageSize = (width - (imagesPerRow + 1) * imageMargin) / imagesPerRow;
+  }
+
+  toogleVideoPlay() {
+    this.setState({
+      videoPaused : !this.state.videoPaused
+    });
+  }
+
+  renderVideo() {
+    if (this.props.item.mediaType !== 'video' || this.state.videoPaused) {
+      return null;
+    }
+    return (
+      <Video source={this.props.item.withOptions({
+
+
+      }).video}   // Can be a URL or a local file.
+        ref={(ref) => {
+          this.player = ref
+        }}
+        onLoadProgress={(e) => console.log('LOADING', e)}
+        onLoad={() => console.log('load')}
+        resizeMode='cover'
+        onPlaybackRateChange={() => { } }                             // Store reference
+        rate={1.0}                     // 0 is paused, 1 is normal.
+        volume={1.0}                   // 0 is muted, 1 is normal.
+        muted={false}                  // Mutes the audio entirely.
+        paused={this.state.videoPaused}                 // Pauses playback entirely.
+        repeat={true}                  // Repeat forever.
+        playInBackground={false}       // Audio continues to play when app entering background.
+        playWhenInactive={false}       // [iOS] Video continues to play when control or notification center are shown.
+        progressUpdateInterval={250.0} // [iOS] Interval to fire onProgress (default to ~250ms)
+        style={styles.thumbVideo} />
+    );
+  }
+
+  renderVideoSymbol() {
+    if (this.props.item.mediaType !== 'video') {
+      return null;
+    }
+    return (
+      <TouchableOpacity style={styles.playButtonContainer} onPress={this.toogleVideoPlay.bind(this)}>
+        <Text style={[styles.playButton, !this.state.videoPaused ? styles.paused : styles.playing]}>{!this.state.videoPaused ? '▐▐' : '►'}</Text>
+      </TouchableOpacity>
+    );
   }
 
   render() {
@@ -41,12 +88,13 @@ class ImageItem extends Component {
         <Image
           source={{ uri: image.uri }}
           style={{ height: this._imageSize, width: this._imageSize }} >
-          {(selected) ? marker : null}
         </Image>
         {this.props.displayDates ? (<View style={styles.dates}><Text style={styles.creationText}>{`Created: ${item.creationDate.toDateString()}`}</Text>
           <Text style={styles.modificationText}>{`Modified: ${item.modificationDate.toDateString()}`}</Text></View>
         ) : null}
-
+        {this.renderVideo()}
+        {this.renderVideoSymbol()}
+        {(selected) ? marker : null}
       </TouchableOpacity>
     );
   }
@@ -81,12 +129,47 @@ const styles = StyleSheet.create({
     padding: 3,
     fontSize: 10
   },
-  dates : {
-    position : 'absolute',
-    top : 0,
-    left : 0,
-    right : 0,
-    bottom : 0
+  dates: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0
+  },
+  playButtonContainer: {
+    position: 'absolute',
+    bottom: 5,
+    right: 5,
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+    borderRadius: 15,
+    width: 30,
+    height: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'white'
+  },
+  playButton: {
+    backgroundColor: 'transparent',
+    color: 'white',
+    fontSize: 18,
+    fontFamily: 'Arial',
+    left: 2
+  },
+  paused : {
+    fontSize: 12,
+    left: -2
+  },
+  playing : {
+
+  },
+  thumbVideo: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor : 'transparent'
   }
 })
 

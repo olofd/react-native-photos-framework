@@ -250,14 +250,15 @@ static id ObjectOrNull(id object)
     }];
 }
 
-+(void) saveImage:(UIImage *)image toAlbum:(PHAssetCollection *)album andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error, NSString *__nullable localIdentifier))completeBlock {
++(void) saveImage:(UIImage *)image toAlbum:(NSString *)albumLocalIdentfier andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error, NSString *__nullable localIdentifier))completeBlock {
     __block PHObjectPlaceholder *placeholder;
     [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
     
         PHAssetChangeRequest *assetRequest = [PHAssetChangeRequest creationRequestForAssetFromImage:image];
         placeholder = [assetRequest placeholderForCreatedAsset];
         
-        if(album != nil) {
+        if(albumLocalIdentfier != nil) {
+            PHAssetCollection *album = [PHCollectionService getAssetForLocalIdentifer:albumLocalIdentfier];
             PHAssetCollectionChangeRequest *albumChangeRequest = [PHAssetCollectionChangeRequest changeRequestForAssetCollection:album];
             [albumChangeRequest addAssets:@[placeholder]];
             

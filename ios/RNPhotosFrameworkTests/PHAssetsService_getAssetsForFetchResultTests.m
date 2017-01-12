@@ -35,6 +35,9 @@ NSMutableArray *scenarioAssets;
 }
 
 - (void)testLoad {
+    
+
+
 }
 
 - (void)testShouldReturnEqualAmountOfAssets {

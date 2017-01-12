@@ -16,6 +16,7 @@
 #import "RNPFHelpers.h"
 #import "RNPFFileDownloader.h"
 #import "PHOperationResult.h"
+#import "iDebounce.h"
 
 @import Photos;
 
@@ -27,7 +28,8 @@ NSString *const RNPHotoFrameworkErrorUnableToSave = @"RNPHOTOSFRAMEWORK_UNABLE_T
 
 - (dispatch_queue_t)methodQueue
 {
-    return dispatch_queue_create("com.facebook.React.ReactNaticePhotosFramework", DISPATCH_QUEUE_SERIAL);
+    self.currentQueue = dispatch_queue_create("com.facebook.React.ReactNaticePhotosFramework", DISPATCH_QUEUE_SERIAL);
+    return self.currentQueue;
 }
 
 - (NSArray<NSString *> *)supportedEvents {
@@ -407,18 +409,23 @@ RCT_EXPORT_METHOD(createAssets:(NSDictionary *)params
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-    NSString *progressEventId = [RCTConvert NSString:params[@"onCreateAssetsProgress"]];
     NSArray<PHSaveAssetRequest *> *media = [RCTConvert PHSaveAssetRequestArray:params[@"media"]];
     if(media == nil || media.count == 0) {
         return resolve(@{@"localIdentifiers" : @[], @"success" : @((BOOL)true)});
     }
     NSString *albumLocalIdentifier = [RCTConvert NSString:params[@"albumLocalIdentifier"]];
-    NSMutableArray *arrayWithProgress = [NSMutableArray arrayWithCapacity:media.count];
     
-    for(int i = 0; i < media.count;i++) {
-        PHSaveAssetRequest *m = [media objectAtIndex:i];
-        [arrayWithProgress addObject:[NSMutableDictionary dictionaryWithObjectsAndKeys:@(0), m.source.uri, nil]];
+    NSMutableArray *arrayWithProgress;
+    
+    NSString *progressEventId = [RCTConvert NSString:params[@"onCreateAssetsProgress"]];
+    if(progressEventId != nil) {
+        arrayWithProgress = [NSMutableArray arrayWithCapacity:media.count];
+        for(int i = 0; i < media.count;i++) {
+            PHSaveAssetRequest *m = [media objectAtIndex:i];
+            [arrayWithProgress addObject:[NSMutableDictionary dictionaryWithObjectsAndKeys:@(0), m.source.uri, nil]];
+        }
     }
+    
     
     [self saveMediaMany:media andCollectionLocalIdentifier:albumLocalIdentifier andCompleteBLock:^(NSMutableArray<PHOperationResult *> *result) {
         
@@ -438,15 +445,20 @@ RCT_EXPORT_METHOD(createAssets:(NSDictionary *)params
         return resolve(@{@"assets" : assetResponse, @"success" : @(YES) });
         
     } andProgressBlock:^(NSString *uri, int index, int64_t progress, int64_t total) {
-        @synchronized(arrayWithProgress)
-        {
-            NSMutableDictionary *dictForEntry = [arrayWithProgress objectAtIndex:index];
-            int64_t currentProgress = [[dictForEntry objectForKey:uri] integerValue];
-            currentProgress = ((float)progress / total) * 100;
-            NSLog(@"%lld", currentProgress);
-            [dictForEntry setObject:@(currentProgress) forKey:uri];
+        if(progressEventId != nil) {
+            @synchronized(arrayWithProgress)
+            {
+                NSMutableDictionary *dictForEntry = [arrayWithProgress objectAtIndex:index];
+                int64_t currentProgress = [[dictForEntry objectForKey:uri] integerValue];
+                currentProgress = ((float)progress / total) * 100;
+                NSLog(@"%lld", currentProgress);
+                [dictForEntry setObject:@(currentProgress) forKey:uri];
+            }
+            dispatch_async(self.currentQueue, ^{
+                [self sendEventWithName:@"onCreateAssetsProgress" body:@{@"id" : progressEventId, @"data" : arrayWithProgress}];
+            });
+
         }
-        [self sendEventWithName:@"onCreateAssetsProgress" body:@{@"id" : progressEventId, @"data" : arrayWithProgress}];
     }];
 }
 
@@ -462,6 +474,7 @@ RCT_EXPORT_METHOD(createAssets:(NSDictionary *)params
                 [resultArray addObject:[[PHOperationResult alloc] initWithLocalIdentifier:localIdentifier andSuccess:success andError:error]];
                 if(resultArray.count == requests.count) {
                     [myOQ setSuspended:YES];
+                    [myOQ cancelAllOperations];
                     completeBlock(resultArray);
                 }
             }
@@ -520,7 +533,7 @@ RCT_EXPORT_METHOD(createAssets:(NSDictionary *)params
              completeBlock(NO, error, nil);
          }];
      }
-     else if (source.isAsset) {
+     else {
          [self saveVideoAtURL:url toAlbum:albumLocalIdentifier andCompleteBLock:completeBlock];
      }
 }

@@ -158,6 +158,9 @@ export default class ReactNativeCameraRollPicker extends Component {
           '01.jpg'
         }
       ]
+    }, (progressData) => { 
+      //OnProgress 
+      console.log(progressData);
     }).then((assets) => {
       this
         .props
@@ -174,6 +177,9 @@ export default class ReactNativeCameraRollPicker extends Component {
           uri: 'testimage.jpg'
         }
       ]
+    }, (progressData) => {
+      //OnProgress
+      console.log(progressData);
     }).then((assets) => {
       this
         .props
@@ -266,7 +272,10 @@ export default class ReactNativeCameraRollPicker extends Component {
       ],
       images: [{
         uri: 'testimage.jpg'
-      }]
+      }],
+    }, (progressData) => {
+      //OnProgress
+      console.log(progressData);
     }).then((assets) => {
       this
         .props

@@ -227,16 +227,16 @@ class RNPhotosFramework {
   }
 
   loadVideoUrls(localIdentifiers) {
-    return RNPFManager.loadVideoUrls(localIdentifiers);    
+    return RNPFManager.loadVideoUrls(localIdentifiers);
   }
 
-  createAssets(params) {
+  createAssets(params, onProgress) {
     const images = params.images;
     const videos = params.videos !== undefined ? params.videos.map(videoPropsResolver) : params.videos;
     let media = [];
     if (images && images.length) {
       media = media.concat(images.map(image => ({
-        type: 'image',
+        type: 'image', 
         source: image
       })));
     }
@@ -246,17 +246,20 @@ class RNPhotosFramework {
         source: video
       })));
     }
-    const {args, unsubscribe} = this.withUniqueEventListener('onCreateAssetsProgress', { 
-        media : media,
-        albumLocalIdentifier: params.album ?
-          params.album.localIdentifier : undefined,
-        includeMetadata: params.includeMetadata
-    }, (...args) => {
-      console.log('ONPROGREE', args);
-    });
+
+    const {
+      args,
+      unsubscribe
+    } = this.withUniqueEventListener('onCreateAssetsProgress', {
+      media: media,
+      albumLocalIdentifier: params.album ?
+        params.album.localIdentifier : undefined,
+      includeMetadata: params.includeMetadata
+    }, onProgress);
     return RNPFManager
       .createAssets(args)
       .then((result) => {
+        unsubscribe && this.nativeEventEmitter.removeListener(unsubscribe);
         return result
           .assets
           .map(this.createJsAsset);
@@ -264,13 +267,19 @@ class RNPhotosFramework {
   }
 
   withUniqueEventListener(eventName, params, cb) {
-    params[eventName] = uuidGenerator();
-    const subscription = this.nativeEventEmitter.addListener(eventName, (data) => {
-      if(data.id && data.id === params[eventName]) {
-        cb && cb(data);
-      }
-    });
-    return {args : params, unsubscribe : subscription};
+    let subscription;
+    if (cb) {
+      params[eventName] = uuidGenerator();
+      subscription = this.nativeEventEmitter.addListener(eventName, (data) => {
+        if (cb && data.id && data.id === params[eventName]) {
+          cb(data);
+        }
+      });
+    }
+    return {
+      args: params,
+      unsubscribe: subscription
+    };
   }
 
   stopTracking(cacheKey) {
@@ -283,7 +292,7 @@ class RNPhotosFramework {
           status: 'was-not-tracked'
         });
       }
-    }); 
+    });
   }
 
   asSingleQueryResult(albumQueryResultList, params, eventEmitter) {

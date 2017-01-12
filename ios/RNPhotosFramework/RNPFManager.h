@@ -14,5 +14,5 @@ typedef void (^fileDownloadExtendedPrograessBlock)(NSString * _Nonnull uri, int 
 typedef void(^createAssetsCompleteBlock)( NSMutableArray<PHOperationResult *> * _Nonnull  result);
 
 @interface RNPFManager : RCTEventEmitter <RCTBridgeModule>
-
+@property (nonatomic, strong) __nonnull dispatch_queue_t currentQueue;
 @end

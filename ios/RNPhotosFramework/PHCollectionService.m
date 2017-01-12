@@ -2,7 +2,7 @@
 #import <React/RCTConvert.h>
 #import "RCTConvert+RNPhotosFramework.h"
 #import "PHFetchOptionsService.h"
-#import "PHChangeObserver.h"
+#import "PHCache.h"
 #import <React/RCTConvert.h>
 #import "RCTConvert+RNPhotosFramework.h"
 #import "RNPFHelpers.h"
@@ -86,7 +86,7 @@ static id ObjectOrNull(id object)
     
     NSMutableDictionary *multipleAlbumsResponse = [PHCollectionService generateAlbumsResponseFromParams:params andAlbums:collections andCacheAssets:preCacheAssets];
     if(shouldCache) {
-        NSString *uuid = [[PHChangeObserver sharedChangeObserver] cacheFetchResultAndReturnUUID:collections andObjectType:[PHAssetCollection class] andOrginalFetchParams:params];
+        NSString *uuid = [[PHCache sharedPHCache] cacheFetchResultAndReturnUUID:collections andObjectType:[PHAssetCollection class] andOrginalFetchParams:params];
         [multipleAlbumsResponse setObject:uuid forKey:@"_cacheKey"];
     }
     return multipleAlbumsResponse;
@@ -166,7 +166,7 @@ static id ObjectOrNull(id object)
             PHFetchResult<PHAsset *> * assets = [PHCollectionService getAssetForCollection:phAssetCollection andFetchParams:assetFetchParams];
             
             if(cacheAssets) {
-                NSString *uuid = [[PHChangeObserver sharedChangeObserver] cacheFetchResultAndReturnUUID:assets andObjectType:[PHAsset class] andOrginalFetchParams:assetFetchParams];
+                NSString *uuid = [[PHCache sharedPHCache] cacheFetchResultAndReturnUUID:assets andObjectType:[PHAsset class] andOrginalFetchParams:assetFetchParams];
                 [albumDictionary setObject:uuid forKey:@"_cacheKey"];
             }
             
@@ -250,14 +250,15 @@ static id ObjectOrNull(id object)
     }];
 }
 
-+(void) saveImage:(UIImage *)image toAlbum:(PHAssetCollection *)album andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error, NSString *__nullable localIdentifier))completeBlock {
++(void) saveImage:(UIImage *)image toAlbum:(NSString *)albumLocalIdentfier andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error, NSString *__nullable localIdentifier))completeBlock {
     __block PHObjectPlaceholder *placeholder;
     [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
     
         PHAssetChangeRequest *assetRequest = [PHAssetChangeRequest creationRequestForAssetFromImage:image];
         placeholder = [assetRequest placeholderForCreatedAsset];
         
-        if(album != nil) {
+        if(albumLocalIdentfier != nil) {
+            PHAssetCollection *album = [PHCollectionService getAssetForLocalIdentifer:albumLocalIdentfier];
             PHAssetCollectionChangeRequest *albumChangeRequest = [PHAssetCollectionChangeRequest changeRequestForAssetCollection:album];
             [albumChangeRequest addAssets:@[placeholder]];
             

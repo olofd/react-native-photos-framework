@@ -158,6 +158,9 @@ export default class ReactNativeCameraRollPicker extends Component {
           '01.jpg'
         }
       ]
+    }, (progressData) => { 
+      //OnProgress 
+      console.log(progressData);
     }).then((assets) => {
       this
         .props
@@ -174,6 +177,9 @@ export default class ReactNativeCameraRollPicker extends Component {
           uri: 'testimage.jpg'
         }
       ]
+    }, (progressData) => {
+      //OnProgress
+      console.log(progressData);
     }).then((assets) => {
       this
         .props
@@ -202,6 +208,83 @@ export default class ReactNativeCameraRollPicker extends Component {
     });
   }
 
+  insertLocalVideo() {
+    RNPhotosFramework.createAssets({
+      videos: [
+        {
+          uri: 'test-video',
+          type: 'MOV'
+        }
+      ]
+    }).then((assets) => {
+      this
+        .props
+        .album
+        .addAssets(assets)
+        .then((status) => { });
+    });
+  }
+
+  insertTwoLocalVideos() {
+    RNPhotosFramework.createAssets({
+      videos: [
+        {
+          uri: 'test-video',
+          type: 'MOV'
+        },
+        {
+          uri: 'test-video2',
+          type: 'MOV'
+        }
+      ]
+    }).then((assets) => {
+      this
+        .props
+        .album
+        .addAssets(assets)
+        .then((status) => { });
+    });
+  }
+
+  insertRemoteLocalVideo() {
+    RNPhotosFramework.createAssets({
+      videos: [
+        {
+          uri: 'http://yt-dash-mse-test.commondatastorage.googleapis.com/media/car-20120827-85.mp4',
+          type: 'mp4'
+        },
+        {
+          uri: 'http://yt-dash-mse-test.commondatastorage.googleapis.com/media/car-20120827-85.mp4',
+          type: 'mp4'
+        },
+        {
+          uri: 'http://yt-dash-mse-test.commondatastorage.googleapis.com/media/car-20120827-85.mp4',
+          type: 'mp4'
+        },
+        {
+          uri: 'http://yt-dash-mse-test.commondatastorage.googleapis.com/media/car-20120827-85.mp4',
+          type: 'mp4'
+        },
+        {
+          uri: 'http://yt-dash-mse-test.commondatastorage.googleapis.com/media/car-20120827-85.mp4',
+          type: 'mp4'
+        }
+      ],
+      images: [{
+        uri: 'testimage.jpg'
+      }],
+    }, (progressData) => {
+      //OnProgress
+      console.log(progressData);
+    }).then((assets) => {
+      this
+        .props
+        .album
+        .addAssets(assets)
+        .then((status) => { });
+    });
+  }
+
   downloadDialog() {
     AlertIOS.alert('Add media', 'Select what to add:', [
       {
@@ -217,7 +300,25 @@ export default class ReactNativeCameraRollPicker extends Component {
           .bind(this)
       },
       {
-        text: '5 random photos',
+        text: 'Insert local video',
+        onPress: this
+          .insertLocalVideo
+          .bind(this)
+      },
+      {
+        text: 'Insert two local videos',
+        onPress: this
+          .insertTwoLocalVideos
+          .bind(this)
+      },
+      {
+        text: 'Insert remote video',
+        onPress: this
+          .insertRemoteLocalVideo
+          .bind(this)
+      },
+      {
+        text: 'Insert 5 remote photos',
         onPress: this
           .downloadTenRandom
           .bind(this)
@@ -232,6 +333,7 @@ export default class ReactNativeCameraRollPicker extends Component {
   render() {
     return (
       <View style={styles.container}>
+
         <CameraRollPicker
           album={this.props.album}
           removeClippedSubviews={true}
@@ -313,15 +415,15 @@ const styles = StyleSheet.create({
   },
   addButtonPlus: {
     width: 30,
-    height: 40, 
+    height: 40,
     top: -10,
     fontSize: 32,
     color: 'rgb(0, 113, 255)',
     backgroundColor: 'transparent'
   },
   trashIcon: {
-    width : 25,
-    height : 25
+    width: 25,
+    height: 25
   },
   changeButton: {
     fontSize: 18,
@@ -341,5 +443,9 @@ const styles = StyleSheet.create({
     fontSize: 28,
     color: 'red',
     backgroundColor: 'transparent'
+  },
+  backgroundVideo: {
+    width: 500,
+    height: 500
   }
 });

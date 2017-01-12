@@ -2,7 +2,7 @@
 #import <React/RCTConvert.h>
 #import "RCTConvert+RNPhotosFramework.h"
 #import "PHFetchOptionsService.h"
-#import "PHChangeObserver.h"
+#import "PHCache.h"
 #import "RNPFHelpers.h"
 #import <React/RCTConvert.h>
 #import "RCTConvert+RNPhotosFramework.h"
@@ -17,7 +17,7 @@
     NSString * albumLocalIdentifier = [RCTConvert NSString:params[@"albumLocalIdentifier"]];
 
     if(cacheKey != nil) {
-        PHCachedFetchResult *cachedResultSet = [[PHChangeObserver sharedChangeObserver] getFetchResultFromCacheWithuuid:cacheKey];
+        PHCachedFetchResult *cachedResultSet = [[PHCache sharedPHCache] getFetchResultFromCacheWithuuid:cacheKey];
         if(cachedResultSet != nil) {
             return [cachedResultSet fetchResult];
         }
@@ -32,7 +32,7 @@
     }
 
     if(cacheKey != nil && fetchResult != nil) {
-        [[PHChangeObserver sharedChangeObserver] cacheFetchResultWithUUID:fetchResult andObjectType:[PHAsset class] andUUID:cacheKey andOrginalFetchParams:params];
+        [[PHCache sharedPHCache] cacheFetchResultWithUUID:fetchResult andObjectType:[PHAsset class] andUUID:cacheKey andOrginalFetchParams:params];
     }
 
     return fetchResult;

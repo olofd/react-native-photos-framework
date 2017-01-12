@@ -1,8 +1,7 @@
 import ReactPropTypes from 'react/lib/ReactPropTypes';
 import {
-  NativeAppEventEmitter
-} from 'react-native';
-import {
+  NativeAppEventEmitter,
+  NativeEventEmitter,
   NativeModules
 } from 'react-native';
 import Asset from './asset';
@@ -12,6 +11,8 @@ import AlbumQueryResultCollection from './album-query-result-collection';
 import EventEmitter from '../event-emitter';
 import ImageAsset from './image-asset';
 import VideoAsset from './video-asset';
+import videoPropsResolver from './video-props-resolver';
+import uuidGenerator from './uuid-generator';
 
 const RNPFManager = NativeModules.RNPFManager;
 if (!RNPFManager) {
@@ -24,17 +25,19 @@ export const eventEmitter = new EventEmitter();
 class RNPhotosFramework {
 
   constructor() {
-    var subscription = NativeAppEventEmitter.addListener('RNPFObjectChange', (changeDetails) => {
+
+    this.nativeEventEmitter = new NativeEventEmitter(NativeModules.RNPFManager);
+    this.nativeEventEmitter.addListener('onObjectChange', (changeDetails) => {
       eventEmitter.emit('onObjectChange', changeDetails);
     });
-    var subscription = NativeAppEventEmitter.addListener('RNPFLibraryChange', (changeDetails) => {
+    this.nativeEventEmitter.addListener('onLibraryChange', (changeDetails) => {
       eventEmitter.emit('onLibraryChange', changeDetails);
     });
 
     //We need to make sure we clean cache in native before any calls
     //go into RNPF. This is important when running in DEV because we reastart
     //often in RN. (Live reload).
-    const methodsWithoutCacheCleanBlock = ['constructor', 'cleanCache', 'authorizationStatus', 'requestAuthorization', 'createJsAsset'];
+    const methodsWithoutCacheCleanBlock = ['constructor', 'cleanCache', 'authorizationStatus', 'requestAuthorization', 'createJsAsset', 'withUniqueEventListener'];
     const methodNames = (
       Object.getOwnPropertyNames(RNPhotosFramework.prototype)
       .filter(method => methodsWithoutCacheCleanBlock.indexOf(method) === -1)
@@ -173,7 +176,7 @@ class RNPhotosFramework {
         return albums.map(album => new Album(album, undefined, eventEmitter));
       });
   }
- 
+
   updateAlbumTitle(params) {
     //minimum params: {newTitle : 'x', albumLocalIdentifier : 'guid'}
     return RNPFManager.updateAlbumTitle(params);
@@ -223,20 +226,60 @@ class RNPhotosFramework {
       .then((result) => result[1]);
   }
 
-  createAssets(params) {
+  loadVideoUrls(localIdentifiers) {
+    return RNPFManager.loadVideoUrls(localIdentifiers);
+  }
+
+  createAssets(params, onProgress) {
+    const images = params.images;
+    const videos = params.videos !== undefined ? params.videos.map(videoPropsResolver) : params.videos;
+    let media = [];
+    if (images && images.length) {
+      media = media.concat(images.map(image => ({
+        type: 'image', 
+        source: image
+      })));
+    }
+    if (videos && videos.length) {
+      media = media.concat(videos.map(video => ({
+        type: 'video',
+        source: video
+      })));
+    }
+
+    const {
+      args,
+      unsubscribe
+    } = this.withUniqueEventListener('onCreateAssetsProgress', {
+      media: media,
+      albumLocalIdentifier: params.album ?
+        params.album.localIdentifier : undefined,
+      includeMetadata: params.includeMetadata
+    }, onProgress);
     return RNPFManager
-      .createAssets({
-        images: params.images,
-        videos: params.videos,
-        albumLocalIdentifier: params.album ?
-          params.album.localIdentifier : undefined,
-        includeMetadata: params.includeMetadata
-      })
+      .createAssets(args)
       .then((result) => {
+        unsubscribe && this.nativeEventEmitter.removeListener(unsubscribe);
         return result
           .assets
           .map(this.createJsAsset);
       });
+  }
+
+  withUniqueEventListener(eventName, params, cb) {
+    let subscription;
+    if (cb) {
+      params[eventName] = uuidGenerator();
+      subscription = this.nativeEventEmitter.addListener(eventName, (data) => {
+        if (cb && data.id && data.id === params[eventName]) {
+          cb(data);
+        }
+      });
+    }
+    return {
+      args: params,
+      unsubscribe: subscription
+    };
   }
 
   stopTracking(cacheKey) {
@@ -260,10 +303,8 @@ class RNPhotosFramework {
     switch (nativeObj.mediaType) {
       case "image":
         return new ImageAsset(nativeObj, options);
-        break;
       case "video":
         return new VideoAsset(nativeObj, options);
-        break;
     }
   }
 

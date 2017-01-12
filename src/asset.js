@@ -1,16 +1,43 @@
 import NativeApi from './index';
 export default class Asset {
-    static scheme = "pk://";
-    constructor(assetObj, options) {
+    static scheme = "photos://";
+    constructor(assetObj) {
         Object.assign(this, assetObj);
-        if (options) {
-            this._queryString = this.serialize(options);
+        this._assetObj = assetObj;  
+    }
+
+    get uri() {
+        if(this.lastOptions === this.currentOptions && this._uri) {
+            return this._uri;
         }
-        this.uri = Asset.scheme + this.localIdentifier;
-        if (this._queryString) {
-            this.uri = this.uri + `?${this._queryString}`;
+        let queryString;
+        if(this.currentOptions) {
+            this.lastOptions = this.currentOptions;
+            queryString = this.serialize(this.currentOptions);
         }
-        this._assetObj = assetObj;
+        this._uri = Asset.scheme + this.localIdentifier;
+        if (queryString) {
+            this._uri = this._uri + `?${queryString}`;
+        }
+        return this._uri;
+    }
+
+    //This is here in base-class, videos can display thumb.
+    get image() {
+        if (this._imageRef) {
+            return this._imageRef;
+        }
+        const {
+            width,
+            height,
+            uri
+        } = this;
+        this._imageRef = {
+            width,
+            height,
+            uri
+        };
+        return this._imageRef;
     }
 
     get creationDate() {
@@ -39,7 +66,7 @@ export default class Asset {
 
     refreshMetadata() {
         return this._fetchExtraData('getAssetsMetadata', 'creationDate', 'metadata', true);
-    } 
+    }
 
     getResourcesMetadata() {
         return this._fetchExtraData('getAssetsResourcesMetadata', 'resourcesMetadata');
@@ -79,7 +106,8 @@ export default class Asset {
     }
 
     withOptions(options) {
-        return NativeApi.createJsAsset(this._assetObj, options);
+        this.currentOptions = options;
+        return this;
     }
 
     delete() {

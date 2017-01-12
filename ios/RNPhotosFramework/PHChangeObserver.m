@@ -5,36 +5,31 @@
 #import "PHCachedFetchResult.h"
 #import "PHCollectionService.h"
 #import "PHAssetsService.h"
+#import "PHCache.h"
 @implementation PHChangeObserver
 
-+ (PHChangeObserver *)sharedChangeObserver {
-    static PHChangeObserver *sharedChangeObserver = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        sharedChangeObserver = [[PHChangeObserver alloc] init];
-        [sharedChangeObserver setupChangeObserver];
-    });
-    return sharedChangeObserver;
-}
-
--(void) cleanCache {
-    if(self.fetchResults) {
-        self.fetchResults = [[NSMutableDictionary alloc] init];
+- (instancetype)initWithEventEmitter:(RCTEventEmitter *)eventEmitter
+{
+    self = [super init];
+    if (self) {
+        self.eventEmitter = eventEmitter;
+        [self setupChangeObserver];
     }
+    return self;
 }
 
 -(void)setupChangeObserver {
     [[PHPhotoLibrary sharedPhotoLibrary] registerChangeObserver:self];
-    self.fetchResults = [[NSMutableDictionary alloc] init];
+}
+
+-(void)removeChangeObserver {
+    [[PHPhotoLibrary sharedPhotoLibrary] unregisterChangeObserver:self];
 }
 
 - (void)photoLibraryDidChange:(PHChange *)changeInstance {
     if(changeInstance != nil) {
-        //Unfortunately we seem to have to use a private-api here.
-        //Let me know if you know how we can avoid this.
-        RCTBridge * bridge = [RCTBridge currentBridge];
         
-        NSMutableDictionary<NSString *, PHCachedFetchResult *> *previousFetches = [[PHChangeObserver sharedChangeObserver] fetchResults];
+        NSMutableDictionary<NSString *, PHCachedFetchResult *> *previousFetches = [[PHCache sharedPHCache] fetchResults];
         
         [previousFetches enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull uuid, PHCachedFetchResult * _Nonnull cachedFetchResult, BOOL * _Nonnull stop) {
             
@@ -153,19 +148,22 @@
                                                    hasMoves) && trackChanges);
                     
                     if(shouldNotifyForInsertOrDelete || shouldNotifyForChange){
-                        [bridge.eventDispatcher sendAppEventWithName:@"RNPFObjectChange"
-                                                                body:@{
-                                                                       @"_cacheKey": uuid,
-                                                                       @"type" : @"AssetChange",
-                                                                       @"removedIndexes" : removedIndexes,
-                                                                       @"insertedIndexes" : insertedIndexes,
-                                                                       @"changedIndexes" : changedIndexes,
-                                                                       @"insertedObjects" : insertedObjects,
-                                                                       @"removedObjects" : removedLocalIdentifiers,
-                                                                       @"changedObjects" : changedObjects,
-                                                                       @"hasIncrementalChanges" : @(changeDetails.hasIncrementalChanges),
-                                                                       @"moves" : moves
-                                                                       }];
+                        if(self.eventEmitter) {
+                            [self.eventEmitter sendEventWithName:@"onObjectChange"
+                                                            body:@{
+                                                                   @"_cacheKey": uuid,
+                                                                   @"type" : @"AssetChange",
+                                                                   @"removedIndexes" : removedIndexes,
+                                                                   @"insertedIndexes" : insertedIndexes,
+                                                                   @"changedIndexes" : changedIndexes,
+                                                                   @"insertedObjects" : insertedObjects,
+                                                                   @"removedObjects" : removedLocalIdentifiers,
+                                                                   @"changedObjects" : changedObjects,
+                                                                   @"hasIncrementalChanges" : @(changeDetails.hasIncrementalChanges),
+                                                                   @"moves" : moves
+                                                                   }];
+                        }
+
                         cachedFetchResult.fetchResult = [changeDetails fetchResultAfterChanges];
                     }
                 }
@@ -173,7 +171,7 @@
             }
         }];
         
-        [bridge.eventDispatcher sendAppEventWithName:@"RNPFLibraryChange"
+        [self.eventEmitter sendEventWithName:@"onLibraryChange"
                                                 body:@{}];
     }
 
@@ -190,24 +188,6 @@
     return indexArray;
 }
 
--(NSString *) cacheFetchResultAndReturnUUID:(PHFetchResult *)fetchResult andObjectType:(Class)objectType andOrginalFetchParams:(NSDictionary *)params {
-    NSString *uuid = [[NSUUID UUID] UUIDString];
-    [self.fetchResults setObject:[[PHCachedFetchResult alloc] initWithFetchResult:fetchResult andObjectType:objectType andOriginalFetchParams:params] forKey:uuid];
-    return uuid;
-}
-
--(NSString *) cacheFetchResultWithUUID:(PHFetchResult *)fetchResult andObjectType:(Class)objectType andUUID:(NSString *)uuid andOrginalFetchParams:(NSDictionary *)params  {
-    [self.fetchResults setObject:[[PHCachedFetchResult alloc] initWithFetchResult:fetchResult andObjectType:objectType andOriginalFetchParams:params] forKey:uuid];
-    return uuid;
-}
-
--(void) removeFetchResultFromCacheWithUUID:(NSString *)uuid {
-    [self.fetchResults removeObjectForKey:uuid];
-}
-
--(PHCachedFetchResult *) getFetchResultFromCacheWithuuid:(NSString *)uuid {
-    return [self.fetchResults objectForKey:uuid];
-}
 
 
 @end

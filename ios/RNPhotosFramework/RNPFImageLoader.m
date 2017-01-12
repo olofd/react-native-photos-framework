@@ -9,13 +9,15 @@ RCT_EXPORT_MODULE()
 @synthesize bridge = _bridge;
 
 #pragma mark - RCTImageLoader
+#define PHOTOS_SCHEME_IDENTIFIER @"photos"
+
 
 - (BOOL)canLoadImageURL:(NSURL *)requestURL
 {
   if (![PHAsset class]) {
     return NO;
   }
-  return [requestURL.scheme caseInsensitiveCompare:@"pk"] == NSOrderedSame;
+  return [requestURL.scheme caseInsensitiveCompare:PHOTOS_SCHEME_IDENTIFIER] == NSOrderedSame;
 }
 
 - (RCTImageLoaderCancellationBlock)loadImageForURL:(NSURL *)imageURL
@@ -40,7 +42,7 @@ RCT_EXPORT_MODULE()
       [fetchOptions setIncludeHiddenAssets:YES];
       [fetchOptions setIncludeAllBurstAssets:YES];
       [fetchOptions setWantsIncrementalChangeDetails:NO];
-    assetID = [imageURL.absoluteString substringFromIndex:@"pk://".length];
+    assetID = [imageURL.absoluteString substringFromIndex:[PHOTOS_SCHEME_IDENTIFIER stringByAppendingString:@"://"].length];
       
     results = [PHAsset fetchAssetsWithLocalIdentifiers:@[assetID] options:fetchOptions];
   }

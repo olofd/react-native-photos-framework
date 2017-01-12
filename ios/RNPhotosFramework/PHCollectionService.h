@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 +(void) deleteAlbumsWithLocalIdentifers:(NSArray *)localIdentifiers andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error))completeBlock;
 
-+(void) saveImage:(UIImage *)image toAlbum:(PHAssetCollection *)album andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error, NSString *__nullable localIdentifier))completeBlock;
++(void) saveImage:(UIImage *)image toAlbum:(NSString *)albumLocalIdentifier andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error, NSString *__nullable localIdentifier))completeBlock;
 +(PHAssetCollection *) getAssetForLocalIdentifer:(NSString *)localIdentifier;
 
 +(PHFetchResult<PHAssetCollection *> *)getAlbumsWithLocalIdentifiers:(NSArray<NSString *> *)localIdentifiers andParams:(NSDictionary * __nullable)params;

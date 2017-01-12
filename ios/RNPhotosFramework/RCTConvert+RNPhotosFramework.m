@@ -163,10 +163,19 @@ RCT_ENUM_CONVERTER_WITH_REVERSED(PHAssetResourceType, (@{
     return sourceTypes;
 }
 
++(PHSaveAsset *)PHSaveAsset:(id)json {
+    PHSaveAsset *asset = [PHSaveAsset new];
+    asset.uri = [RCTConvert NSString:json[@"uri"]];
+    asset.type = [RCTConvert NSString:json[@"type"]];
+    asset.isNetwork = [RCTConvert BOOL:json[@"isNetwork"]];
+    asset.isAsset = [RCTConvert BOOL:json[@"isAsset"]];
+    return asset;
+}
+
 +(PHSaveAssetRequest *)PHSaveAssetRequest:(id)json {
     PHSaveAssetRequest *assetRequest = [PHSaveAssetRequest new];
-    assetRequest.uri = [RCTConvert NSURLRequest:json[@"uri"]];
     assetRequest.type = [RCTConvert NSString:json[@"type"]];
+    assetRequest.source = [RCTConvert PHSaveAsset:json[@"source"]];
     return assetRequest;
 }
 

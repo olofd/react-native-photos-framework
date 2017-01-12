@@ -90,8 +90,8 @@ class CameraRollPicker extends Component {
       .getAssets({
         includeMetadata: true,
         trackInsertsAndDeletes: true,
-        trackChanges: true,
-        startIndex: 0,
+      //  trackChanges: true,
+        startIndex: this.state.images.length,
         endIndex: this.state.images.length + 20,
         fetchOptions: {
           //   includeHiddenAssets: true,

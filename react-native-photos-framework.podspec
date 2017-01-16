@@ -8,8 +8,9 @@ Pod::Spec.new do |s|
   s.requires_arc = true
   s.license      = pkg["license"]
   s.homepage     = pkg["homepage"]
-  s.authors      = { "Olof Dahlbom" => "olof.dahlbom@me.com" }
-  s.source       = { :git => pkg["repository"]["url"] }
+  s.author       = pkg["author"]
+  s.source       = { :git => pkg["repository"]["url"],
+                     :tag => "v" + pkg["version"] }
   s.source_files = 'ios/**/*.{h,m}'
   s.platform     = :ios, "8.0"
   s.dependency 'React/Core'

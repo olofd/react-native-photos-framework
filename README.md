@@ -291,7 +291,6 @@ Delete an album.
 Fetch meta data for a specific album. You can also include metadata on all albums in the first `getAlbum`-call
 by explicitly setting option `includeMetadata: true`.
 
-***
 
 # Working with Assets (Images/Photos):
 When you retrieve assets from the API you will get back an Asset object.
@@ -396,13 +395,12 @@ RNPhotosFramework.updateAssets({
 ~~~~
 Delete asset.
 
-***
 
 ##Images/Photo-Assets
 An Image/Photo-asset is fully compatible with RN's `<Image source={asset.image}></Image>`-tag.
 This includes all resizeModes.
-NOTE: Use the property .image on an asset for the <Image>-tag. Otherwise
-RN will freeze your asset object. And they are, right now at least mutable.
+NOTE: Use the property `.image` on an asset for the `<Image>`-tag. Otherwise
+RN will freeze your asset object. And they are, right now at least, mutable.
 
 ##Image-Asset instance-methods:
 
@@ -416,7 +414,7 @@ Fetch image specific metadata for a specific image-asset, this includes formats 
 
 ##withOptions for Images/Photos
 With options define special rules and options when loading an asset.
-If you want to know more about how an asset is loaded. Read below on chapter `About Asset-Loaders`
+If you want to know more about how an asset is loaded. Read below on chapter `About Asset-Loaders`.
 
 ###deliveryMode
 Apple's Photo Framework will download images from iCloud on demand, and will generally be very smart about caching and loading resources quickly. You can however define how an Image should be loaded. We have 3 different options in PHImageRequestOptionsDeliveryMode:
@@ -432,7 +430,7 @@ This can be considered to be the same as RN normally loads images. It will simpl
 
 But you can choose to use the other two deliveryMode's to. you do this by calling:
 ~~~~
-  const newAssetWithAnotherDeliveryMode = asset.withOptions({
+  const assetWithNewDeliveryMode = asset.withOptions({
       //one of opportunistic|highQuality|fast
       deliveryMode : 'opportunistic'
   });
@@ -440,9 +438,8 @@ But you can choose to use the other two deliveryMode's to. you do this by callin
 If you choose to use opportunistic here you will see a low-res-version of the image displayed
 while the highQuality version of the resource is downloaded. NOTE: This library will call correct lifecycle callback's on your image-tag when this is used: the
 `<Image onPartialLoad={//Low-res-callback} onLoad={//High-res-callback} onProgress={//downloadCallback}>`
-***
 
-***
+
 ##Video-Assets
 Video assets can be played by using a special branch of the great library `react-native-video`.
 This branch adds the capability of loading Videos from Photos-framework and works
@@ -471,8 +468,21 @@ or add : `"react-native-video": "git://github.com/olofd/react-native-video.git#r
 For more info on supported properties see:
 [https://github.com/olofd/react-native-video/tree/react-native-photos-framework](react-native-video)
 
-***
+##withOptions for Video-Asset.
+With options define special rules and options when loading an asset.
+(Implemented in [https://github.com/olofd/react-native-video/tree/react-native-photos-framework](react-native-video))
 
+| Prop  | Default  | Type | Description |
+| :------------ |:---------------:| :---------------:| :-----|
+| deliveryMode | `'automatic'` | `string/enum` | Maps to native [https://developer.apple.com/reference/photos/phvideorequestoptionsdeliverymode?language=objc](PHVideoRequestOptionsDeliveryMode (Apple's docs)).  Possible values : `automatic`, `mediumQuality`, `highQuality`, `fast`|
+| version | `'current'` | `string/enum` | Maps to native [https://developer.apple.com/reference/photos/phvideorequestoptionsversion](PHVideoRequestOptionsVersion (Apple's docs)).  Possible values : `current`, `original`|
+
+###withOptions example usage for video:
+~~~~
+  const assetWithNewDeliveryMode = asset.withOptions({
+      deliveryMode : 'mediumQuality'
+  });
+~~~~
 
 ###About Asset-Loaders:
 ~~~~
@@ -484,10 +494,9 @@ all ImageLoaders loaded in the system and ask which loader can load a specific r
 If the resource starts with `https://` for instance, RN's own network-image-loader will take care of loading that resource. While if the scheme of the resource is `asset-library://` another ImageLoader will load that Image.
 
 This library defines it's own ImageLoader which can load images from iCloud. (RN actually already have a ImageLoader that can load iCloud images, but we define our own/extend their original loader so we can have some extra functionality on our loader. (See deliveryMode below)).
-A ´uri´ that our loader can load is defined in scheme: `pk://` and localIdentifier eg: `9509A678-2A07-405F-B3C6-49FD806915CC/L0/001`
-URI-example: pk://9509A678-2A07-405F-B3C6-49FD806915CC/L0/001
+A ´uri´ that our loader can load is defined in scheme: `photos://` and localIdentifier eg: `9509A678-2A07-405F-B3C6-49FD806915CC/L0/001`
+URI-example: photos://9509A678-2A07-405F-B3C6-49FD806915CC/L0/001
 ~~~~
-***
 
 #Creating Assets:
 You can use this library to save images and videos to the users iCloud library.

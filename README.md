@@ -466,15 +466,15 @@ or add : `"react-native-video": "git://github.com/olofd/react-native-video.git#r
         style={styles.thumbVideo}/>
 ~~~~~~
 For more info on supported properties see:
-[https://github.com/olofd/react-native-video/tree/react-native-photos-framework](react-native-video)
+[react-native-video](https://github.com/olofd/react-native-video/tree/react-native-photos-framework)
 
 ##withOptions for Video-Asset.
 With options define special rules and options when loading an asset.
-(Implemented in [https://github.com/olofd/react-native-video/tree/react-native-photos-framework](react-native-video))
+(Implemented in [react-native-video)](https://github.com/olofd/react-native-video/tree/react-native-photos-framework)
 
 | Prop  | Default  | Type | Description |
 | :------------ |:---------------:| :---------------:| :-----|
-| deliveryMode | `'automatic'` | `string/enum` | Maps to native [https://developer.apple.com/reference/photos/phvideorequestoptionsdeliverymode?language=objc](PHVideoRequestOptionsDeliveryMode (Apple's docs)).  Possible values : `automatic`, `mediumQuality`, `highQuality`, `fast`|
+| deliveryMode | `'automatic'` | `string/enum` | Maps to native [PHVideoRequestOptionsDeliveryMode (Apple's docs)](https://developer.apple.com/reference/photos/phvideorequestoptionsdeliverymode?language=objc).  Possible values : `automatic`, `mediumQuality`, `highQuality`, `fast`|
 | version | `'current'` | `string/enum` | Maps to native [PHVideoRequestOptionsVersion (Apple's docs)](https://developer.apple.com/reference/photos/phvideorequestoptionsversion).  Possible values : `current`, `original`|
 
 ###withOptions example usage for video:

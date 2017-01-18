@@ -31,7 +31,8 @@
     "index.js",
     "README.md",
     "install.js",
-    "event-emitter.js"
+    "event-emitter.js",
+    "react-native-photos-framework.podspec"
   ],
   "dependencies": {
   },

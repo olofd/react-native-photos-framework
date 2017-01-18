@@ -51,9 +51,11 @@
     NSMutableArray * nsOptions = [[NSMutableArray alloc] init];
         for (NSUInteger i=0; i < bitSize; i++) {
         NSUInteger enumBitValueToCheck = 1UL << i;
-        if (option & enumBitValueToCheck) {
-            [nsOptions addObject:[dict objectForKey:@(enumBitValueToCheck)]];
-            
+        if ((option & enumBitValueToCheck)) {
+            NSObject *option = dict[@(enumBitValueToCheck)];
+            if (option) {
+                [nsOptions addObject:option];
+            }
         }
     }
     

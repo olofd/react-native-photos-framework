@@ -4,6 +4,11 @@
 ####NOTE: This is not a GUI-component, it's an API. The example project just shows off some of the the capabilities of this API.
 ![](https://media.giphy.com/media/3o6Ztqdc8OF3FAgAiQ/source.gif)
 
+#### Breaking Changes
+react-native header imports have changed in v0.40, and that means breaking changes for all! [Reference PR & Discussion](https://github.com/lwansbrough/react-native-camera/pull/544).
+This library is updated to work with the new imports.
+Use version < 0.0.64 if your still < RN 0.40.
+
 ###Description
 Load photos/videos and more from CameraRoll and iCloud.
 Uses Apples photos framework.
@@ -286,53 +291,18 @@ Delete an album.
 Fetch meta data for a specific album. You can also include metadata on all albums in the first `getAlbum`-call
 by explicitly setting option `includeMetadata: true`.
 
+***
+
 # Working with Assets (Images/Photos):
 When you retrieve assets from the API you will get back an Asset object.
 There is nothing special about this object. I've defined it as a class so
-that it can have some instance-methods. But it should be highly compatible with
-native RN-elements like `<Image source={asset.image}></Image>`.
-NOTE: Use the property .image on an asset for the <Image>-tag. Otherwise
-RN will freeze your asset object. And they are, right now at least mutable.
-//More info about videos/audio coming soon
+that it can have some instance-methods.
 
-##Images/Photos
-
-An Image/Photo-asset is fully compatible with RN's <Image>-tag.
-This includes all resizeModes.
+##All Assets. (Video/Image)
+These are methods and options that apply to all kinds of assets.
+(NOTE: Creating new assets has it's own chapter down below).
 
 ##Asset instance-methods:
-
-### Updating asset metaData
-NOTE: When updating metaData, there is two ways of dealing with the result of the update operation.
-Either your asset-collection updates automatically by using `Change-Tracking` (See below).
-This means that the updated asset will be replaced in your collection, but the asset you 
-executed the change on will be unaffected. So calling `setHidden(true)` will still
-have isHidden : false, after your update, but it will be replaced with a new asset
-in your collection via `Change-Tracking`. (Remember to track changes with `trackChanges : true` when calling `getAssets`)
-
-If you choose to NOT use `Change-Tracking` you can call `refreshMetadata` on the asset
-after your update-operation:
-~~~~
-  asset.setHidden(hiddenBoolean).then((resultOfOperation) => {
-      asset.refreshMetadata().then(() => {
-          console.log('The JS-asset should now reflect your changes');
-       });
-  });
-~~~~
-
-NOTE2: You can update multiple assets at once by calling 
-~~~~
-RNPhotosFramework.updateAssets({
-  [assetOne.localIdentifier] : {
-    //Will only update properties provided:
-    hidden, favorite, creationDate, location
-  },
-  [assetTwo.localIdentifier] : {
-    hidden, favorite, creationDate, location
-  }
-  ...etc
-});
-~~~~
 
 ####setHidden
 ~~~~
@@ -387,6 +357,38 @@ Fetch metadata for a specific asset. You can also include metadata on all assets
 ~~~~
 Fetch resource-metadata for a specific asset, this includes original filename, type, uti (uniformTypeIdentifier) and localidentifier. You can also include resource-metadata on all assets in the first `getAsset`-call by explicitly setting option `includeResourcesMetadata: true`.
 
+### Update Asset metaData
+NOTE: When updating metaData, there is two ways of dealing with the result of the update operation.
+Either your asset-collection updates automatically by using `Change-Tracking` (See below).
+This means that the updated asset will be replaced in your collection, but the asset you 
+executed the change on will be unaffected. So calling `setHidden(true)` will still
+have isHidden : false, after your update, but it will be replaced with a new asset
+in your collection via `Change-Tracking`. (Remember to track changes with `trackChanges : true` when calling `getAssets`)
+
+If you choose to NOT use `Change-Tracking` you can call `refreshMetadata` on the asset
+after your update-operation:
+~~~~
+  asset.setHidden(hiddenBoolean).then((resultOfOperation) => {
+      asset.refreshMetadata().then(() => {
+          console.log('The JS-asset should now reflect your changes');
+       });
+  });
+~~~~
+
+NOTE2: You can update multiple assets at once by calling 
+~~~~
+RNPhotosFramework.updateAssets({
+  [assetOne.localIdentifier] : {
+    //Will only update properties provided:
+    hidden, favorite, creationDate, location
+  },
+  [assetTwo.localIdentifier] : {
+    hidden, favorite, creationDate, location
+  }
+  ...etc
+});
+~~~~
+
 ####delete
 ~~~~
   asset.delete().then((status) => {
@@ -394,7 +396,16 @@ Fetch resource-metadata for a specific asset, this includes original filename, t
 ~~~~
 Delete asset.
 
-##ImageAsset instance-methods:
+***
+
+##Images/Photo-Assets
+An Image/Photo-asset is fully compatible with RN's `<Image source={asset.image}></Image>`-tag.
+This includes all resizeModes.
+NOTE: Use the property .image on an asset for the <Image>-tag. Otherwise
+RN will freeze your asset object. And they are, right now at least mutable.
+
+##Image-Asset instance-methods:
+
 ####getImageMetadata
 ~~~~
   asset.getImageMetadata().then((mutatedAssetWithImageMetadata) => {
@@ -403,24 +414,11 @@ Delete asset.
 ~~~~
 Fetch image specific metadata for a specific image-asset, this includes formats and sizes.
 
-###withOptions
-See below (ImageLoader Concept).
+##withOptions for Images/Photos
+With options define special rules and options when loading an asset.
+If you want to know more about how an asset is loaded. Read below on chapter `About Asset-Loaders`
 
-###ImageLoader Concept:
-~~~~
-NOTE about RN's concept of Image loaders:
-RN has a plugin-like system for displaying Images/Photos.
-This means that any library (like this library) can define it's own
-ImageLoader. When RN later gets a request to display a <Image> it will query
-all ImageLoaders loaded in the system and ask which loader can load a specific resource.
-If the resource starts with `https://` for instance, RN's own network-image-loader will take care of loading that resource. While if the scheme of the resource is `asset-library://` another ImageLoader will load that Image.
-
-This library defines it's own ImageLoader which can load images from iCloud. (RN actually already have a ImageLoader that can load iCloud images, but we define our own/extend their original loader so we can have some extra functionality on our loader. (See deliveryMode below)).
-A ´uri´ that our loader can load is defined in scheme: `pk://` and localIdentifier eg: `9509A678-2A07-405F-B3C6-49FD806915CC/L0/001`
-URI-example: pk://9509A678-2A07-405F-B3C6-49FD806915CC/L0/001
-~~~~
-
-###deliveryMode (Advanced)
+###deliveryMode
 Apple's Photo Framework will download images from iCloud on demand, and will generally be very smart about caching and loading resources quickly. You can however define how an Image should be loaded. We have 3 different options in PHImageRequestOptionsDeliveryMode:
 
 ~~~~
@@ -442,12 +440,58 @@ But you can choose to use the other two deliveryMode's to. you do this by callin
 If you choose to use opportunistic here you will see a low-res-version of the image displayed
 while the highQuality version of the resource is downloaded. NOTE: This library will call correct lifecycle callback's on your image-tag when this is used: the
 `<Image onPartialLoad={//Low-res-callback} onLoad={//High-res-callback} onProgress={//downloadCallback}>`
+***
+
+***
+##Video-Assets
+Video assets can be played by using a special branch of the great library `react-native-video`.
+This branch adds the capability of loading Videos from Photos-framework and works
+as expected, but is otherwise the same as the orignal project. So you can play 
+local or remote files as well and if you already use `react-native-video` for
+other content, you should just be able to replace the version.
+
+NOTE: Let me and the `react-native-video`-guys know if you want this to go into thir master.
+
+###Install `react-native-video`:
+`npm install git://github.com/olofd/react-native-video.git#react-native-photos-framework --save && react-native link`
+
+or add : `"react-native-video": "git://github.com/olofd/react-native-video.git#react-native-photos-framework"`  to your package.json and run npm install.
+
+### Displaying video
+~~~~~~
+      <Video source={this.props.asset.video} //Use the asset.video-property.
+        ref={(ref) => {
+          this.player = ref
+        }}
+        resizeMode='cover'
+        muted={false}
+        paused={this.state.videoPaused}  
+        style={styles.thumbVideo}/>
+~~~~~~
+For more info on supported properties see:
+[https://github.com/olofd/react-native-video/tree/react-native-photos-framework](react-native-video)
+
+***
+
+
+###About Asset-Loaders:
+~~~~
+NOTE about RN's concept of Image loaders:
+RN has a plugin-like system for displaying Images/Photos.
+This means that any library (like this library) can define it's own
+ImageLoader. When RN later gets a request to display a <Image> it will query
+all ImageLoaders loaded in the system and ask which loader can load a specific resource.
+If the resource starts with `https://` for instance, RN's own network-image-loader will take care of loading that resource. While if the scheme of the resource is `asset-library://` another ImageLoader will load that Image.
+
+This library defines it's own ImageLoader which can load images from iCloud. (RN actually already have a ImageLoader that can load iCloud images, but we define our own/extend their original loader so we can have some extra functionality on our loader. (See deliveryMode below)).
+A ´uri´ that our loader can load is defined in scheme: `pk://` and localIdentifier eg: `9509A678-2A07-405F-B3C6-49FD806915CC/L0/001`
+URI-example: pk://9509A678-2A07-405F-B3C6-49FD806915CC/L0/001
+~~~~
+***
 
 #Creating Assets:
 You can use this library to save images and videos to the users iCloud library.
-
-##Images/Photos
-Creating image-assets uses RN's ImageLoader-system behind the scenes and should therefore be able to accept/save any image/photo that you can display in RN.
+NOTE: Creating image-assets uses RN's ImageLoader-system behind the scenes and should therefore be able to accept/save any image/photo that you can display in RN.
 
 ###Static methods:
 

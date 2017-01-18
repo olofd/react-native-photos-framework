@@ -225,11 +225,7 @@ class RNPhotosFramework {
       })
       .then((result) => result[1]);
   }
-
-  loadVideoUrls(localIdentifiers) {
-    return RNPFManager.loadVideoUrls(localIdentifiers);
-  }
-
+  
   createAssets(params, onProgress) {
     const images = params.images;
     const videos = params.videos !== undefined ? params.videos.map(videoPropsResolver) : params.videos;

@@ -11,12 +11,9 @@ export default class VideoAsset extends Asset {
             return this._videoRef;
         }
         this._videoRef = {
-            uri : this.uri
+            uri : this.uri,
+            type : ''
         };
         return this._videoRef;
-    }
-
-    loadVideoUrl() {
-        return NativeApi.loadVideoUrls([this.localIdentfier]);
     }
 }

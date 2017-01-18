@@ -36,15 +36,10 @@ class ImageItem extends Component {
       return null;
     }
     return (
-      <Video source={this.props.item.withOptions({
-
-
-      }).video}   // Can be a URL or a local file.
+      <Video source={this.props.item.video}   // Can be a URL or a local file.
         ref={(ref) => {
           this.player = ref
         }}
-        onLoadProgress={(e) => console.log('LOADING', e)}
-        onLoad={() => console.log('load')}
         resizeMode='cover'
         onPlaybackRateChange={() => { } }                             // Store reference
         rate={1.0}                     // 0 is paused, 1 is normal.

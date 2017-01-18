@@ -8,4 +8,4 @@ export default class ImageAsset extends Asset {
     getImageMetadata() {
         return this._fetchExtraData('getImageAssetsMetadata', 'imageMetadata');
     }
-}
+} 

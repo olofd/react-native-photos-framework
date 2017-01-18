@@ -474,13 +474,14 @@ RCT_EXPORT_METHOD(createAssets:(NSDictionary *)params
                 NSMutableDictionary *dictForEntry = [arrayWithProgress objectAtIndex:index];
                 int64_t currentProgress = [[dictForEntry objectForKey:uri] integerValue];
                 currentProgress = ((float)progress / total) * 100;
-                NSLog(@"%lld", currentProgress);
                 [dictForEntry setObject:@(currentProgress) forKey:uri];
             }
-            dispatch_async(self.currentQueue, ^{
-                [self sendEventWithName:@"onCreateAssetsProgress" body:@{@"id" : progressEventId, @"data" : arrayWithProgress}];
-            });
-
+            [iDebounce debounce:^{
+                dispatch_async(self.currentQueue, ^{
+                    NSLog(@"Sending");
+                    [self sendEventWithName:@"onCreateAssetsProgress" body:@{@"id" : progressEventId, @"data" : arrayWithProgress}];
+                });
+            } withIdentifier:progressEventId wait:0.050];
         }
     }];
 }

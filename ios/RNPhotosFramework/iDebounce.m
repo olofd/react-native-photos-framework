@@ -21,16 +21,18 @@
 }
 
 +(void)debounce:( iDebounceBlock )block withIdentifier:(NSString *)identifier wait:( NSTimeInterval )seconds {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        iDebounce *instance = [[self class] sharedInstance];
 
-    iDebounce *instance = [[self class] sharedInstance];
+        if( [instance.iDebounceBlockMap objectForKey:identifier] ) {
+            return;
+        }
 
-    if( [instance.iDebounceBlockMap objectForKey:identifier] ) {
-        return;
-    }
 
-    [NSTimer scheduledTimerWithTimeInterval:seconds target:instance selector:@selector( executeDebouncedBlockForTimer: ) userInfo:@{ @"name": identifier } repeats:NO];
+        [[NSRunLoop mainRunLoop] addTimer:[NSTimer scheduledTimerWithTimeInterval:seconds target:instance selector:@selector( executeDebouncedBlockForTimer: ) userInfo:@{ @"name": identifier } repeats:NO] forMode:NSRunLoopCommonModes];
 
-    [instance.iDebounceBlockMap setObject:block forKey:identifier];
+        [instance.iDebounceBlockMap setObject:block forKey:identifier];
+    });
 }
 
 

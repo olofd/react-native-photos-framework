@@ -34,7 +34,7 @@ node_modules/
 npm-debug.log
 
 article-web/article-web.zip
-example/react-native-photos-framework/
+example/react-native-photos-framework/src/
 
 # REMINDER: do not edit Icon^M^M Carriage Returns
 Icon

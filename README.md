@@ -68,7 +68,7 @@ for fetchOptions. You can also read Apple's documentation around [PHFetchOptions
 | :------------ |:---------------:| :---------------:| :-----|
 | mediaTypes (Only for `getAssets`) | - | `array<string>` | Defines what mediaType the asset should be. Array combined with OR-operator. e.g. ['image', 'video'] will return both photos and videos. Converted in Native to PHAssetMediaType. Accepted values: `image`, `video`, `audio`, `unknown` |
 | mediaSubTypes (Only for `getAssets`) | - | `array<string>` | Defines what subtype the asset should be. Array combined with OR-operator. e.g. ['photoPanorama', 'photoHDR'] will return both panorama and HDR-assets. Converted in Native to PHAssetMediaSubtype. Accepted enum-values: `none`, `photoPanorama`, `photoHDR`, `photoScreenshot`, `photoLive`, `videoStreamed`, `videoHighFrameRate`, `videoTimeLapse` (mediaTypes and mediaSubTypes are combined with AND-operator) |
-| sourceTypes (Only for `getAssets`) | - | `array<string>` | Defines where the asset should come from originally. Array combined with OR-operator. Converted in Native to PHAssetSourceType. Accepted enum-values: `none`, `userLibrary`, `cloudShared`, `itunesSynced`. |
+| sourceTypes (Only for `getAssets`) | - | `array<string>` | Defines where the asset should come from originally. Array combined with OR-operator. Converted in Native to PHAssetSourceType. Accepted enum-values: `none`, `userLibrary`, `cloudShared`, `itunesSynced`. (not supported and ignored in iOS 8) |
 | includeHiddenAssets | false | `boolean` | A Boolean value that determines whether the fetch result includes assets marked as hidden. |
 | includeAllBurstAssets | false | `boolean` | A Boolean value that determines whether the fetch result includes all assets from burst photo sequences. |
 | fetchLimit | 0 | `number` | The maximum number of objects to include in the fetch result. Remember to not use this in the wrong way combined with startIndex and endIndex. 0 means unlimited. |
@@ -131,6 +131,8 @@ modificationDate : 1466766146
 sourceType : "userLibrary"
 uri : "pk://3D5E6260-2B63-472E-A38A-3B543E936E8C/L0/001"
 ~~~~
+
+(`sourceType` is not supported in iOS 8)
 
 # Retrieving albums and enumerating their assets:
 ~~~~

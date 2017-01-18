@@ -475,7 +475,7 @@ With options define special rules and options when loading an asset.
 | Prop  | Default  | Type | Description |
 | :------------ |:---------------:| :---------------:| :-----|
 | deliveryMode | `'automatic'` | `string/enum` | Maps to native [https://developer.apple.com/reference/photos/phvideorequestoptionsdeliverymode?language=objc](PHVideoRequestOptionsDeliveryMode (Apple's docs)).  Possible values : `automatic`, `mediumQuality`, `highQuality`, `fast`|
-| version | `'current'` | `string/enum` | Maps to native [https://developer.apple.com/reference/photos/phvideorequestoptionsversion](PHVideoRequestOptionsVersion (Apple's docs)).  Possible values : `current`, `original`|
+| version | `'current'` | `string/enum` | Maps to native [PHVideoRequestOptionsVersion (Apple's docs)](https://developer.apple.com/reference/photos/phvideorequestoptionsversion).  Possible values : `current`, `original`|
 
 ###withOptions example usage for video:
 ~~~~

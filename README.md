@@ -413,7 +413,7 @@ RN will freeze your asset object. And they are, right now at least, mutable.
 Fetch image specific metadata for a specific image-asset, this includes formats and sizes.
 
 ##withOptions for Images/Photos
-With options define special rules and options when loading an asset.
+`withOptions` define special rules and options when loading an asset.
 If you want to know more about how an asset is loaded. Read below on chapter `About Asset-Loaders`.
 
 ###deliveryMode
@@ -469,7 +469,7 @@ For more info on supported properties see:
 [react-native-video](https://github.com/olofd/react-native-video/tree/react-native-photos-framework)
 
 ##withOptions for Video-Asset.
-With options define special rules and options when loading an asset.
+`withOptions` define special rules and options when loading an asset.
 (Implemented in [react-native-video)](https://github.com/olofd/react-native-video/tree/react-native-photos-framework)
 
 | Prop  | Default  | Type | Description |

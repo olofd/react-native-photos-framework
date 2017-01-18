@@ -5,7 +5,10 @@
 @implementation PHFetchOptionsService
 
 +(PHFetchOptions *)getCommonFetchOptionsFromParams:(NSDictionary *)params andFetchOptions:(PHFetchOptions *)options {
-    options.includeAssetSourceTypes = [RCTConvert PHAssetSourceTypes:params[@"sourceTypes"]];
+    if ([options respondsToSelector:@selector(includeAssetSourceTypes)]) {
+        // not available in iOS 8
+        options.includeAssetSourceTypes = [RCTConvert PHAssetSourceTypes:params[@"sourceTypes"]];
+    }
     options.includeHiddenAssets = [RCTConvert BOOL:params[@"includeHiddenAssets"]];
     options.includeAllBurstAssets = [RCTConvert BOOL:params[@"includeAllBurstAssets"]];
     options.fetchLimit = [RCTConvert int:params[@"fetchLimit"]];

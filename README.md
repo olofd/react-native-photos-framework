@@ -41,7 +41,7 @@ import React, {Component} from 'react';
 import {AppRegistry, StyleSheet, Text, View, Image} from 'react-native';
 import RNPhotosFramework from 'react-native-photos-framework';
 
-export default class Update extends Component {
+export default class AwesomeProject extends Component {
 
     constructor() {
       super();
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
     }
 });
 
-AppRegistry.registerComponent('Update', () => Update);
+AppRegistry.registerComponent('AwesomeProject', () => AwesomeProject);
 
 ~~~~~
 

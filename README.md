@@ -589,3 +589,11 @@ const unsubscribeFunc = album.onChange((changeDetails, update) => {
 });
 ~~~~
 The update-function will apply the changes to your collection.
+
+Call the unsubscribeFunc in order to unsubscribe from the onChange event.
+~~~~
+componentDidUnmount: function () {
+  unsubscribeFunc();
+  album.stopTracking();
+}
+~~~~

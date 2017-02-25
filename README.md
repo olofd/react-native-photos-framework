@@ -240,7 +240,7 @@ mediaSubTypes : null
 mediaType : "video"
 modificationDate : 1466766146
 sourceType : "userLibrary"
-uri : "pk://3D5E6260-2B63-472E-A38A-3B543E936E8C/L0/001"
+uri : "photos://3D5E6260-2B63-472E-A38A-3B543E936E8C/L0/001"
 ~~~
 
 (`sourceType` is not supported in iOS 8)

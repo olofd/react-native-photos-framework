@@ -44,11 +44,11 @@
     "update-small": "git add . && git commit -m \"Updated\" && git push origin master"
   },
   "devDependencies": {
-    "babel-cli": "^6.18.0",
-    "babel-jest": "^18.0.0",
-    "babel-polyfill": "^6.20.0",
-    "babel-preset-latest": "^6.16.0",
-    "jest": "^18.1.0",
+    "babel-cli": "^6.23.0",
+    "babel-jest": "^19.0.0",
+    "babel-polyfill": "^6.23.0",
+    "babel-preset-latest": "^6.22.0",
+    "jest": "^19.0.2",
     "jest-react-native": "^18.0.0"
   },
   "jest": {

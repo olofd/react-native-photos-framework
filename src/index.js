@@ -40,7 +40,7 @@ class RNPhotosFramework {
     const methodsWithoutCacheCleanBlock = ['constructor', 'cleanCache', 'authorizationStatus', 'requestAuthorization', 'createJsAsset', 'withUniqueEventListener'];
     const methodNames = (
       Object.getOwnPropertyNames(RNPhotosFramework.prototype)
-      .filter(method => methodsWithoutCacheCleanBlock.indexOf(method) === -1)
+        .filter(method => methodsWithoutCacheCleanBlock.indexOf(method) === -1)
     );
     methodNames.forEach(methodName => {
       const originalMethod = this[methodName];
@@ -225,14 +225,14 @@ class RNPhotosFramework {
       })
       .then((result) => result[1]);
   }
-  
+
   createAssets(params, onProgress) {
     const images = params.images;
     const videos = params.videos !== undefined ? params.videos.map(videoPropsResolver) : params.videos;
     let media = [];
     if (images && images.length) {
       media = media.concat(images.map(image => ({
-        type: 'image', 
+        type: 'image',
         source: image
       })));
     }

@@ -421,7 +421,7 @@ RCT_EXPORT_METHOD(updateAssets:(NSArray *)arrayWithLocalIdentifiers andUpdateObj
         if(prepareForSizeDisplay.width != 0 && prepareForSizeDisplay.height != 0) {
             if(prepareScale < 0.1) {
                 prepareScale = 2;
-            }
+            }            
             [cacheManager startCachingImagesForAssets:[PHAssetWithCollectionIndex toAssetsArray:assets] targetSize:CGSizeApplyAffineTransform(prepareForSizeDisplay, CGAffineTransformMakeScale(prepareScale, prepareScale)) contentMode:PHImageContentModeAspectFill options:nil];
         }
     }

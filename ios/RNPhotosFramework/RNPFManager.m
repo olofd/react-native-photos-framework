@@ -352,7 +352,7 @@ RCT_EXPORT_METHOD(getImageAssetsMetadata:(NSArray<NSString *> *)arrayWithLocalId
     [assets removeObject:currentAsset];
     if(currentAsset != nil) {
         __weak RNPFManager *weakSelf = self;
-        [PHAssetsService extendAssetDictWithPhotoAssetEditionMetadata:[NSMutableDictionary new] andPHAsset:currentAsset andCompletionBlock:^(NSMutableDictionary *dict) {
+        [PHAssetsService extendAssetDictWithPhotoAssetEditingMetadata:[NSMutableDictionary new] andPHAsset:currentAsset andCompletionBlock:^(NSMutableDictionary *dict) {
             
             [resultArray addObject:[NSMutableDictionary dictionaryWithObjectsAndKeys:currentAsset.localIdentifier, @"localIdentifier", dict, @"imageMetadata", nil]];
             

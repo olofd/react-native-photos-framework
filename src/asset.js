@@ -3,15 +3,15 @@ export default class Asset {
     static scheme = "photos://";
     constructor(assetObj) {
         Object.assign(this, assetObj);
-        this._assetObj = assetObj;  
+        this._assetObj = assetObj;
     }
 
     get uri() {
-        if(this.lastOptions === this.currentOptions && this._uri) {
+        if (this.lastOptions === this.currentOptions && this._uri) {
             return this._uri;
         }
         let queryString;
-        if(this.currentOptions) {
+        if (this.currentOptions) {
             this.lastOptions = this.currentOptions;
             queryString = this.serialize(this.currentOptions);
         }
@@ -35,7 +35,8 @@ export default class Asset {
         this._imageRef = {
             width,
             height,
-            uri
+            uri,
+            name: 'test.jpg'
         };
         return this._imageRef;
     }
@@ -143,6 +144,33 @@ export default class Asset {
                     [property]: value
                 }
             }).then(resolve, reject);
+        });
+    }
+
+    getPostableAsset() {
+        return this.getResourcesMetadata().then((asset) => {
+            const resourceMetaData = asset.resourcesMetadata[0];
+            return {
+                uri: this.uri,
+                name: resourceMetaData.originalFilename,
+                type: resourceMetaData.mimeType
+            };
+        });
+    }
+
+    postAsset() {
+        return this.getPostableAsset().then((postableAsset) => {
+            var photo = {
+                uri: 'testimage.jpg',
+                type: 'image/jpeg',
+                name: 'photo.jpg',
+            };
+            const body = new FormData();
+            body.append('photo', postableAsset);
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', 'http://localhost:3000/upload');
+            xhr.setRequestHeader("X-RNPF", "react-native-photos-framework");
+            xhr.send(body);
         });
     }
 }

@@ -13,7 +13,7 @@
     "react": "15.4.2",
     "react-native": "^0.41.2",
     "react-native-photos-framework": "latest",
-    "react-native-router-flux": "^3.37.0",
+    "react-native-router-flux": "^3.38.0",
     "react-native-video": "git://github.com/olofd/react-native-video.git#react-native-photos-framework",
     "simple-timer": "0.0.5"
   },

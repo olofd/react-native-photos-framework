@@ -226,6 +226,10 @@ class RNPhotosFramework {
       .then((result) => result[1]);
   }
 
+  getPostableAssets(localIdentifiers) {
+    return RNPFManager.getPostableAssets(localIdentifiers);
+  }
+
   createAssets(params, onProgress) {
     const images = params.images;
     const videos = params.videos !== undefined ? params.videos.map(videoPropsResolver) : params.videos;

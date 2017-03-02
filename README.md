@@ -637,6 +637,67 @@ Signature: album.createAssets(params) : Promise<array<Asset>>.
 Base function for creating assets. Will return the successfully created new assets.
 If the function returns less Assets then you sent as input, the ones not returned did fail.
 
+#Sending Assets to Server using AJAX
+
+This library implements the interface `RCTURLRequestHandler`. This means
+it supports sending assets as files with AJAX to your server of choice out of the box.
+You can send both Images and Videos with your ajax-library of choice.
+The simplest way of doing this is by doing it the good old way:
+
+~~~js
+//Create a JS object with these props.
+//The only thing required is the asset.uri and a name of the file.
+const photo = {
+    uri: asset.uri,
+    type: 'image/jpeg',
+    name: 'photo.jpg',
+};
+
+const body = new FormData();
+body.append('photo', photo);
+const xhr = new XMLHttpRequest();
+xhr.open('POST', 'http://your-server-url/upload');
+xhr.send(body);
+~~~
+
+###Ajax-Helper.
+
+This library does however include a helper to abstract over a simple upload.
+This helper does promisify and help you to simply sending assets over the wire.
+It also loads the original filename of the assets and their mimeType before sending.
+You can supply your own `modifyAssetData` callback to change the name if you want to before 
+sending. This helper operates over multiple Assets, so you always give it an array of Assets (Can contain only one item). It will upload the assets async in parallell and give you progress of the overall operation as well (For progressbars etc.).
+
+This helper sits outside of the rest of the library to not bloat for people not wanting it, and needs to be required/imported seperatly. (See example below).
+
+~~~js
+import {postAssets} from 'react-native-photos-framework/src/ajax-helper';
+const ajaxPromise = postAssets(assets, {
+     url: 'http://localhost:3000/upload',
+     headers : {},
+     onProgress: (progressPercentage, details) => {
+         console.log('On Progress called', progressPercentage);
+     },
+     onComplete : (asset, status, responseText, xhr) => {
+         console.log('Asset upload completed successfully');
+     },
+     onError : (asset, status, responseText, xhr) => {
+         console.log('Asset upload failed');
+     },
+     onFinnished : (completedItems) => {
+         console.log('Operation complete');
+     },
+     modifyAssetData : (postableAsset, asset) => {
+         postableAsset.name = `${postableAsset.name}-special-name-maybe-guid.jpg`;
+         return postableAsset;
+     }
+ }).then((result) => {
+     console.log('Operation complete, promise resolved', result);
+     return result;
+ });
+~~~
+
+
 #Change-Tracking/Observing library changes
 You can register listeners for library-change-detection on different levels of the api.
 

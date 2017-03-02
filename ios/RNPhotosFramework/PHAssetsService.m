@@ -127,11 +127,20 @@
 
     for(int i = 0; i < resources.count;i++) {
         PHAssetResource *resourceMetadata = [resources objectAtIndex:i];
+        
+        NSString *mimeType = (NSString *)[NSNull null];
+        CFStringRef mimeTypeCString = UTTypeCopyPreferredTagWithClass((__bridge CFStringRef _Nonnull)(resourceMetadata.uniformTypeIdentifier), kUTTagClassMIMEType);
+        if(mimeTypeCString != nil) {
+            mimeType = (__bridge NSString *)(mimeTypeCString);
+        }
+        
         [arrayWithResourcesMetadata addObject:@{
                                                      @"originalFilename" : resourceMetadata.originalFilename,
                                                      @"assetLocalIdentifier" : resourceMetadata.assetLocalIdentifier,
                                                      @"uniformTypeIdentifier" : resourceMetadata.uniformTypeIdentifier,
-                                                     @"type" : [[RCTConvert PHAssetResourceTypeValuesReversed] objectForKey:@(resourceMetadata.type)]
+                                                     @"type" : [[RCTConvert PHAssetResourceTypeValuesReversed] objectForKey:@(resourceMetadata.type)],
+                                                     @"mimeType" : mimeType,
+                                                     @"fileExtension" : [resourceMetadata.originalFilename pathExtension]
                                                      }];
     }
 
@@ -140,10 +149,10 @@
     return dictToExtend;
 }
 
-+(void)extendAssetDictWithPhotoAssetEditionMetadata:(NSMutableDictionary *)dictToExtend andPHAsset:(PHAsset *)asset andCompletionBlock:(void(^)(NSMutableDictionary * dict))completeBlock  {
++(void)extendAssetDictWithPhotoAssetEditingMetadata:(NSMutableDictionary *)dictToExtend andPHAsset:(PHAsset *)asset andCompletionBlock:(void(^)(NSMutableDictionary * dict))completeBlock  {
     __block NSMutableDictionary * dictionaryToExtendBlocked = dictToExtend;
     [PHAssetsService requestEditingMetadataWithCompletionBlock:^(NSDictionary<NSString *,id> *dict) {
-        [dictionaryToExtendBlocked addEntriesFromDictionary:dict];
+        [dictionaryToExtendBlocked setObject:dict forKey:@"imageMetadata"];
         completeBlock(dictionaryToExtendBlocked);
     } andAsset:asset];
 }
@@ -241,9 +250,17 @@
     options.synchronous = NO;
     options.version = PHImageRequestOptionsVersionOriginal;
     PHImageManager *manager = [[PHImageManager alloc] init];
+
     [manager requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info){
         CIImage *image = [CIImage imageWithData:imageData];
-        completeBlock(image.properties);
+
+        NSMutableDictionary *editingDictionary = [image.properties mutableCopy];
+        if ([info objectForKey:@"PHImageFileURLKey"]) {
+            NSURL *path = [info objectForKey:@"PHImageFileURLKey"];
+            [editingDictionary setObject:[path absoluteString] forKey:@"fileUrl"];
+        }
+        
+        completeBlock(editingDictionary);
     }];
 }
 

@@ -1,16 +1,12 @@
 #import "RNPFImageLoader.h"
 #import <Photos/Photos.h>
 #import <React/RCTUtils.h>
-
+#import "RNPFGlobals.h"
 @implementation RNPFImageLoader
 
 RCT_EXPORT_MODULE()
 
 @synthesize bridge = _bridge;
-
-#pragma mark - RCTImageLoader
-#define PHOTOS_SCHEME_IDENTIFIER @"photos"
-NSString *const SCHEME_WITH_SIGNS = PHOTOS_SCHEME_IDENTIFIER @"://";
 
 - (BOOL)canLoadImageURL:(NSURL *)requestURL
 {
@@ -20,14 +16,8 @@ NSString *const SCHEME_WITH_SIGNS = PHOTOS_SCHEME_IDENTIFIER @"://";
     return [requestURL.scheme caseInsensitiveCompare:PHOTOS_SCHEME_IDENTIFIER] == NSOrderedSame;
 }
 
-- (RCTImageLoaderCancellationBlock)loadImageForURL:(NSURL *)imageURL
-                                              size:(CGSize)size
-                                             scale:(CGFloat)scale
-                                        resizeMode:(RCTResizeMode)resizeMode
-                                   progressHandler:(RCTImageLoaderProgressBlock)progressHandler
-                                partialLoadHandler:(RCTImageLoaderPartialLoadBlock)partialLoadHandler
-                                 completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
-{
+-(PHAsset *)getAssetFromNSUrl:(NSURL *)url {
+    
     static PHFetchOptions *fetchOptions = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -37,19 +27,94 @@ NSString *const SCHEME_WITH_SIGNS = PHOTOS_SCHEME_IDENTIFIER @"://";
         [fetchOptions setWantsIncrementalChangeDetails:NO];
     });
     
-    NSString *localIdentifier = [imageURL.absoluteString substringFromIndex:SCHEME_WITH_SIGNS.length];
+    NSString *localIdentifier = [url.absoluteString substringFromIndex:PHOTOS_SCHEME_IDENTIFIER_WITHSIGNS.length];
     PHFetchResult *results = [PHAsset fetchAssetsWithLocalIdentifiers:@[localIdentifier] options:fetchOptions];
+
+    if([results count] == 0) {
+        return nil;
+    }
+    return [results firstObject];
+}
+
+-(RCTImageLoaderCancellationBlock) loadAssetAsData:(NSURL *)imageURL                                  completionHandler:(RNPFDataLoaderCompletionBlock)completionHandler {
+    PHAsset *asset = [self getAssetFromNSUrl:imageURL];
+    if(asset.mediaType == PHAssetMediaTypeImage) {
+        return [self loadImageAssetAsData:asset completionHandler:completionHandler];
+    }else if(asset.mediaType == PHAssetMediaTypeVideo) {
+        return [self loadVideoAssetAsData:asset completionHandler:completionHandler];
+    }
+    return ^{};
+}
+
+-(RCTImageLoaderCancellationBlock) loadImageAssetAsData:(PHAsset *)asset                                 completionHandler:(RNPFDataLoaderCompletionBlock)completionHandler
+ {
+    if (asset == nil) {
+        NSString *errorText = [NSString stringWithFormat:@"Failed to fetch localIdentifier with url %@ with no error message.", asset.localIdentifier];
+        completionHandler(RCTErrorWithMessage(errorText), nil);
+        return ^{};
+    }
+     
+    PHImageRequestOptions *imageOptions = [PHImageRequestOptions new];
+    imageOptions.networkAccessAllowed = YES;
+    imageOptions.resizeMode = PHImageRequestOptionsResizeModeNone;
+    imageOptions.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
     
-    if (results.count == 0) {
-        NSString *errorText = [NSString stringWithFormat:@"Failed to fetch PHAsset with local identifier %@ with no error message.", localIdentifier];
+    PHImageRequestID requestID =
+    [[PHCachingImageManagerInstance sharedCachingManager] requestImageDataForAsset:asset options:imageOptions resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
+        completionHandler(nil, imageData);
+    }];
+    return ^{
+        [[PHCachingImageManagerInstance sharedCachingManager] cancelImageRequest:requestID];
+    };
+}
+
+-(RCTImageLoaderCancellationBlock) loadVideoAssetAsData:(PHAsset *)asset                                 completionHandler:(RNPFDataLoaderCompletionBlock)completionHandler
+{
+    if (asset == nil) {
+        NSString *errorText = [NSString stringWithFormat:@"Failed to fetch localIdentifier with url %@ with no error message.", asset.localIdentifier];
         completionHandler(RCTErrorWithMessage(errorText), nil);
         return ^{};
     }
     
-    PHAsset *asset = [results firstObject];
-    PHImageRequestOptions *imageOptions = [PHImageRequestOptions new];
+    PHVideoRequestOptions *videoOptions = [PHVideoRequestOptions new];
+    videoOptions.networkAccessAllowed = YES;
+    videoOptions.version=PHVideoRequestOptionsVersionOriginal;
     
-    // Allow PhotoKit to fetch images from iCloud
+    PHImageRequestID requestID = [[PHCachingImageManagerInstance sharedCachingManager] requestAVAssetForVideo:asset options:videoOptions resultHandler:^(AVAsset *asset, AVAudioMix *audioMix, NSDictionary *info)
+     {
+         if ([asset isKindOfClass:[AVURLAsset class]])
+         {
+             NSURL *URL = [(AVURLAsset *)asset URL];
+             NSData *videoData=[NSData dataWithContentsOfURL:URL];
+             completionHandler(nil, videoData);
+         }
+     }];
+    
+    
+    return ^{
+        [[PHCachingImageManagerInstance sharedCachingManager] cancelImageRequest:requestID];
+    };
+}
+
+
+- (RCTImageLoaderCancellationBlock)loadImageForURL:(NSURL *)imageURL
+                                              size:(CGSize)size
+                                             scale:(CGFloat)scale
+                                        resizeMode:(RCTResizeMode)resizeMode
+                                   progressHandler:(RCTImageLoaderProgressBlock)progressHandler
+                                partialLoadHandler:(RCTImageLoaderPartialLoadBlock)partialLoadHandler
+                                 completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
+{
+
+    PHAsset *asset = [self getAssetFromNSUrl:imageURL];
+    
+    if (asset == nil) {
+        NSString *errorText = [NSString stringWithFormat:@"Failed to fetch PHAsset with url %@ with no error message.", [imageURL absoluteString]];
+        completionHandler(RCTErrorWithMessage(errorText), nil);
+        return ^{};
+    }
+    
+    PHImageRequestOptions *imageOptions = [PHImageRequestOptions new];
     imageOptions.networkAccessAllowed = YES;
     
     if (progressHandler) {

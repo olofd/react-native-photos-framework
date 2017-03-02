@@ -3,15 +3,15 @@ export default class Asset {
     static scheme = "photos://";
     constructor(assetObj) {
         Object.assign(this, assetObj);
-        this._assetObj = assetObj;  
+        this._assetObj = assetObj;
     }
 
     get uri() {
-        if(this.lastOptions === this.currentOptions && this._uri) {
+        if (this.lastOptions === this.currentOptions && this._uri) {
             return this._uri;
         }
         let queryString;
-        if(this.currentOptions) {
+        if (this.currentOptions) {
             this.lastOptions = this.currentOptions;
             queryString = this.serialize(this.currentOptions);
         }
@@ -35,7 +35,8 @@ export default class Asset {
         this._imageRef = {
             width,
             height,
-            uri
+            uri,
+            name: 'test.jpg'
         };
         return this._imageRef;
     }
@@ -61,18 +62,18 @@ export default class Asset {
     }
 
     getMetadata() {
-        return this._fetchExtraData('getAssetsMetadata', 'creationDate', 'metadata');
+        return this._fetchExtraData('getAssetsMetadata', 'creationDate');
     }
 
     refreshMetadata() {
-        return this._fetchExtraData('getAssetsMetadata', 'creationDate', 'metadata', true);
+        return this._fetchExtraData('getAssetsMetadata', 'creationDate', true);
     }
 
     getResourcesMetadata() {
         return this._fetchExtraData('getAssetsResourcesMetadata', 'resourcesMetadata');
     }
 
-    _fetchExtraData(nativeMethod, alreadyLoadedProperty, propertyToAssignToSelf, force) {
+    _fetchExtraData(nativeMethod, alreadyLoadedProperty, force) {
         return new Promise((resolve, reject) => {
             if (!force && this[alreadyLoadedProperty]) {
                 //This means we alread have fetched metadata.
@@ -82,12 +83,8 @@ export default class Asset {
             }
             return resolve(NativeApi[nativeMethod]([this.localIdentifier])
                 .then((metadataObjs) => {
-                    if (metadataObjs && metadataObjs[0]) {
-                        if (propertyToAssignToSelf) {
-                            Object.assign(this, metadataObjs[0][propertyToAssignToSelf]);
-                        } else {
-                            Object.assign(this, metadataObjs[0]);
-                        }
+                    if (metadataObjs && metadataObjs[this.localIdentifier]) {
+                       Object.assign(this, metadataObjs[this.localIdentifier]);
                     }
                     return this;
                 }));
@@ -143,6 +140,29 @@ export default class Asset {
                     [property]: value
                 }
             }).then(resolve, reject);
+        });
+    }
+
+    getPostableAsset() {
+        return this.getResourcesMetadata().then((asset) => {
+            const resourceMetaData = asset.resourcesMetadata[0];
+            return {
+                uri: this.uri,
+                name: resourceMetaData.originalFilename,
+                type: resourceMetaData.mimeType
+            };
+        });
+    }
+
+    postAsset() {
+        return this.getPostableAsset().then((postableAsset) => {
+            const body = new FormData();
+            body.append('photo', postableAsset);
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', 'http://localhost:3000/upload');
+            xhr.setRequestHeader("X-RNPF", "react-native-photos-framework");
+            xhr.setRequestHeader('Content-Type', postableAsset.type);
+            xhr.send(body);
         });
     }
 }

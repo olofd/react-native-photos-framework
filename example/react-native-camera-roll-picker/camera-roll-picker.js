@@ -90,7 +90,7 @@ class CameraRollPicker extends Component {
       .getAssets({
         includeMetadata: true,
         trackInsertsAndDeletes: true,
-      //  trackChanges: true,
+        //  trackChanges: true,
         startIndex: this.state.images.length,
         endIndex: this.state.images.length + 20,
         fetchOptions: {
@@ -104,6 +104,26 @@ class CameraRollPicker extends Component {
         assetDisplayStartToEnd: false
       })
       .then((data) => {
+
+        setTimeout(() => {
+          data.assets[0].postAsset().then((result) => {
+
+          });
+         /* var photo = {
+            uri: 'testimage.jpg',
+            type: 'image/jpeg',
+            name: 'testimagefff.jpg',
+          };
+
+          var body = new FormData();
+        //  body.append('photo', photo);
+
+          body.append('photo', data.assets[0].image);
+          var xhr = new XMLHttpRequest();
+          xhr.open('POST', 'http://localhost:3000/upload');
+          xhr.send(body);*/
+        }, 2000);
+
         console.log(data.assets.map(x => x.collectionIndex));
         simple_timer.stop('fetch_timer');
         console.log('react-native-photos-framework fetch request took %s milliseconds.', simple_timer.get('fetch_timer').delta)

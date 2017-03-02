@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import ImageItem from './ImageItem';
 import RNPhotosFramework from '../react-native-photos-framework';
+import {postAssets} from '../react-native-photos-framework/src/ajax-helper'
 var simple_timer = require('simple-timer')
 
 class CameraRollPicker extends Component {
@@ -94,36 +95,14 @@ class CameraRollPicker extends Component {
         startIndex: this.state.images.length,
         endIndex: this.state.images.length + 20,
         fetchOptions: {
-          //   includeHiddenAssets: true,
+          includeHiddenAssets: true,
           sortDescriptors: [{
             key: 'creationDate',
-            ascending: true
+            ascending: false
           }]
         },
-        assetDisplayBottomUp: false,
-        assetDisplayStartToEnd: false
       })
       .then((data) => {
-
-        setTimeout(() => {
-          data.assets[0].postAsset().then((result) => {
-
-          });
-         /* var photo = {
-            uri: 'testimage.jpg',
-            type: 'image/jpeg',
-            name: 'testimagefff.jpg',
-          };
-
-          var body = new FormData();
-        //  body.append('photo', photo);
-
-          body.append('photo', data.assets[0].image);
-          var xhr = new XMLHttpRequest();
-          xhr.open('POST', 'http://localhost:3000/upload');
-          xhr.send(body);*/
-        }, 2000);
-
         console.log(data.assets.map(x => x.collectionIndex));
         simple_timer.stop('fetch_timer');
         console.log('react-native-photos-framework fetch request took %s milliseconds.', simple_timer.get('fetch_timer').delta)

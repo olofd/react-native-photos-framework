@@ -40,7 +40,7 @@ class RNPhotosFramework {
     const methodsWithoutCacheCleanBlock = ['constructor', 'libraryStartup', 'authorizationStatus', 'requestAuthorization', 'createJsAsset', 'withUniqueEventListener'];
     const methodNames = (
       Object.getOwnPropertyNames(RNPhotosFramework.prototype)
-        .filter(method => methodsWithoutCacheCleanBlock.indexOf(method) === -1)
+      .filter(method => methodsWithoutCacheCleanBlock.indexOf(method) === -1)
     );
     methodNames.forEach(methodName => {
       const originalMethod = this[methodName];
@@ -80,8 +80,19 @@ class RNPhotosFramework {
   removeAssetsFromAlbum(params) {
     return RNPFManager.removeAssetsFromAlbum(params);
   }
-
+ 
   getAssets(params) {
+    //This might look hacky, but it is!
+    //We default to assetDisplayStartToEnd == false because photos framework will by default
+    //give us the results in the same order as the photos-app displays them. The most recent image last that is.
+    //BUT in this library we have decided to reverse that default, because most third-party apps wants (our guesses)
+    //the most recent photo first. So by default we load the results in reverse by saying assetDisplayStartToEnd = false.
+    //However. If this option is not expicitly set and you provide a saortDescriptor, we no longer want to reverse the ordser
+    //of the photos. Then we want to display them as is. So here we check for that scenario. If the key assetDisplayStartToEnd is
+    //not explicitly set and there is a sortDescriptor, do not reverse the order of the photos by assetDisplayStartToEnd = true.  
+    if (params.assetDisplayStartToEnd === undefined && params.fetchOptions.sortDescriptors && params.fetchOptions.sortDescriptors.length) {
+      params.assetDisplayStartToEnd = true;
+    }
     return RNPFManager
       .getAssets(params)
       .then((assetsResponse) => {
@@ -255,11 +266,11 @@ class RNPhotosFramework {
       args,
       unsubscribe
     } = this.withUniqueEventListener('onCreateAssetsProgress', {
-        media: media,
-        albumLocalIdentifier: params.album ?
-          params.album.localIdentifier : undefined,
-        includeMetadata: params.includeMetadata
-      }, onProgress);
+      media: media,
+      albumLocalIdentifier: params.album ?
+        params.album.localIdentifier : undefined,
+      includeMetadata: params.includeMetadata
+    }, onProgress);
     return RNPFManager
       .createAssets(args)
       .then((result) => {

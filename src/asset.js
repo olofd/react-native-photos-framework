@@ -142,27 +142,4 @@ export default class Asset {
             }).then(resolve, reject);
         });
     }
-
-    getPostableAsset() {
-        return this.getResourcesMetadata().then((asset) => {
-            const resourceMetaData = asset.resourcesMetadata[0];
-            return {
-                uri: this.uri,
-                name: resourceMetaData.originalFilename,
-                type: resourceMetaData.mimeType
-            };
-        });
-    }
-
-    postAsset() {
-        return this.getPostableAsset().then((postableAsset) => {
-            const body = new FormData();
-            body.append('photo', postableAsset);
-            const xhr = new XMLHttpRequest();
-            xhr.open('POST', 'http://localhost:3000/upload');
-            xhr.setRequestHeader("X-RNPF", "react-native-photos-framework");
-            xhr.setRequestHeader('Content-Type', postableAsset.type);
-            xhr.send(body);
-        });
-    }
 }

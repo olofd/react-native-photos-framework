@@ -11,7 +11,12 @@ Use version < 0.0.64 if your still < RN 0.40.
 
 ###Description
 Load photos/videos and more from CameraRoll and iCloud.
-Uses Apples photos framework.
+Uses Apples photos framework. 
+- Advanced options for loading and filtering.
+- Support for displaying both Images and Videos simply in your app.
+- Create, modify, delete photos, videos and albums.
+- Support for sending photos and videos to a server using Ajax. 
+- Change-tracking. (eg. someone takes a new photo while your app is open, this library will provide you with events to refresh your collection so it will display the latest changes to the photo-library).
 
 React Native comes with it's own CameraRoll library.
 This however uses ALAssetLibrary which is a deprecated API from Apple
@@ -637,7 +642,7 @@ Signature: album.createAssets(params) : Promise<array<Asset>>.
 Base function for creating assets. Will return the successfully created new assets.
 If the function returns less Assets then you sent as input, the ones not returned did fail.
 
-#Sending Assets to Server using AJAX
+#Sending assets to server using AJAX
 
 This library implements the interface `RCTURLRequestHandler`. This means
 it supports sending assets as files with AJAX to your server of choice out of the box.

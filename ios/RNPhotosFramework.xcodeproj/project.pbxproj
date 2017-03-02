@@ -15,7 +15,6 @@
 		632F8C261DB75A4A007E83E1 /* RNPFManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 632F8C221DB75A4A007E83E1 /* RNPFManager.m */; };
 		632F8C271DB75A4A007E83E1 /* RNPFImageLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 632F8C241DB75A4A007E83E1 /* RNPFImageLoader.m */; };
 		6342E0701DC346E300F7765E /* PHSaveAssetRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 6342E06F1DC346E300F7765E /* PHSaveAssetRequest.m */; };
-		6349B2BE1E67614200A153FD /* RNPFVideoLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 6349B2BD1E67614200A153FD /* RNPFVideoLoader.m */; };
 		63880A7B1E1281F3007532B2 /* RCTConvert+RNPhotosFrameworkTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 63880A7A1E1281F3007532B2 /* RCTConvert+RNPhotosFrameworkTests.m */; };
 		639BE3591DB82A7C00A2BE6F /* RCTConvert+RNPhotosFramework.m in Sources */ = {isa = PBXBuildFile; fileRef = 639BE3581DB82A7C00A2BE6F /* RCTConvert+RNPhotosFramework.m */; };
 		639BE3661DBB902E00A2BE6F /* PHChangeObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 639BE3651DBB902E00A2BE6F /* PHChangeObserver.m */; };
@@ -72,8 +71,6 @@
 		6342E06E1DC346E300F7765E /* PHSaveAssetRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHSaveAssetRequest.h; sourceTree = "<group>"; };
 		6342E06F1DC346E300F7765E /* PHSaveAssetRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHSaveAssetRequest.m; sourceTree = "<group>"; };
 		6349B2B91E6700DF00A153FD /* RNPFGlobals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNPFGlobals.h; sourceTree = "<group>"; };
-		6349B2BC1E67614200A153FD /* RNPFVideoLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNPFVideoLoader.h; sourceTree = "<group>"; };
-		6349B2BD1E67614200A153FD /* RNPFVideoLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNPFVideoLoader.m; sourceTree = "<group>"; };
 		63880A7A1E1281F3007532B2 /* RCTConvert+RNPhotosFrameworkTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+RNPhotosFrameworkTests.m"; sourceTree = "<group>"; };
 		639BE3571DB82A7C00A2BE6F /* RCTConvert+RNPhotosFramework.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RCTConvert+RNPhotosFramework.h"; sourceTree = "<group>"; };
 		639BE3581DB82A7C00A2BE6F /* RCTConvert+RNPhotosFramework.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+RNPhotosFramework.m"; sourceTree = "<group>"; };
@@ -175,8 +172,6 @@
 				63D8F9491E65C7F200A74433 /* RNPFUrlRequestHandler.h */,
 				63D8F94A1E65C7F200A74433 /* RNPFUrlRequestHandler.m */,
 				6349B2B91E6700DF00A153FD /* RNPFGlobals.h */,
-				6349B2BC1E67614200A153FD /* RNPFVideoLoader.h */,
-				6349B2BD1E67614200A153FD /* RNPFVideoLoader.m */,
 			);
 			path = RNPhotosFramework;
 			sourceTree = "<group>";
@@ -343,7 +338,6 @@
 				639BE3591DB82A7C00A2BE6F /* RCTConvert+RNPhotosFramework.m in Sources */,
 				8C2A0FCA1E27940300E31596 /* PHOperationResult.m in Sources */,
 				8C2A0FC71E2788F800E31596 /* PHCreateMediaQueue.m in Sources */,
-				6349B2BE1E67614200A153FD /* RNPFVideoLoader.m in Sources */,
 				63C543481DC00BDA004BFE57 /* RNPFHelpers.m in Sources */,
 				632F8C261DB75A4A007E83E1 /* RNPFManager.m in Sources */,
 				8C2A0FD01E283B6400E31596 /* PHCache.m in Sources */,

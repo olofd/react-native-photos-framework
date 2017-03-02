@@ -152,7 +152,7 @@
 +(void)extendAssetDictWithPhotoAssetEditingMetadata:(NSMutableDictionary *)dictToExtend andPHAsset:(PHAsset *)asset andCompletionBlock:(void(^)(NSMutableDictionary * dict))completeBlock  {
     __block NSMutableDictionary * dictionaryToExtendBlocked = dictToExtend;
     [PHAssetsService requestEditingMetadataWithCompletionBlock:^(NSDictionary<NSString *,id> *dict) {
-        [dictionaryToExtendBlocked addEntriesFromDictionary:dict];
+        [dictionaryToExtendBlocked setObject:dict forKey:@"imageMetadata"];
         completeBlock(dictionaryToExtendBlocked);
     } andAsset:asset];
 }

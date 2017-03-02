@@ -306,12 +306,12 @@ RCT_EXPORT_METHOD(getAssetsMetadata:(NSArray<NSString *> *)arrayWithLocalIdentif
                   reject:(RCTPromiseRejectBlock)reject)
 {
     PHFetchResult<PHAsset *> * arrayWithAssets = [PHAssetsService getAssetsFromArrayOfLocalIdentifiers:arrayWithLocalIdentifiers];
-    NSMutableArray<NSDictionary *>  *arrayWithMetadataObjs = [NSMutableArray arrayWithCapacity:arrayWithAssets.count];
+    NSMutableDictionary<NSString *, NSDictionary *> *dictWithMetadataObjs = [NSMutableDictionary dictionaryWithCapacity:arrayWithAssets.count];
     [arrayWithAssets enumerateObjectsUsingBlock:^(PHAsset * _Nonnull asset, NSUInteger idx, BOOL * _Nonnull stop) {
-        [arrayWithMetadataObjs addObject:[NSMutableDictionary dictionaryWithObjectsAndKeys:asset.localIdentifier, @"localIdentifier", [PHAssetsService extendAssetDictWithAssetMetadata:[NSMutableDictionary new] andPHAsset:asset], @"metadata", nil]];
+        [dictWithMetadataObjs setObject:[PHAssetsService extendAssetDictWithAssetMetadata:[NSMutableDictionary new] andPHAsset:asset] forKey:asset.localIdentifier];
 
     }];
-    resolve(arrayWithMetadataObjs);
+    resolve(dictWithMetadataObjs);
 }
 
 RCT_EXPORT_METHOD(getAssetsResourcesMetadata:(NSArray<NSString *> *)arrayWithLocalIdentifiers
@@ -319,13 +319,11 @@ RCT_EXPORT_METHOD(getAssetsResourcesMetadata:(NSArray<NSString *> *)arrayWithLoc
                   reject:(RCTPromiseRejectBlock)reject)
 {
     PHFetchResult<PHAsset *> * arrayWithAssets = [PHAssetsService getAssetsFromArrayOfLocalIdentifiers:arrayWithLocalIdentifiers];
-    NSMutableArray<NSDictionary *> *arrayWithMetadataObjs = [NSMutableArray arrayWithCapacity:arrayWithAssets.count];
+    NSMutableDictionary<NSString *, NSDictionary *> *dictWithMetadataObjs = [NSMutableDictionary dictionaryWithCapacity:arrayWithAssets.count];
     [arrayWithAssets enumerateObjectsUsingBlock:^(PHAsset * _Nonnull asset, NSUInteger idx, BOOL * _Nonnull stop) {
-        NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithObjectsAndKeys:asset.localIdentifier, @"localIdentifier", nil];
-        [dict addEntriesFromDictionary:[PHAssetsService extendAssetDictWithAssetResourcesMetadata:[NSMutableDictionary new] andPHAsset:asset]];
-        [arrayWithMetadataObjs addObject:dict];
+        [dictWithMetadataObjs setObject:[PHAssetsService extendAssetDictWithAssetResourcesMetadata:[NSMutableDictionary new] andPHAsset:asset] forKey:asset.localIdentifier];
     }];
-    resolve(arrayWithMetadataObjs);
+    resolve(dictWithMetadataObjs);
 }
 
 RCT_EXPORT_METHOD(getImageAssetsMetadata:(NSArray<NSString *> *)arrayWithLocalIdentifiers
@@ -334,32 +332,31 @@ RCT_EXPORT_METHOD(getImageAssetsMetadata:(NSArray<NSString *> *)arrayWithLocalId
 {
     PHFetchResult<PHAsset *> * arrayWithAssets = [PHAssetsService getAssetsFromArrayOfLocalIdentifiers:arrayWithLocalIdentifiers];
     NSMutableArray *mutableArrayWithAssets = [NSMutableArray arrayWithCapacity:arrayWithAssets.count];
-    NSMutableArray<NSDictionary *> *arrayWithMetadataObjs = [NSMutableArray arrayWithCapacity:arrayWithAssets.count];
+    NSMutableDictionary<NSString *, NSDictionary *> *dictWithMetadataObjs = [NSMutableDictionary dictionaryWithCapacity:arrayWithAssets.count];
+
     [arrayWithAssets enumerateObjectsUsingBlock:^(PHAsset * _Nonnull asset, NSUInteger idx, BOOL * _Nonnull stop) {
         [mutableArrayWithAssets addObject:asset];
     }];
-    [self getImageAssetsMetaData:mutableArrayWithAssets andResultArray:arrayWithMetadataObjs andCompleteBLock:^(NSMutableArray<NSDictionary *> *resultArray) {
-        resolve(resultArray);
+    [self getImageAssetsMetaData:mutableArrayWithAssets andResultDict:dictWithMetadataObjs andCompleteBLock:^(NSMutableDictionary<NSString *, NSDictionary *> *resultDict) {
+        resolve(resultDict);
     }];
 }
 
--(void) getImageAssetsMetaData:(NSMutableArray<PHAsset *> *)assets andResultArray:(NSMutableArray<NSDictionary *> *)resultArray andCompleteBLock:(nullable void(^)(NSMutableArray<NSDictionary *> * resultArray))completeBlock {
+-(void) getImageAssetsMetaData:(NSMutableArray<PHAsset *> *)assets andResultDict:(NSMutableDictionary<NSString *, NSDictionary *> *)resultDict andCompleteBLock:(nullable void(^)(NSMutableDictionary<NSString *, NSDictionary *> * resultDict))completeBlock {
     
     if(assets.count == 0){
-        return completeBlock(resultArray);
+        return completeBlock(resultDict);
     }
     PHAsset *currentAsset = [assets objectAtIndex:0];
     [assets removeObject:currentAsset];
     if(currentAsset != nil) {
         __weak RNPFManager *weakSelf = self;
         [PHAssetsService extendAssetDictWithPhotoAssetEditingMetadata:[NSMutableDictionary new] andPHAsset:currentAsset andCompletionBlock:^(NSMutableDictionary *dict) {
-            
-            [resultArray addObject:[NSMutableDictionary dictionaryWithObjectsAndKeys:currentAsset.localIdentifier, @"localIdentifier", dict, @"imageMetadata", nil]];
-            
-            return [weakSelf getImageAssetsMetaData:assets andResultArray:resultArray andCompleteBLock:completeBlock];
+            [resultDict setObject:dict forKey:currentAsset.localIdentifier];
+            return [weakSelf getImageAssetsMetaData:assets andResultDict:resultDict andCompleteBLock:completeBlock];
         }];
     }else {
-        return [self getImageAssetsMetaData:assets andResultArray:resultArray andCompleteBLock:completeBlock];
+        return [self getImageAssetsMetaData:assets andResultDict:resultDict andCompleteBLock:completeBlock];
     }
 }
 

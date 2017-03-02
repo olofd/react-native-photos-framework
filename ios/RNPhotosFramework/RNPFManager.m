@@ -26,15 +26,6 @@ RCT_EXPORT_MODULE()
 NSString *const RNPHotoFrameworkErrorUnableToLoad = @"RNPHOTOSFRAMEWORK_UNABLE_TO_LOAD";
 NSString *const RNPHotoFrameworkErrorUnableToSave = @"RNPHOTOSFRAMEWORK_UNABLE_TO_SAVE";
 
-- (instancetype)init
-{
-    self = [super init];
-    if (self) {
-        self.changeObserver = [[PHChangeObserver alloc] initWithEventEmitter:self];
-    }
-    return self;
-}
-
 - (void)dealloc
 {
     if(self.changeObserver) {
@@ -51,6 +42,18 @@ NSString *const RNPHotoFrameworkErrorUnableToSave = @"RNPHOTOSFRAMEWORK_UNABLE_T
 - (NSArray<NSString *> *)supportedEvents {
     return @[@"onCreateAssetsProgress", @"onLibraryChange", @"onObjectChange"];
 }
+
+RCT_EXPORT_METHOD(libraryStartup:(BOOL)useCacheAndChangeTracking
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+    [[PHCache sharedPHCache] cleanCache];
+    if(useCacheAndChangeTracking && self.changeObserver == nil) {
+        self.changeObserver = [[PHChangeObserver alloc] initWithEventEmitter:self];
+    }
+    resolve(@{ @"success" : @((BOOL)YES) });
+}
+
 
 RCT_EXPORT_METHOD(startChangeObserving:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
@@ -125,16 +128,6 @@ RCT_EXPORT_METHOD(getAssetsWithIndecies:(NSDictionary *)params
               @"assets" : [PHAssetsService assetsArrayToUriArray:assets andincludeMetadata:includeMetadata andIncludeAssetResourcesMetadata:includeResourcesMetadata],
               });
 }
-
-
-RCT_EXPORT_METHOD(cleanCache:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject)
-{
-    [[PHCache sharedPHCache] cleanCache];
-    
-    resolve(@{ @"success" : @((BOOL)YES) });
-}
-
 
 RCT_EXPORT_METHOD(updateAlbumTitle:(NSDictionary *)params
                   resolve:(RCTPromiseResolveBlock)resolve

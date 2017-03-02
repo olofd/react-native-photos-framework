@@ -37,7 +37,7 @@ class RNPhotosFramework {
     //We need to make sure we clean cache in native before any calls
     //go into RNPF. This is important when running in DEV because we reastart
     //often in RN. (Live reload).
-    const methodsWithoutCacheCleanBlock = ['constructor', 'cleanCache', 'authorizationStatus', 'requestAuthorization', 'createJsAsset', 'withUniqueEventListener'];
+    const methodsWithoutCacheCleanBlock = ['constructor', 'libraryStartup', 'authorizationStatus', 'requestAuthorization', 'createJsAsset', 'withUniqueEventListener'];
     const methodNames = (
       Object.getOwnPropertyNames(RNPhotosFramework.prototype)
         .filter(method => methodsWithoutCacheCleanBlock.indexOf(method) === -1)
@@ -45,10 +45,10 @@ class RNPhotosFramework {
     methodNames.forEach(methodName => {
       const originalMethod = this[methodName];
       this[methodName] = function (...args) {
-        if (!this.cleanCachePromise) {
-          this.cleanCachePromise = RNPFManager.cleanCache();
+        if (!this.libraryStartupPromise) {
+          this.libraryStartupPromise = this.libraryStartup();
         }
-        return this.cleanCachePromise.then(() => originalMethod.apply(this, args));
+        return this.libraryStartupPromise.then(() => originalMethod.apply(this, args));
       }.bind(this);
     });
   }
@@ -57,8 +57,8 @@ class RNPhotosFramework {
     return eventEmitter.addListener('onLibraryChange', cb);
   }
 
-  cleanCache() {
-    return RNPFManager.cleanCache();
+  libraryStartup() {
+    return RNPFManager.libraryStartup(true);
   }
 
   authorizationStatus() {

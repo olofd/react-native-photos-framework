@@ -65,7 +65,7 @@ RCT_ENUM_CONVERTER_WITH_REVERSED(PHAssetMediaSubtype, (@{
                                            @"videoStreamed": @(PHAssetMediaSubtypeVideoStreamed),
                                            @"videoHighFrameRate": @(PHAssetMediaSubtypeVideoHighFrameRate),
                                            @"videoTimeLapse": @(PHAssetMediaSubtypeVideoTimelapse),
-                                           
+                                           @"photoDepthEffect": @(PHAssetMediaSubtypePhotoDepthEffect),
                                            }), PHAssetMediaSubtypeNone, integerValue)
 
 

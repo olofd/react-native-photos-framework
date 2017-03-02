@@ -43,7 +43,7 @@ export default class Example extends Component {
                 }).then((queryResult) => {
                     const album = queryResult.albums[0];
                     return album.getAssets({
-                        fetchOptions : {
+                        fetchOptions: {
                             mediaTypes: ['video']
                         },
 
@@ -56,11 +56,25 @@ export default class Example extends Component {
                         trackInsertsAndDeletes: true,
                         trackChanges: false
                     }).then((response) => {
-                        const asset = response.assets[0];
                         setTimeout(() => {
-                            asset.postAsset();
+                            const assets = [response.assets[0], response.assets[1]];
+                            RNPhotosFramework.postAssets({
+                                url: 'http://localhost:3000/upload',
+                                onProgress: (progressPercentage, details) => {
+                                    console.log('On Progress called', progressPercentage);
+                                },
+                                onComplete : (asset, status, responseText, xhr) => {
+                                    console.log('Asset upload completed successfully');
+                                },
+                                onError : (asset, status, responseText, xhr) => {
+                                    console.log('Asset upload failed');
+                                },
+                                onFinnished : (completedItems) => {
+                                    console.log('Operation complete');
+                                }
+                            }, assets);
+                        }, 2000);
 
-                        }, 5000);
                         this.setState({
                             images: [response.assets[0]]
                         });

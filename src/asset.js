@@ -160,16 +160,12 @@ export default class Asset {
 
     postAsset() {
         return this.getPostableAsset().then((postableAsset) => {
-            var photo = {
-                uri: 'testimage.jpg',
-                type: 'image/jpeg',
-                name: 'photo.jpg',
-            };
             const body = new FormData();
             body.append('photo', postableAsset);
             const xhr = new XMLHttpRequest();
             xhr.open('POST', 'http://localhost:3000/upload');
             xhr.setRequestHeader("X-RNPF", "react-native-photos-framework");
+            xhr.setRequestHeader('Content-Type', postableAsset.type);
             xhr.send(body);
         });
     }

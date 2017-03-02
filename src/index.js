@@ -251,11 +251,11 @@ class RNPhotosFramework {
       args,
       unsubscribe
     } = this.withUniqueEventListener('onCreateAssetsProgress', {
-      media: media,
-      albumLocalIdentifier: params.album ?
-        params.album.localIdentifier : undefined,
-      includeMetadata: params.includeMetadata
-    }, onProgress);
+        media: media,
+        albumLocalIdentifier: params.album ?
+          params.album.localIdentifier : undefined,
+        includeMetadata: params.includeMetadata
+      }, onProgress);
     return RNPFManager
       .createAssets(args)
       .then((result) => {
@@ -306,6 +306,84 @@ class RNPhotosFramework {
       case "video":
         return new VideoAsset(nativeObj, options);
     }
+  }
+
+  postAssets({ url, method, onProgress, onComplete, onError, onFinnished }, assets) {
+    let totalProgressLoaded = {};
+    let completedItems = [];
+    const onTotalProgress = (assetUpdatePorgress) => {
+      if (onProgress) {
+        totalProgressLoaded[assetUpdatePorgress.asset.uri] = assetUpdatePorgress;
+        const loadedProgress = Object.keys(totalProgressLoaded).reduce((loaded, uri) => {
+          const assetProgress = totalProgressLoaded[uri];
+          return (loaded + assetProgress.percentComplete);
+        }, 0);
+        const loadedProgressTotal = loadedProgress / assets.length;
+        onProgress(loadedProgressTotal, totalProgressLoaded);
+      }
+    };
+
+    const onItemComplete = (asset, status, responseText, xhr) => {
+      completedItems.push({asset, status, responseText, xhr});
+      if(status === 200){
+        onComplete && onComplete(asset, status, responseText, xhr);
+      }else {
+        onError && onError(asset, status, responseText, xhr);
+      }
+      if(completedItems.length === assets.length) {
+        onFinnished && onFinnished(completedItems);
+      }
+    };
+
+    return Promise.all(assets.map((asset) => {
+      if (asset instanceof Asset) {
+        return asset.getPostableAsset().then((postableAsset) => {
+          return this.postAsset({
+            url,
+            onProgress: onTotalProgress,
+            onComplete : onItemComplete,
+            onError : onItemComplete
+          }, postableAsset);
+        });
+      }
+    }));
+  }
+
+  postAsset({ url, method, headers, onProgress, onComplete, onError }, postableAsset) {
+    const body = new FormData();
+    body.append('asset', postableAsset);
+    const xhr = new XMLHttpRequest();
+    xhr.upload.onprogress = (evt) => {
+      if (evt.lengthComputable) {
+        const percentComplete = Math.ceil((evt.loaded / evt.total) * 100);
+        onProgress({
+          asset: postableAsset,
+          percentComplete: percentComplete,
+          loaded: evt.loaded,
+          total: evt.total
+        });
+      }
+    };
+    xhr.open(method !== undefined ? method : 'POST', url);
+    xhr.send(body);
+
+    xhr.onreadystatechange = (aEvt) => {
+      if (xhr.readyState === 1) {
+        xhr.setRequestHeader("X-RNPF", "react-native-photos-framework");
+        if (headers) {
+          Object.keys(headers).map((key) => {
+            xhr.setRequestHeader(key, headers[key]);
+          });
+        }
+      }
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
+          onComplete(postableAsset, xhr.status, xhr.responseText, xhr);
+        } else {
+          onError(postableAsset, xhr.status, xhr.responseText, xhr);
+        }
+      }
+    };
   }
 
 }

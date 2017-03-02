@@ -43,6 +43,12 @@ NSString *const RNPHotoFrameworkErrorUnableToSave = @"RNPHOTOSFRAMEWORK_UNABLE_T
     return @[@"onCreateAssetsProgress", @"onLibraryChange", @"onObjectChange"];
 }
 
+RCT_EXPORT_METHOD(setAllowsCachingHighQualityImages:(BOOL)allowed)
+{
+    [[PHCachingImageManagerInstance sharedCachingManager] setAllowsCachingHighQualityImages:allowed];
+}
+
+
 RCT_EXPORT_METHOD(libraryStartup:(BOOL)useCacheAndChangeTracking
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)

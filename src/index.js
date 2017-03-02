@@ -69,6 +69,10 @@ class RNPhotosFramework {
     return RNPFManager.requestAuthorization();
   }
 
+  setAllowsCachingHighQualityImages(allowed) {
+    return RNPFManager.setAllowsCachingHighQualityImages(allowed);
+  }
+
   addAssetsToAlbum(params) {
     return RNPFManager.addAssetsToAlbum(params);
   }

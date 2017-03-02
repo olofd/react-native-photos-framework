@@ -57,7 +57,7 @@ export default class Example extends Component {
                         trackChanges: false
                     }).then((response) => {
                         setTimeout(() => {
-                            const assets = [response.assets[0], response.assets[1]];
+                            const assets = [response.assets[0], response.assets[1], response.assets[2], response.assets[3]];
                             RNPhotosFramework.postAssets({
                                 url: 'http://localhost:3000/upload',
                                 onProgress: (progressPercentage, details) => {
@@ -72,7 +72,9 @@ export default class Example extends Component {
                                 onFinnished : (completedItems) => {
                                     console.log('Operation complete');
                                 }
-                            }, assets);
+                            }, assets).then((result) => {
+                                console.log('Operation complete, promise resolved', result);
+                            });
                         }, 2000);
 
                         this.setState({

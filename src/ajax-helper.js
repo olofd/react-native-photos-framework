@@ -2,12 +2,13 @@ import Asset from './asset';
 import NativeApi from './index';
 export function postAssets(assets, {
     url,
-    method,
+    method,  
     onProgress,
     onComplete,
     onError,
     onFinnished,
-    modifyAssetData
+    modifyAssetData,
+    headers
 }) {
     let totalProgressLoaded = {};
     let completedItems = [];
@@ -77,9 +78,11 @@ export function postAssets(assets, {
         return Promise.all(preparedAssets.map(createPostableAsset).map((postableAsset) => {
             return postAsset(postableAsset, {
                 url,
+                method,
+                headers,
                 onProgress: onTotalProgress,
                 onComplete: onItemComplete,
-                onError: onItemComplete
+                onError: onItemComplete,
             });
         }));
     });

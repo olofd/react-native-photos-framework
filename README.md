@@ -295,7 +295,17 @@ Get albums allow to query the Photos Framework for asset-albums. Both User-creat
 Note that Apple creates a lot of dynamic, so called Smart Albums, like : 'Recently added', 'Favourites' etc.
 
 NOTE: There is also another method called `getAlbumsMany`. This could be considered a low-level-method of the API. It is constructed so that this library can build more accessible methods on top of one joint native-call: like getUserTopAlbums in pure JS.
-The getAlbumsMany-api can take multiple queries (array<albumquery>) and return an array<albumqueryresult>.
+The getAlbumsMany-api can take multiple queries (array<albumquery>) and return an array<albumqueryresult></albumqueryresult>.
+
+NOTE about Apple Bug for album titles in iOS 10.
+The album.title property is suppose to be localized
+to your language out of the box. But this will only work if
+you have a language translation file included in your
+project. The native property is called localizedTitle.
+If you only see english names as titles for smart albums,
+eg. 'All Photos' even though you run on a different language
+iPhone, check this question out:
+http://stackoverflow.com/questions/42579544/ios-phassetcollection-localizedtitle-always-returning-english-name
 
 | Prop  | Default  | Type | Description |
 | :------------ |:---------------:| :---------------:| :-----|

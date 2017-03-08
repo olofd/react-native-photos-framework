@@ -82,12 +82,18 @@
                                              [reveredMediaTypes objectForKey:@([asset mediaType])], @"mediaType",
                                              assetIndex, @"collectionIndex",
                                              nil];
+        
+        if([asset mediaType] == PHAssetMediaTypeVideo || [asset mediaType] == PHAssetMediaTypeAudio) {
+            [responseDict setObject:@([asset duration]) forKey:@"duration"];
+        }
+
         if(includeMetadata) {
             [self extendAssetDictWithAssetMetadata:responseDict andPHAsset:asset];
         }
         if(includeResourcesMetadata) {
             [self extendAssetDictWithAssetResourcesMetadata:responseDict andPHAsset:asset];
         }
+        
 
         [uriArray addObject:responseDict];
     }
@@ -113,9 +119,6 @@
         [dictToExtend setObject:burstIdentifier forKey:@"burstIdentifier"];
         [dictToExtend setObject:@([asset representsBurst]) forKey:@"representsBurst"];
         [dictToExtend setObject:[RNPFHelpers nsOptionsToArray:[asset burstSelectionTypes] andBitSize:32 andReversedEnumDict:[RCTConvert PHAssetBurstSelectionTypeValuesReversed]] forKey:@"burstSelectionTypes"];
-    }
-    if([asset mediaType] == PHAssetMediaTypeVideo || [asset mediaType] == PHAssetMediaTypeAudio) {
-        [dictToExtend setObject:@([asset duration]) forKey:@"duration"];
     }
     return dictToExtend;
 }

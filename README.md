@@ -1,7 +1,7 @@
 # react-native-photos-framework [![Build Status](https://travis-ci.org/olofd/react-native-photos-framework.svg?branch=master)](https://travis-ci.org/olofd/react-native-photos-framework) [![npm version](https://badge.fury.io/js/react-native-photos-framework.svg)](https://badge.fury.io/js/react-native-photos-framework) [![Beerpay](https://beerpay.io/olofd/react-native-photos-framework/badge.svg?style=beer)](https://beerpay.io/olofd/react-native-photos-framework)
 
-###Example project
-####NOTE: This is not a GUI-component, it's an API. The example project just shows off some of the the capabilities of this API.
+### Example project
+#### NOTE: This is not a GUI-component, it's an API. The example project just shows off some of the the capabilities of this API.
 ![](https://media.giphy.com/media/3o6Ztqdc8OF3FAgAiQ/source.gif)
 
 #### Breaking Changes
@@ -9,7 +9,7 @@ react-native header imports have changed in v0.40, and that means breaking chang
 This library is updated to work with the new imports.
 Use version < 0.0.64 if your still < RN 0.40.
 
-###Description
+### Description
 Load photos/videos and more from CameraRoll and iCloud.
 Uses Apples photos framework. 
 - Advanced options for loading and filtering.
@@ -25,7 +25,7 @@ This is not what your user expects today. Most users photos live on iCloud and t
 
 If you use this library (Photos framework) you can display the users local resources and the users iCloud resources.
 
-###Installation:
+### Installation:
 `npm i react-native-photos-framework --save && react-native link react-native-photos-framework`
 
 NOTE: When running `npm install` this library will try to automatically add `NSPhotoLibraryUsageDescription` to your Info.plist.
@@ -33,7 +33,7 @@ Check that it is there after the install or update it's value from the default:
 `Using photo library to select pictures`
  (Will not do anything if you have already defined this key in Info.plist)
 
-#Simple example:
+# Simple example:
 
 ~~~js
 /**
@@ -137,13 +137,13 @@ AppRegistry.registerComponent('AwesomeProject', () => AwesomeProject);
 
 ~~~
 
-#API-documentation:
+# API-documentation:
 
-##Library (Top level):
+## Library (Top level):
 
-##Static methods:
+## Static methods:
 
-###authorizationStatus
+### authorizationStatus
 ~~~js
   RNPhotosFramework.authorizationStatus().then(() => {
   });
@@ -157,7 +157,7 @@ NOTE: You can receive the following statuses :
 * `denied` //User has denied permission,
 * `authorized` //User has granted permission
 
-###requestAuthorization
+### requestAuthorization
 ~~~js
   RNPhotosFramework.requestAuthorization().then((statusObj) => {
     if(statusObj.isAuthorized) {
@@ -173,7 +173,7 @@ trigger this dialog, so if another call comes into Photos Framework before the u
 NOTE: You do not have to first check the authorizationStatus before calling this. If the user has granted access before, this will just return authorized-status.
 NOTE: See available statuses in doc. about: `authorizationStatus`
 
-##Working with Content:
+## Working with Content:
 ##### `fetchOptions`
 fetchOptions is a query-object which can be sent both when fetching albums with
 `getAlbums` and when fetching assets with `getAssets`. Below you can see the available options
@@ -231,7 +231,7 @@ import RNPhotosFramework from 'react-native-photos-framework';
 | assetDisplayStartToEnd | false | `boolean` | Retrieves assets from the beginning of the library when set to true. Using this sorting option preserves the native order of assets as they are viewed in the Photos app.  |
 | assetDisplayBottomUp | false | `boolean` | Used to arrange assets from the bottom to top of screen when scrolling up to view paginated results. |
 
-###Example of asset response with `includeMetadata : true`
+### Example of asset response with `includeMetadata : true`
 ~~~
 creationDate : 1466766146
 duration : 17.647 (video)
@@ -323,9 +323,9 @@ http://stackoverflow.com/questions/42579544/ios-phassetcollection-localizedtitle
 
 # Working with Albums:
 
-##Static methods:
+## Static methods:
 
-###Base methods:
+### Base methods:
 ~~~js
 //Fetches albums for params. See above
 RNPhotosFramework.getAlbums(params)
@@ -337,7 +337,7 @@ RNPhotosFramework.getAlbumsMany([params, params...], asSingleQueryResult);
 RNPhotosFramework.getAlbumsCommon(params)
 ~~~
 
-###createAlbum
+### createAlbum
 ~~~js
   RNPhotosFramework.createAlbum('test-album').then((album) => {
     //You can now use the album like any other album:
@@ -352,7 +352,7 @@ Signature: RNPhotosFramework.createAlbums(albumTitles) : Promise<album>.
 NOTE: Alums can have the same name. All resources in Photos are unique on their
 localIdentifier. You can use the below methods to tackle this:
 
-###getAlbumsByTitle
+### getAlbumsByTitle
 ~~~js
   RNPhotosFramework.getAlbumsByTitle('test-album').then((albums) => {});
 ~~~
@@ -362,16 +362,16 @@ There is also another multi-method you can use here:
 Signature: RNPhotosFramework.getAlbumsByTitles(albumTitles) : Promise<array<album>>.
 Signature: RNPhotosFramework.getAlbumsWithParams({albumTitles, ...otherThingLikeFetchOptionsOrType/SubType}) : Promise<array<album>>.
 
-###getAlbumByLocalIdentifier and getAlbumByLocalIdentifiers
+### getAlbumByLocalIdentifier and getAlbumByLocalIdentifiers
 ~~~js
   RNPhotosFramework.getAlbumByLocalIdentifier(localIdentifier).then((album) => {});
 ~~~
 Signature: RNPhotosFramework.getAlbumByLocalIdentifier(localIdentifier) : Promise<album>.
 All alums carry their localIdentifier on album.localIdentifier.
 
-##Album instance-methods:
+## Album instance-methods:
 
-###addAssetToAlbum and addAssetsToAlbum
+### addAssetToAlbum and addAssetsToAlbum
 ~~~js
   album.addAssetToAlbum(asset).then((status) => {});
 ~~~
@@ -381,7 +381,7 @@ NOTE: Can only be called with assets that are stored in the library already.
 If you have a image that you want to save to the library see createAsset.
 
 
-###removeAssetFromAlbum and removeAssetsFromAlbum
+### removeAssetFromAlbum and removeAssetsFromAlbum
 ~~~js
   album.removeAssetFromAlbum(asset).then((status) => {});
 ~~~
@@ -390,21 +390,21 @@ Remove asset from album.
 NOTE: Can only be called with assets that are stored in the library already.
 If you have a image that you want to save to the library see createAsset.
 
-###updateTitle
+### updateTitle
 ~~~js
   album.updateTitle(newTitle).then((status) => {});
 ~~~
 Signature: album.updateTitle(string) : Promise<status>.
 Change title on an album.
 
-###delete
+### delete
 ~~~js
   album.delete().then((status) => {});
 ~~~
 Signature: album.delete() : Promise<status>.
 Delete an album.
 
-###getMetadata
+### getMetadata
 ~~~js
   album.getMetadata().then((mutatedAlbumWithMetadata) => {});
 ~~~
@@ -417,13 +417,13 @@ When you retrieve assets from the API you will get back an Asset object.
 There is nothing special about this object. I've defined it as a class so
 that it can have some instance-methods.
 
-##All Assets. (Video/Image)
+## All Assets. (Video/Image)
 These are methods and options that apply to all kinds of assets.
 (NOTE: Creating new assets has it's own chapter down below).
 
-##Asset instance-methods:
+## Asset instance-methods:
 
-####setHidden
+#### setHidden
 ~~~js
   asset.setHidden(hiddenBoolean).then((resultOfOperation) => {
 
@@ -431,7 +431,7 @@ These are methods and options that apply to all kinds of assets.
 ~~~
 Hides or un-hides a specific asset. Will prompt the user when an asset is about to be hidden.
 
-####setFavorite
+#### setFavorite
 ~~~js
   asset.setFavorite(favoriteBoolean).then((resultOfOperation) => {
 
@@ -439,7 +439,7 @@ Hides or un-hides a specific asset. Will prompt the user when an asset is about 
 ~~~
 Marks/Unmarks the asset as favorite.
 
-####setCreationDate
+#### setCreationDate
 ~~~js
   asset.setCreationDate(jsDate).then((resultOfOperation) => {
 
@@ -447,7 +447,7 @@ Marks/Unmarks the asset as favorite.
 ~~~
 Updates the assets creationDate.
 
-####setLocation
+#### setLocation
 ~~~js
   asset.setLocation({
     lat : Number //required,
@@ -462,13 +462,13 @@ Updates the assets creationDate.
 ~~~
 Updates the assets location.
 
-####getMetadata
+#### getMetadata
 ~~~js
   asset.getMetadata().then((mutatedAssetWithMetadata) => {});
 ~~~
 Fetch metadata for a specific asset. You can also include metadata on all assets in the first `getAsset`-call by explicitly setting option `includeMetadata: true`.
 
-####getResourcesMetadata
+#### getResourcesMetadata
 ~~~js
   asset.getResourcesMetadata().then((mutatedAssetWithResourcesMetadata) => {
     console.log(mutatedAssetWithResourcesMetadata.resourcesMetadata);
@@ -508,7 +508,7 @@ RNPhotosFramework.updateAssets({
 });
 ~~~
 
-####delete
+#### delete
 ~~~js
   asset.delete().then((status) => {
   });
@@ -516,15 +516,15 @@ RNPhotosFramework.updateAssets({
 Delete asset.
 
 
-##Images/Photo-Assets
+## Images/Photo-Assets
 An Image/Photo-asset is fully compatible with RN's `<Image source={asset.image}></Image>`-tag.
 This includes all resizeModes.
 NOTE: Use the property `.image` on an asset for the `<Image>`-tag. Otherwise
 RN will freeze your asset object. And they are, right now at least, mutable.
 
-##Image-Asset instance-methods:
+## Image-Asset instance-methods:
 
-####getImageMetadata
+#### getImageMetadata
 ~~~js
   asset.getImageMetadata().then((mutatedAssetWithImageMetadata) => {
     console.log(mutatedAssetWithResourcesMetadata.imageMetadata);
@@ -532,11 +532,11 @@ RN will freeze your asset object. And they are, right now at least, mutable.
 ~~~
 Fetch image specific metadata for a specific image-asset, this includes formats and sizes.
 
-##withOptions for Images/Photos
+## withOptions for Images/Photos
 `withOptions` define special rules and options when loading an asset.
 If you want to know more about how an asset is loaded. Read below on chapter `About Asset-Loaders`.
 
-###deliveryMode
+### deliveryMode
 Apple's Photo Framework will download images from iCloud on demand, and will generally be very smart about caching and loading resources quickly. You can however define how an Image should be loaded. We have 3 different options in PHImageRequestOptionsDeliveryMode:
 
 ~~~
@@ -560,7 +560,7 @@ while the highQuality version of the resource is downloaded. NOTE: This library 
 `<Image onPartialLoad={//Low-res-callback} onLoad={//High-res-callback} onProgress={//downloadCallback}>`
 
 
-##Video-Assets
+## Video-Assets
 Video assets can be played by using a special branch of the great library `react-native-video`.
 This branch adds the capability of loading Videos from Photos-framework and works
 as expected, but is otherwise the same as the orignal project. So you can play 
@@ -569,7 +569,7 @@ other content, you should just be able to replace the version.
 
 NOTE: Let me and the `react-native-video`-guys know if you want this to go into thir master.
 
-###Install `react-native-video`:
+### Install `react-native-video`:
 `npm install git://github.com/olofd/react-native-video.git#react-native-photos-framework --save && react-native link`
 
 or add : `"react-native-video": "git://github.com/olofd/react-native-video.git#react-native-photos-framework"`  to your package.json and run npm install.
@@ -588,7 +588,7 @@ or add : `"react-native-video": "git://github.com/olofd/react-native-video.git#r
 For more info on supported properties see:
 [react-native-video](https://github.com/olofd/react-native-video/tree/react-native-photos-framework)
 
-##withOptions for Video-Asset.
+## withOptions for Video-Asset.
 `withOptions` define special rules and options when loading an asset.
 (Implemented in [react-native-video)](https://github.com/olofd/react-native-video/tree/react-native-photos-framework)
 
@@ -597,14 +597,14 @@ For more info on supported properties see:
 | deliveryMode | `'automatic'` | `string/enum` | Maps to native [PHVideoRequestOptionsDeliveryMode (Apple's docs)](https://developer.apple.com/reference/photos/phvideorequestoptionsdeliverymode?language=objc).  Possible values : `automatic`, `mediumQuality`, `highQuality`, `fast`|
 | version | `'current'` | `string/enum` | Maps to native [PHVideoRequestOptionsVersion (Apple's docs)](https://developer.apple.com/reference/photos/phvideorequestoptionsversion).  Possible values : `current`, `original`|
 
-###withOptions example usage for video:
+### withOptions example usage for video:
 ~~~js
   const assetWithNewDeliveryMode = asset.withOptions({
       deliveryMode : 'mediumQuality'
   });
 ~~~
 
-###About Asset-Loaders:
+### About Asset-Loaders:
 ~~~
 NOTE about RN's concept of Image loaders:
 RN has a plugin-like system for displaying Images/Photos.
@@ -618,27 +618,27 @@ A ´uri´ that our loader can load is defined in scheme: `photos://` and localId
 URI-example: photos://9509A678-2A07-405F-B3C6-49FD806915CC/L0/001
 ~~~
 
-#Creating Assets:
+# Creating Assets:
 You can use this library to save images and videos to the users iCloud library.
 NOTE: Creating image-assets uses RN's ImageLoader-system behind the scenes and should therefore be able to accept/save any image/photo that you can display in RN.
 
-###Static methods:
+### Static methods:
 
-###createImageAsset
+### createImageAsset
 ~~~js
   RCTCameraRollRNPhotosFrameworkManager.createImageAsset(imageWithUriProp);
 ~~~
 Signature: album.createImageAsset(params) : Promise<Asset>.
 Create a image-asset
 
-###createVideoAsset
+### createVideoAsset
 ~~~js
   RCTCameraRollRNPhotosFrameworkManager.createVideoAsset(videoWithUriProp);
 ~~~
 Signature: album.createVideoAsset(params) : Promise<Asset>.
 Create a image-asset
 
-###createAssets
+### createAssets
 ~~~js
   RCTCameraRollRNPhotosFrameworkManager.createAssets({
     images : [{ uri : 'https://some-uri-local-or-remote.jpg' }],
@@ -651,7 +651,7 @@ Signature: album.createAssets(params) : Promise<array<Asset>>.
 Base function for creating assets. Will return the successfully created new assets.
 If the function returns less Assets then you sent as input, the ones not returned did fail.
 
-#Sending assets to server using AJAX
+# Sending assets to server using AJAX
 
 This library implements the interface `RCTURLRequestHandler`. This means
 it supports sending assets as files with AJAX to your server of choice out of the box.
@@ -674,7 +674,7 @@ xhr.open('POST', 'http://your-server-url/upload');
 xhr.send(body);
 ~~~
 
-###Ajax-Helper.
+### Ajax-Helper.
 
 This library does however include a helper to abstract over a simple upload.
 This helper does promisify and help you to simply sending assets over the wire.
@@ -712,10 +712,10 @@ const ajaxPromise = postAssets(assets, {
 ~~~
 
 
-#Change-Tracking/Observing library changes
+# Change-Tracking/Observing library changes
 You can register listeners for library-change-detection on different levels of the api.
 
-##Library-level
+## Library-level
 You can detect globally if the library changed by:
 ~~~js
 RNPhotosFramework.onLibraryChange(() => {
@@ -724,7 +724,7 @@ RNPhotosFramework.onLibraryChange(() => {
 ~~~
 No details provided
 
-##AlbumQueryResult-level
+## AlbumQueryResult-level
 You can register a listener that receives updates when any of the albums that result contains
 changes (Not if their assets change, only the Albums get those messages, see below).
 You currently receive the following events: `AlbumTitleChanged` (More to come).
@@ -741,7 +741,7 @@ const unsubscribeFunc = albumsFetchResult.onChange((changeDetails, update) => {
 ~~~
 NOTE: If a change occures that affects one of the AlbumQueryResults albums that change will also be passed along to the album.
 
-##Album/Assets-level
+## Album/Assets-level
 To receive change-updates on an album's assets you need to supply at least one of these
 two arguments when calling `getAssets` on that album:
 `trackInsertsAndDeletes : true` or

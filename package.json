@@ -34,7 +34,6 @@
     "event-emitter.js",
     "react-native-photos-framework.podspec"
   ],
-  "dependencies": {},
   "scripts": {
     "postinstall": "node install.js",
     "test": "jest",

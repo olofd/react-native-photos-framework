@@ -144,7 +144,10 @@ static id ObjectOrNull(id object)
             //Found references to this when i Googled.
             [albumDictionary setObject:@"recentlyDeleted" forKey:@"subType"];
         }else {
-            [albumDictionary setObject:[[RCTConvert PHAssetCollectionSubtypeValuesReversed] objectForKey:@(subType)] forKey:@"subType"];
+            NSString *subTypeString = [[RCTConvert PHAssetCollectionSubtypeValuesReversed] objectForKey:@(subType)];
+            if(subTypeString != nil) {
+                [albumDictionary setObject:subTypeString forKey:@"subType"];
+            }
         }
         if(includeMetadata) {
             [albumDictionary setObject:@([RNPFHelpers getTimeSince1970:phAssetCollection.startDate])forKey:@"startDate"];

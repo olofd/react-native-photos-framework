@@ -321,6 +321,10 @@ class RNPhotosFramework {
         return new VideoAsset(nativeObj, options);
     }
   }
+
+  saveAssetToDisk(data) {
+    return RNPFManager.saveAssetToDisk(data);
+  }
 }
 
 export default new RNPhotosFramework();

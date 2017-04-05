@@ -84,7 +84,7 @@ export default class Asset {
             return resolve(NativeApi[nativeMethod]([this.localIdentifier])
                 .then((metadataObjs) => {
                     if (metadataObjs && metadataObjs[this.localIdentifier]) {
-                       Object.assign(this, metadataObjs[this.localIdentifier]);
+                        Object.assign(this, metadataObjs[this.localIdentifier]);
                     }
                     return this;
                 }));
@@ -125,6 +125,19 @@ export default class Asset {
 
     setLocation(latLngObj) {
         return this._updateProperty('location', latLngObj, false);
+    }
+
+    //name and extension are optional
+    saveAssetToDisk(options) {
+        return this.getResourcesMetadata().then((assetResourceMetadata) => {
+            return NativeApi.saveAssetToDisk({
+                ...assetResourceMetadata.resourcesMetadata[0],
+                uri : this.uri,
+                localIdentifier : this.localIdentifier,
+                mediaType : this.mediaType,
+                ...options
+            });
+        });
     }
 
     _updateProperty(property, value, precheckValue) {

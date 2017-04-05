@@ -10,8 +10,9 @@ import {
 } from 'react-native';
 import ImageItem from './ImageItem';
 import RNPhotosFramework from '../react-native-photos-framework';
-import {postAssets} from '../react-native-photos-framework/src/ajax-helper'
+import { postAssets } from '../react-native-photos-framework/src/ajax-helper'
 var simple_timer = require('simple-timer')
+import RNFetchBlob from 'react-native-fetch-blob';
 
 class CameraRollPicker extends Component {
   constructor(props) {
@@ -103,6 +104,21 @@ class CameraRollPicker extends Component {
         },
       })
       .then((data) => {
+
+        console.log(RNFetchBlob.fs.dirs);
+        const dirs = RNFetchBlob.fs.dirs
+        data.assets[0].saveAssetToDisk({
+          dir: RNFetchBlob.fs.dirs.DocumentDir,
+          fileName : "olof.jpg"
+        }).then((uri) => {
+          console.log('finnished');
+          RNFetchBlob.fs.exists(uri)
+            .then((exist) => {
+              console.log(`file ${uri} ${exist ? '' : 'not'} exists`)
+            });
+        });
+
+
         console.log(data.assets.map(x => x.collectionIndex));
         simple_timer.stop('fetch_timer');
         console.log('react-native-photos-framework fetch request took %s milliseconds.', simple_timer.get('fetch_timer').delta)
@@ -135,7 +151,7 @@ class CameraRollPicker extends Component {
   }
 
   render() {
-    var {dataSource} = this.state;
+    var { dataSource } = this.state;
     var {
       scrollRenderAheadDistance,
       initialListSize,
@@ -190,8 +206,8 @@ class CameraRollPicker extends Component {
   }
 
   _renderImage(item) {
-    var {selected} = this.state;
-    var {imageMargin, selectedMarker, imagesPerRow, containerWidth} = this.props;
+    var { selected } = this.state;
+    var { imageMargin, selectedMarker, imagesPerRow, containerWidth } = this.props;
     var uri = item.uri;
     var isSelected = (this._arrayObjectIndexOf(selected, 'uri', uri) >= 0)
       ? true
@@ -240,7 +256,7 @@ class CameraRollPicker extends Component {
   }
 
   _selectImage(image) {
-    var {maximum, imagesPerRow, callback} = this.props;
+    var { maximum, imagesPerRow, callback } = this.props;
 
     var selected = this.state.selected,
       index = this._arrayObjectIndexOf(selected, 'uri', image.uri);

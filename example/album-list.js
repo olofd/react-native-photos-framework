@@ -15,6 +15,7 @@ import { Actions } from 'react-native-router-flux';
 import minusIcon from './images/minus.png';
 //ion-ios-remove-circle
 var simple_timer = require('simple-timer');
+import RNFetchBlob from 'react-native-fetch-blob';
 
 export default class AlbumList extends Component {
 
@@ -108,6 +109,7 @@ export default class AlbumList extends Component {
             includeHiddenAssets: true,
           }
         }, true).then((albumsFetchResult) => {
+
           albumsFetchResult.onChange((changeDetails, update, unsubscribe) => {
             if (update) {
               update((newAlbumFetchResult) => {
@@ -123,7 +125,7 @@ export default class AlbumList extends Component {
         });
       });
 
-    var {width} = Dimensions.get('window');
+    var { width } = Dimensions.get('window');
     const imagesPerRow = 2;
     const imageMargin = 10;
     this._imageSize = (width - (imagesPerRow + 1) * imageMargin) / imagesPerRow;
@@ -238,7 +240,7 @@ export default class AlbumList extends Component {
           onChangeText={(text) => {
             album.pendingTitle = text;
             this.forceUpdate();
-          } }
+          }}
           style={styles.title}
           value={value}></TextInput>
       );

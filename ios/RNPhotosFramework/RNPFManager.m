@@ -341,6 +341,104 @@ RCT_EXPORT_METHOD(getImageAssetsMetadata:(NSArray<NSString *> *)arrayWithLocalId
     }];
 }
 
+RCT_EXPORT_METHOD(saveAssetToDisk:(NSDictionary *)params
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+    NSString *mediaType = [RCTConvert NSString:params[@"mediaType"]];
+    
+    if([mediaType isEqualToString:@"image"]) {
+        NSURLRequest *url = [RCTConvert NSURLRequest:params[@"uri"]];
+        [self.bridge.imageLoader loadImageWithURLRequest:url
+                                                    size:CGSizeZero
+                                                   scale:1
+                                                 clipped:YES
+                                              resizeMode:RCTResizeModeStretch
+                                           progressBlock:^(int64_t progress, int64_t total) {
+                                           }
+                                        partialLoadBlock:nil
+                                         completionBlock:^(NSError *loadError, UIImage *loadedImage) {
+                                             if (loadError) {
+                                                 return reject(@"Could not fetch image", nil, loadError);
+                                             }
+
+                                             NSString *path = [self getFilePathFromParamsObj:params];
+                                             NSString *fullFileName = [path stringByAppendingPathComponent:[self getFileNameFromParamsObj:params]];
+                                             NSData * binaryImageData = UIImagePNGRepresentation(loadedImage);
+
+                                             BOOL success = [binaryImageData writeToFile:fullFileName atomically:YES];
+                                             if(success) {
+                                                 resolve(fullFileName);
+                                             }
+                                           
+                                         }];
+    }else if([mediaType isEqualToString:@"video"]) {
+        
+        PHAsset* asset = [PHAssetsService getAssetsFromArrayOfLocalIdentifiers:@[[RCTConvert NSString:params[@"localIdentifier"]]]].firstObject;
+        
+        PHVideoRequestOptions *options = [PHVideoRequestOptions new];
+        options.version = PHVideoRequestOptionsVersionOriginal;
+        options.networkAccessAllowed = YES;
+        
+        [[PHImageManager defaultManager] requestAVAssetForVideo:asset
+                                                        options:options
+                                                  resultHandler:
+         ^(AVAsset * _Nullable avasset,
+           AVAudioMix * _Nullable audioMix,
+           NSDictionary * _Nullable info)
+        {
+            NSError *error;
+            AVURLAsset *avurlasset = (AVURLAsset*) avasset;
+            
+            // Write to documents folder
+            NSString *path = [self getFilePathFromParamsObj:params];
+            NSString *fullFileName = [path stringByAppendingPathComponent:[self getFileNameFromParamsObj:params]];
+            NSURL *fileURL = [NSURL fileURLWithPath:fullFileName];
+            
+            if ([[NSFileManager defaultManager] isDeletableFileAtPath:fullFileName]) {
+                BOOL success = [[NSFileManager defaultManager] removeItemAtPath:fullFileName error:&error];
+                if (!success) {
+                    NSLog(@"Error removing file at path: %@", error.localizedDescription);
+                }
+            }
+            
+            if ([[NSFileManager defaultManager] copyItemAtURL:avurlasset.URL
+                                                        toURL:fileURL
+                                                        error:&error]) {
+                if(error) {
+                    reject(@"Could not write video to file", nil, error);
+                }else {
+                    resolve(fullFileName);
+                }
+            }
+        }];
+        
+    }
+
+}
+
+-(NSString *)getFileNameFromParamsObj:(NSDictionary *)params {
+    NSString *userDefined = [RCTConvert NSString:params[@"fileName"]];
+    if(userDefined != nil) {
+        return userDefined;
+    }
+    NSString *originalFileName = [RCTConvert NSString:params[@"originalFilename"]];
+    if(originalFileName != nil) {
+        return originalFileName;
+    }
+    return @"Unknown";
+}
+
+-(NSString *)getFilePathFromParamsObj:(NSDictionary *)params {
+    NSString *userDefined = [RCTConvert NSString:params[@"dir"]];
+    if(userDefined != nil) {
+        return userDefined;
+    }
+    NSArray * paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString * basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
+    return basePath;
+}
+
 -(void) getImageAssetsMetaData:(NSMutableArray<PHAsset *> *)assets andResultDict:(NSMutableDictionary<NSString *, NSDictionary *> *)resultDict andCompleteBLock:(nullable void(^)(NSMutableDictionary<NSString *, NSDictionary *> * resultDict))completeBlock {
     
     if(assets.count == 0){

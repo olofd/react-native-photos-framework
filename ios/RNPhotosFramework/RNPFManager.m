@@ -376,12 +376,8 @@ RCT_EXPORT_METHOD(saveAssetToDisk:(NSDictionary *)params
         
         PHAsset* asset = [PHAssetsService getAssetsFromArrayOfLocalIdentifiers:@[[RCTConvert NSString:params[@"localIdentifier"]]]].firstObject;
         
-        PHVideoRequestOptions *options = [PHVideoRequestOptions new];
-        options.version = PHVideoRequestOptionsVersionOriginal;
-        options.networkAccessAllowed = YES;
-        
         [[PHImageManager defaultManager] requestAVAssetForVideo:asset
-                                                        options:options
+                                                        options:[self getVideoRequestOptionsFromParams:params]
                                                   resultHandler:
          ^(AVAsset * _Nullable avasset,
            AVAudioMix * _Nullable audioMix,
@@ -395,7 +391,7 @@ RCT_EXPORT_METHOD(saveAssetToDisk:(NSDictionary *)params
             NSString *fullFileName = [path stringByAppendingPathComponent:[self getFileNameFromParamsObj:params]];
             NSURL *fileURL = [NSURL fileURLWithPath:fullFileName];
             
-            if ([[NSFileManager defaultManager] isDeletableFileAtPath:fullFileName]) {
+            if ([[NSFileManager defaultManager] fileExistsAtPath:fullFileName] && [[NSFileManager defaultManager] isDeletableFileAtPath:fullFileName]) {
                 BOOL success = [[NSFileManager defaultManager] removeItemAtPath:fullFileName error:&error];
                 if (!success) {
                     NSLog(@"Error removing file at path: %@", error.localizedDescription);
@@ -414,7 +410,41 @@ RCT_EXPORT_METHOD(saveAssetToDisk:(NSDictionary *)params
         }];
         
     }
+}
 
+
+-(PHVideoRequestOptions *)getVideoRequestOptionsFromParams:(NSDictionary *)params {
+    PHVideoRequestOptions *videoRequestOptions = [PHVideoRequestOptions new];
+    videoRequestOptions.networkAccessAllowed = YES;
+
+    NSString *deliveryModeQuery = [RCTConvert NSString:params[@"deliveryMode"]];
+    NSString *versionQuery = [RCTConvert NSString:params[@"version"]];
+    
+    PHVideoRequestOptionsVersion version = PHVideoRequestOptionsVersionOriginal;
+    
+    if(versionQuery) {
+        if([versionQuery isEqualToString:@"current"]) {
+            version = PHVideoRequestOptionsVersionCurrent;
+        }
+    }
+    
+    PHVideoRequestOptionsDeliveryMode deliveryMode = PHVideoRequestOptionsDeliveryModeAutomatic;
+    if(deliveryModeQuery != nil) {
+        if([deliveryModeQuery isEqualToString:@"mediumQuality"]) {
+            deliveryMode = PHVideoRequestOptionsDeliveryModeMediumQualityFormat;
+        }
+        else if([deliveryModeQuery isEqualToString:@"highQuality"]) {
+            deliveryMode = PHVideoRequestOptionsDeliveryModeHighQualityFormat;
+        }
+        else if([deliveryModeQuery isEqualToString:@"fast"]) {
+            deliveryMode = PHVideoRequestOptionsDeliveryModeFastFormat;
+        }
+    }
+    videoRequestOptions.deliveryMode = deliveryMode;
+    videoRequestOptions.version = version;
+    
+    
+    return videoRequestOptions;
 }
 
 -(NSString *)getFileNameFromParamsObj:(NSDictionary *)params {
@@ -673,5 +703,16 @@ RCT_EXPORT_METHOD(createAssets:(NSDictionary *)params
         completeBlock(success, error, placeholder.localIdentifier);
     }];
 }
+
+- (NSString *)valueForKey:(NSString *)key
+           fromQueryItems:(NSArray *)queryItems
+{
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"name=%@", key];
+    NSURLQueryItem *queryItem = [[queryItems
+                                  filteredArrayUsingPredicate:predicate]
+                                 firstObject];
+    return queryItem.value;
+}
+
 
 @end

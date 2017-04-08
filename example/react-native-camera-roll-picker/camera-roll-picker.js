@@ -107,9 +107,10 @@ class CameraRollPicker extends Component {
 
         console.log(RNFetchBlob.fs.dirs);
         const dirs = RNFetchBlob.fs.dirs
-        data.assets[0].saveAssetToDisk({
+        data.assets[4].saveAssetToDisk({ 
           dir: RNFetchBlob.fs.dirs.DocumentDir,
-          fileName : "olof.jpg"
+          deliveryMode : 'mediumQuality',
+          version : 'current' 
         }).then((uri) => {
           console.log('finnished');
           RNFetchBlob.fs.exists(uri)

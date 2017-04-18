@@ -138,7 +138,7 @@ export default class Asset {
                 ...options
             });
         });
-    }
+    } 
 
     _updateProperty(property, value, precheckValue) {
         return new Promise((resolve, reject) => {

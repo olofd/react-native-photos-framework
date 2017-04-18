@@ -364,7 +364,7 @@ RCT_EXPORT_METHOD(saveAssetToDisk:(NSDictionary *)params
                                              }
                                              
                                              NSString *path = [self getFilePathFromParamsObj:params];
-
+                                             NSString *fileName = [self getFileNameFromParamsObj:params];
                                              NSDictionary *resizeOptions = [RCTConvert NSDictionary:params[@"resizeOptions"]];
                                              if(resizeOptions != nil) {
                                                  float width = [RCTConvert float:resizeOptions[@"width"]];
@@ -386,7 +386,7 @@ RCT_EXPORT_METHOD(saveAssetToDisk:(NSDictionary *)params
                                                  if(![format isEqualToString:@"JPEG"] || ![format isEqualToString:@"PNG"]) {
                                                      format = @"JPEG";
                                                  }
-                                                 return [ImageResizer createResizedImage:loadedImage width:width height:height format:format quality:quality rotation:rotation outputPath:path andCompleteBLock:^(NSString *error, NSString *path) {
+                                                 return [ImageResizer createResizedImage:loadedImage width:width height:height format:format quality:quality rotation:rotation outputPath:path fileName:fileName andCompleteBLock:^(NSString *error, NSString *path) {
                                                      if(error != nil) {
                                                          return reject(error, nil, nil);
                                                      }
@@ -394,7 +394,7 @@ RCT_EXPORT_METHOD(saveAssetToDisk:(NSDictionary *)params
                                                  }];
                                              }
 
-                                             NSString *fullFileName = [path stringByAppendingPathComponent:[self getFileNameFromParamsObj:params]];
+                                             NSString *fullFileName = [path stringByAppendingPathComponent:fileName];
                                              NSData * binaryImageData = UIImagePNGRepresentation(loadedImage);
 
                                              BOOL success = [binaryImageData writeToFile:fullFileName atomically:YES];

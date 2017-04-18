@@ -9,5 +9,6 @@
                    quality:(float)quality
                   rotation:(float)rotation
                 outputPath:(NSString *)outputPath
+                  fileName:(NSString *)fileName
           andCompleteBLock:(void(^)(NSString *error, NSString *path))completeBlock;
 @end

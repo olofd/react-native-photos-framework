@@ -18,12 +18,11 @@ bool saveImage(NSString * fullPath, UIImage * image, NSString * format, float qu
         return NO;
     }
     
-    NSFileManager* fileManager = [NSFileManager defaultManager];
-    [fileManager createFileAtPath:fullPath contents:data attributes:nil];
+    [data writeToFile:fullPath atomically:YES];
     return YES;
 }
 
-NSString * generateFilePath(NSString * ext, NSString * outputPath)
+NSString * generateFilePath(NSString * ext, NSString *name, NSString * outputPath)
 {
     NSString* directory;
 
@@ -33,8 +32,10 @@ NSString * generateFilePath(NSString * ext, NSString * outputPath)
     } else {
         directory = outputPath;
     }
-
-    NSString* name = [[NSUUID UUID] UUIDString];
+    if(name == nil) {
+        name = [[NSUUID UUID] UUIDString];
+    }
+    name = [[name lastPathComponent] stringByDeletingPathExtension];
     NSString* fullName = [NSString stringWithFormat:@"%@.%@", name, ext];
     NSString* fullPath = [directory stringByAppendingPathComponent:fullName];
 
@@ -81,11 +82,12 @@ UIImage * rotateImage(UIImage *inputImage, float rotationDegrees)
                   quality:(float)quality
                   rotation:(float)rotation
                   outputPath:(NSString *)outputPath
+                  fileName:(NSString *)fileName
                   andCompleteBLock:(void(^)(NSString *error, NSString *path))completeBlock
 
 {
     CGSize newSize = CGSizeMake(width, height);
-    NSString* fullPath = generateFilePath(@"jpg", outputPath);
+    NSString* fullPath = generateFilePath(@"jpg", fileName, outputPath);
 
         // Rotate image if rotation is specified.
         if (0 != (int)rotation) {

@@ -212,6 +212,22 @@ class RNPhotosFramework {
     return RNPFManager.getAssetsResourcesMetadata(assetsLocalIdentifiers);
   }
 
+  updateAssetsWithResoucesMetadata(assets) {
+    return new Promise((resolve, reject) => {
+      const assetsWithoutRoesourceMetaData = assets.filter(asset => asset.resourcesMetadata === undefined);
+      if (assetsWithoutRoesourceMetaData.length) {
+        RNPFManager.getAssetsResourcesMetadata(assetsWithoutRoesourceMetaData.map(asset => asset.localIdentifier)).then((result) => {
+          assetsWithoutRoesourceMetaData.forEach((asset) => {
+            Object.assign(asset, result[asset.localIdentifier]);
+          });
+          resolve(assets);
+        });
+      } else {
+        resolve(assets);
+      }
+    });
+  }
+
   getImageAssetsMetadata(assetsLocalIdentifiers) {
     return RNPFManager.getImageAssetsMetadata(assetsLocalIdentifiers);
   }
@@ -322,8 +338,33 @@ class RNPhotosFramework {
     }
   }
 
-  saveAssetToDisk(data) {
-    return RNPFManager.saveAssetToDisk(data);
+  /*
+      assets,
+      options : {
+        dir : '/path', //optional
+      },
+      generateFileName : (asset, resourceMetadata) => {
+        return 'newFileName';
+      }
+  */
+
+  saveAssetsToDisk(assets, options, generateFileName) {
+    return this.updateAssetsWithResoucesMetadata(assets).then((assets) => {
+      return RNPFManager.saveAssetsToDisk({ 
+        media: assets.map(asset => {
+          const resourceMetadata = asset.resourcesMetadata[0];
+          const fileName = generateFileName !== undefined ? generateFileName(asset, resourceMetadata) : resourceMetadata.originalFilename;
+          return {
+            fileName,
+            ...asset.resourcesMetadata[0],
+            uri: asset.uri,
+            localIdentifier: asset.localIdentifier,
+            mediaType: asset.mediaType,
+          };
+        }),
+        ...options
+      });
+    });
   }
 }
 

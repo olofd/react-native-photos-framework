@@ -15,6 +15,7 @@
 #import "RNPFHelpers.h"
 #import "RNPFFileDownloader.h"
 #import "PHOperationResult.h"
+#import "PHSaveAssetToFileOperationResult.h"
 #import "iDebounce.h"
 #import "PHCache.h"
 
@@ -25,6 +26,13 @@ RCT_EXPORT_MODULE()
 
 NSString *const RNPHotoFrameworkErrorUnableToLoad = @"RNPHOTOSFRAMEWORK_UNABLE_TO_LOAD";
 NSString *const RNPHotoFrameworkErrorUnableToSave = @"RNPHOTOSFRAMEWORK_UNABLE_TO_SAVE";
+
+
+/*
+ Startup And Globals
+ */
+
+#pragma mark - Startup And Globals
 
 - (void)dealloc
 {
@@ -40,7 +48,7 @@ NSString *const RNPHotoFrameworkErrorUnableToSave = @"RNPHOTOSFRAMEWORK_UNABLE_T
 }
 
 - (NSArray<NSString *> *)supportedEvents {
-    return @[@"onCreateAssetsProgress", @"onLibraryChange", @"onObjectChange"];
+    return @[@"onCreateAssetsProgress", @"onSaveAssetsToFileProgress", @"onLibraryChange", @"onObjectChange"];
 }
 
 RCT_EXPORT_METHOD(setAllowsCachingHighQualityImages:(BOOL)allowed)
@@ -67,6 +75,12 @@ RCT_EXPORT_METHOD(startChangeObserving:(RCTPromiseResolveBlock)resolve
     self.changeObserver = [[PHChangeObserver alloc] initWithEventEmitter:self];
 }
 
+/*
+ LibraryAuthorization
+ */
+
+#pragma mark - LibraryAuthorization
+
 RCT_EXPORT_METHOD(authorizationStatus:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
@@ -88,6 +102,13 @@ RCT_EXPORT_METHOD(requestAuthorization:(RCTPromiseResolveBlock)resolve
                   });
     }];
 }
+
+
+/*
+ GetAssets
+ */
+
+#pragma mark - GetAssets
 
 
 RCT_EXPORT_METHOD(getAssets:(NSDictionary *)params
@@ -113,7 +134,7 @@ RCT_EXPORT_METHOD(getAssets:(NSDictionary *)params
     [self prepareAssetsForDisplayWithParams:params andAssets:assets];
     NSInteger assetCount = assetsFetchResult.count;
     BOOL includesLastAsset = assetCount == 0 || endIndex >= (assetCount -1);
-    resolve(@{
+    return resolve(@{
               @"assets" : [PHAssetsService assetsArrayToUriArray:assets andincludeMetadata:includeMetadata andIncludeAssetResourcesMetadata:includeResourcesMetadata],
               @"includesLastAsset" : @(includesLastAsset)
               });
@@ -135,130 +156,11 @@ RCT_EXPORT_METHOD(getAssetsWithIndecies:(NSDictionary *)params
               });
 }
 
-RCT_EXPORT_METHOD(updateAlbumTitle:(NSDictionary *)params
-                  resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject)
-{
-    PHAssetCollection *collection = [PHCollectionService getAssetCollectionForParams:params];
-    NSString *newTitle = [RCTConvert NSString:params[@"newTitle"]];
-    if(newTitle == nil) {
-        return reject(@"You have to provide newTitle-prop to rename album", nil, nil);
-    }
-    if (![collection canPerformEditOperation:PHCollectionEditOperationRename]) {
-        return reject(@"Can't PerformEditOperation", nil, nil);
-    }
-    
-    [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
-        PHAssetCollectionChangeRequest *changeTitlerequest =[PHAssetCollectionChangeRequest changeRequestForAssetCollection:collection];
-        changeTitlerequest.title = newTitle;
-        
-    } completionHandler:^(BOOL success, NSError *error) {
-        if(success) {
-            return resolve(@{ @"success" : @(success) });
-        }else {
-            return reject(@"Error updating title", nil, error);
-        }
-    }];
-}
+/*
+ DeleteAssets
+ */
 
-
-RCT_EXPORT_METHOD(addAssetsToAlbum:(NSDictionary *)params
-                  resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject)
-{
-    PHAssetCollection *assetCollection = [PHCollectionService getAssetCollectionForParams:params];
-    PHFetchResult<PHAsset *> *fetchedAssets = [PHAssetsService getAssetsFromArrayOfLocalIdentifiers:[RCTConvert NSArray:params[@"assets"]]];
-    [PHCollectionService addAssets:fetchedAssets toAssetCollection:assetCollection andCompleteBLock:^(BOOL success, NSError * _Nullable error) {
-        if(success) {
-            return resolve(@{ @"success" : @(success) });
-        }else {
-            return reject(@"Error adding assets to album", nil, error);
-        }
-        
-    }];
-}
-
-RCT_EXPORT_METHOD(removeAssetsFromAlbum:(NSDictionary *)params
-                  resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject)
-{
-    PHAssetCollection *assetCollection = [PHCollectionService getAssetCollectionForParams:params];
-    PHFetchResult<PHAsset *> *fetchedAssets = [PHAssetsService getAssetsFromArrayOfLocalIdentifiers:[RCTConvert NSArray:params[@"assets"]]];
-    [PHCollectionService removeAssets:fetchedAssets fromAssetCollection:assetCollection andCompleteBLock:^(BOOL success, NSError * _Nullable error) {
-        if(success) {
-            return resolve(@{ @"success" : @(success) });
-        }else {
-            return reject(@"Error removing assets from album", nil, error);
-        }
-
-    }];
-}
-
-RCT_EXPORT_METHOD(getAlbums:(NSDictionary *)params
-                  resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject)
-{
-    return resolve([PHCollectionService getAlbums:params]);
-}
-
-RCT_EXPORT_METHOD(stopTracking:(NSString *)cacheKey
-                  resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject)
-{
-    if(cacheKey != nil) {
-        [[PHCache sharedPHCache] removeFetchResultFromCacheWithUUID:cacheKey];
-    }
-    return resolve(@{@"success" : @(YES)});
-}
-
-RCT_EXPORT_METHOD(getAlbumsMany:(NSArray *)params
-                  resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject)
-{
-    NSMutableArray *responseArray = [NSMutableArray new];
-    for(int i = 0; i < params.count;i++) {
-        NSDictionary *albumsQuery = [params objectAtIndex:i];
-        [responseArray addObject:[PHCollectionService getAlbums:albumsQuery]];
-    }
-    return resolve(responseArray);
-}
-
-RCT_EXPORT_METHOD(getAlbumsByTitles:(NSDictionary *)params
-                  resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject)
-{
-    NSArray * albumTitles = [RCTConvert NSArray:params[@"albumTitles"]];
-    if(albumTitles == nil) {
-        return reject(@"albumTitles cannot be null", nil, nil);
-    }
-    PHFetchResult<PHAssetCollection *> * collections = [PHCollectionService getUserAlbumsByTitles:albumTitles withParams:params];
-    resolve([PHCollectionService generateCollectionResponseWithCollections:(PHFetchResult<PHCollection *> *)collections andParams:params]);
-}
-
-RCT_EXPORT_METHOD(createAlbums:(NSArray *)albumTitles
-                  resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject)
-{
-    if(albumTitles == nil) {
-        return reject(@"input array with album-names array<string> cannot be null", nil, nil);
-    }
-    
-    if(albumTitles.count == 0) {
-        return resolve(@[]);
-    }
-    
-    [PHCollectionService createAlbumsWithTitles:albumTitles andCompleteBLock:^(BOOL success, NSError * _Nullable error, NSArray<NSString *> *localIdentifiers) {
-        if(success) {
-            PHFetchResult<PHAssetCollection *> *collections = [PHCollectionService getAlbumsWithLocalIdentifiers:localIdentifiers andParams:nil];
-            
-          NSMutableDictionary *response = [PHCollectionService generateCollectionResponseWithCollections:(PHFetchResult<PHCollection *> *)collections andParams:[NSDictionary dictionaryWithObjectsAndKeys:@"true", @"noCache", nil]];
-            
-            return resolve([response objectForKey:@"albums"]);
-        }else{
-            return reject([NSString stringWithFormat:@"Error creating albumTitles %@", albumTitles], nil, error);
-        }
-    }];
-}
+#pragma mark - DeleteAssets
 
 
 RCT_EXPORT_METHOD(deleteAssets:(NSArray *)localIdentifiers
@@ -278,26 +180,12 @@ RCT_EXPORT_METHOD(deleteAssets:(NSArray *)localIdentifiers
     
 }
 
-RCT_EXPORT_METHOD(deleteAlbums:(NSArray *)albumsLocalIdentifiers
-                  resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject)
-{
-    if(albumsLocalIdentifiers == nil) {
-        return reject(@"input array with album-localIdentifiers array<string> cannot be null", nil, nil);
-    }
-    
-    if(albumsLocalIdentifiers.count == 0) {
-        return resolve(@[]);
-    }
-    
-    [PHCollectionService deleteAlbumsWithLocalIdentifers:albumsLocalIdentifiers andCompleteBLock:^(BOOL success, NSError * _Nullable error) {
-        if(success) {
-            return resolve(@{@"success" : @(success)});
-        }else{
-            return reject(@"Error deleting albums", nil, error);
-        }
-    }];
-}
+
+/*
+ GetAssetMetaData
+ */
+
+#pragma mark - GetAssetMetaData
 
 
 RCT_EXPORT_METHOD(getAssetsMetadata:(NSArray<NSString *> *)arrayWithLocalIdentifiers
@@ -325,6 +213,7 @@ RCT_EXPORT_METHOD(getAssetsResourcesMetadata:(NSArray<NSString *> *)arrayWithLoc
     resolve(dictWithMetadataObjs);
 }
 
+
 RCT_EXPORT_METHOD(getImageAssetsMetadata:(NSArray<NSString *> *)arrayWithLocalIdentifiers
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
@@ -341,133 +230,6 @@ RCT_EXPORT_METHOD(getImageAssetsMetadata:(NSArray<NSString *> *)arrayWithLocalId
     }];
 }
 
-RCT_EXPORT_METHOD(saveAssetToDisk:(NSDictionary *)params
-                  resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject)
-{
-    NSString *mediaType = [RCTConvert NSString:params[@"mediaType"]];
-    
-    if([mediaType isEqualToString:@"image"]) {
-        NSURLRequest *url = [RCTConvert NSURLRequest:params[@"uri"]];
-        [self.bridge.imageLoader loadImageWithURLRequest:url
-                                                    size:CGSizeZero
-                                                   scale:1
-                                                 clipped:YES
-                                              resizeMode:RCTResizeModeStretch
-                                           progressBlock:^(int64_t progress, int64_t total) {
-                                           }
-                                        partialLoadBlock:nil
-                                         completionBlock:^(NSError *loadError, UIImage *loadedImage) {
-                                             if (loadError) {
-                                                 return reject(@"Could not fetch image", nil, loadError);
-                                             }
-
-                                             NSString *path = [self getFilePathFromParamsObj:params];
-                                             NSString *fullFileName = [path stringByAppendingPathComponent:[self getFileNameFromParamsObj:params]];
-                                             NSData * binaryImageData = UIImagePNGRepresentation(loadedImage);
-
-                                             BOOL success = [binaryImageData writeToFile:fullFileName atomically:YES];
-                                             if(success) {
-                                                 resolve(fullFileName);
-                                             }
-                                           
-                                         }];
-    }else if([mediaType isEqualToString:@"video"]) {
-        
-        PHAsset* asset = [PHAssetsService getAssetsFromArrayOfLocalIdentifiers:@[[RCTConvert NSString:params[@"localIdentifier"]]]].firstObject;
-        
-        [[PHImageManager defaultManager] requestAVAssetForVideo:asset
-                                                        options:[self getVideoRequestOptionsFromParams:params]
-                                                  resultHandler:
-         ^(AVAsset * _Nullable avasset,
-           AVAudioMix * _Nullable audioMix,
-           NSDictionary * _Nullable info)
-        {
-            NSError *error;
-            AVURLAsset *avurlasset = (AVURLAsset*) avasset;
-            
-            // Write to documents folder
-            NSString *path = [self getFilePathFromParamsObj:params];
-            NSString *fullFileName = [path stringByAppendingPathComponent:[self getFileNameFromParamsObj:params]];
-            NSURL *fileURL = [NSURL fileURLWithPath:fullFileName];
-            
-            if ([[NSFileManager defaultManager] fileExistsAtPath:fullFileName] && [[NSFileManager defaultManager] isDeletableFileAtPath:fullFileName]) {
-                BOOL success = [[NSFileManager defaultManager] removeItemAtPath:fullFileName error:&error];
-                if (!success) {
-                    NSLog(@"Error removing file at path: %@", error.localizedDescription);
-                }
-            }
-            
-            if ([[NSFileManager defaultManager] copyItemAtURL:avurlasset.URL
-                                                        toURL:fileURL
-                                                        error:&error]) {
-                if(error) {
-                    reject(@"Could not write video to file", nil, error);
-                }else {
-                    resolve(fullFileName);
-                }
-            }
-        }];
-        
-    }
-}
-
-
--(PHVideoRequestOptions *)getVideoRequestOptionsFromParams:(NSDictionary *)params {
-    PHVideoRequestOptions *videoRequestOptions = [PHVideoRequestOptions new];
-    videoRequestOptions.networkAccessAllowed = YES;
-
-    NSString *deliveryModeQuery = [RCTConvert NSString:params[@"deliveryMode"]];
-    NSString *versionQuery = [RCTConvert NSString:params[@"version"]];
-    
-    PHVideoRequestOptionsVersion version = PHVideoRequestOptionsVersionOriginal;
-    
-    if(versionQuery) {
-        if([versionQuery isEqualToString:@"current"]) {
-            version = PHVideoRequestOptionsVersionCurrent;
-        }
-    }
-    
-    PHVideoRequestOptionsDeliveryMode deliveryMode = PHVideoRequestOptionsDeliveryModeAutomatic;
-    if(deliveryModeQuery != nil) {
-        if([deliveryModeQuery isEqualToString:@"mediumQuality"]) {
-            deliveryMode = PHVideoRequestOptionsDeliveryModeMediumQualityFormat;
-        }
-        else if([deliveryModeQuery isEqualToString:@"highQuality"]) {
-            deliveryMode = PHVideoRequestOptionsDeliveryModeHighQualityFormat;
-        }
-        else if([deliveryModeQuery isEqualToString:@"fast"]) {
-            deliveryMode = PHVideoRequestOptionsDeliveryModeFastFormat;
-        }
-    }
-    videoRequestOptions.deliveryMode = deliveryMode;
-    videoRequestOptions.version = version;
-    
-    
-    return videoRequestOptions;
-}
-
--(NSString *)getFileNameFromParamsObj:(NSDictionary *)params {
-    NSString *userDefined = [RCTConvert NSString:params[@"fileName"]];
-    if(userDefined != nil) {
-        return userDefined;
-    }
-    NSString *originalFileName = [RCTConvert NSString:params[@"originalFilename"]];
-    if(originalFileName != nil) {
-        return originalFileName;
-    }
-    return @"Unknown";
-}
-
--(NSString *)getFilePathFromParamsObj:(NSDictionary *)params {
-    NSString *userDefined = [RCTConvert NSString:params[@"dir"]];
-    if(userDefined != nil) {
-        return userDefined;
-    }
-    NSArray * paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString * basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
-    return basePath;
-}
 
 -(void) getImageAssetsMetaData:(NSMutableArray<PHAsset *> *)assets andResultDict:(NSMutableDictionary<NSString *, NSDictionary *> *)resultDict andCompleteBLock:(nullable void(^)(NSMutableDictionary<NSString *, NSDictionary *> * resultDict))completeBlock {
     
@@ -487,6 +249,12 @@ RCT_EXPORT_METHOD(saveAssetToDisk:(NSDictionary *)params
     }
 }
 
+/*
+    UPDATEASSETS
+ */
+
+
+#pragma mark - UpdateAssets
 
 RCT_EXPORT_METHOD(updateAssets:(NSArray *)arrayWithLocalIdentifiers andUpdateObjs:(NSDictionary *)updateObjs
                   resolve:(RCTPromiseResolveBlock)resolve
@@ -535,23 +303,177 @@ RCT_EXPORT_METHOD(updateAssets:(NSArray *)arrayWithLocalIdentifiers andUpdateObj
     }
 }
 
--(void) prepareAssetsForDisplayWithParams:(NSDictionary *)params andAssets:(NSArray<PHAssetWithCollectionIndex *> *)assets {
-    NSString *prepareProp = params[@"prepareForSizeDisplay"];
-    if(prepareProp != nil) {
-        CGSize prepareForSizeDisplay = [RCTConvert CGSize:params[@"prepareForSizeDisplay"]];
-        CGFloat prepareScale = [RCTConvert CGFloat:params[@"prepareScale"]];
-        PHCachingImageManager *cacheManager = [PHCachingImageManagerInstance sharedCachingManager];
-        
-        if(prepareForSizeDisplay.width != 0 && prepareForSizeDisplay.height != 0) {
-            if(prepareScale < 0.1) {
-                prepareScale = 2;
-            }            
-            [cacheManager startCachingImagesForAssets:[PHAssetWithCollectionIndex toAssetsArray:assets] targetSize:CGSizeApplyAffineTransform(prepareForSizeDisplay, CGAffineTransformMakeScale(prepareScale, prepareScale)) contentMode:PHImageContentModeAspectFill options:nil];
+/*
+ SAVEASSETSTOFILE
+ */
+
+
+#pragma mark - SaveAssetsToFile
+
+RCT_EXPORT_METHOD(saveAssetsToDisk:(NSDictionary *)params
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+    
+    NSArray<PHSaveAssetFileRequest *> *media = [RCTConvert PHSaveAssetFileRequestArray:params[@"media"]];
+    if(media == nil || media.count == 0) {
+        return resolve(@{@"files" : @[], @"success" : @((BOOL)true)});
+    }
+    
+    NSMutableArray *arrayWithProgress;
+    
+    NSString *progressEventId = [RCTConvert NSString:params[@"onCreateAssetsProgress"]];
+    if(progressEventId != nil) {
+        arrayWithProgress = [NSMutableArray arrayWithCapacity:media.count];
+        for(int i = 0; i < media.count;i++) {
+            PHSaveAssetFileRequest *m = [media objectAtIndex:i];
+            [arrayWithProgress addObject:[NSMutableDictionary dictionaryWithObjectsAndKeys:@(0), m.uriString, nil]];
         }
     }
+    
+    [self saveAssetsToFileMany:media andCompleteBLock:^(NSMutableArray<PHSaveAssetToFileOperationResult *> * _Nonnull results) {
+        if(results == nil) {
+            return reject(@"SOmething went wrong, result was nil", nil, nil);
+        }
+        NSMutableArray *arrayResponse = [[NSMutableArray alloc] initWithCapacity:results.count];
+        for(int i = 0; i < results.count; i ++) {
+            PHSaveAssetToFileOperationResult *fileResult = [results objectAtIndex:i];
+            [arrayResponse addObject:@{
+                                       @"localIdentifier" :fileResult.localIdentifier,
+                                       @"fileUrl" : fileResult.fileUrl,
+                                       @"success" : @(fileResult.success),
+                                       @"error" : fileResult.error != nil ? [fileResult.error localizedDescription] : [NSNull null]
+                                       }];
+        }
+        return resolve(arrayResponse);
+        
+        
+    } andProgressBlock:^(NSString * _Nonnull uri, int index, int64_t progress, int64_t total) {
+        @synchronized(arrayWithProgress)
+        {
+            NSMutableDictionary *dictForEntry = [arrayWithProgress objectAtIndex:index];
+            int64_t currentProgress = [[dictForEntry objectForKey:uri] integerValue];
+            currentProgress = ((float)progress / total) * 100;
+            [dictForEntry setObject:@(currentProgress) forKey:uri];
+        }
+        [iDebounce debounce:^{
+            dispatch_async(self.currentQueue, ^{
+                [self sendEventWithName:@"onSaveAssetsToFileProgress" body:@{@"id" : progressEventId, @"data" : arrayWithProgress}];
+            });
+        } withIdentifier:progressEventId wait:0.050];
+        
+    }];
+}
+
+-(void) saveAssetsToFileMany:(NSArray<PHSaveAssetFileRequest *> *)saveFileRequests
+        andCompleteBLock:(assetsFileSaveCompleteBlock)completeBlock andProgressBlock:(fileDownloadExtendedPrograessBlock)progressBlock {
+    
+    __block NSMutableArray<PHSaveAssetToFileOperationResult *> *resultArray = [[NSMutableArray alloc] initWithCapacity:saveFileRequests.count];
+    NSOperationQueue *myOQ = [[NSOperationQueue alloc] init];
+    [myOQ setMaxConcurrentOperationCount:5];
+    assetFileSaveOperationBlock onTaskFinnished = ^void(BOOL success, NSError *__nullable error, NSString  * __nullable localIdentifier, NSString  * __nullable fileUrl) {
+        if(!myOQ.isSuspended) {
+            @synchronized(resultArray)
+            {
+                [resultArray addObject:[[PHSaveAssetToFileOperationResult alloc] initWithLocalIdentifier:localIdentifier fileUrl:fileUrl andSuccess:success andError:error]];
+                if(resultArray.count == saveFileRequests.count) {
+                    [myOQ setSuspended:YES];
+                    [myOQ cancelAllOperations];
+                    completeBlock(resultArray);
+                }
+            }
+        }
+    };
+    for(int i = 0; i < saveFileRequests.count;i++) {
+        __block PHSaveAssetFileRequest *currentRequest = [saveFileRequests objectAtIndex:i];
+        [myOQ addOperationWithBlock:^(void){
+            if([currentRequest.mediaType isEqualToString:@"image"]) {
+                [self writeImageToFile:currentRequest andCompleteBLock:onTaskFinnished andProgressBlock:^(int64_t progress, int64_t total) {
+                    progressBlock(currentRequest.uriString, i, progress, total);
+                }];
+            }else if([currentRequest.mediaType isEqualToString:@"video"]) {
+                [self writeVideoToFile:currentRequest andCompleteBLock:onTaskFinnished andProgressBlock:^(NSString * _Nonnull uri, int index, int64_t progress, int64_t total) {
+                    progressBlock(currentRequest.uriString, i, progress, total);
+                }];
+            }
+        }];
+    }
+}
+
+-(void) writeImageToFile:(PHSaveAssetFileRequest *)fileRequest andCompleteBLock:(assetFileSaveOperationBlock)completeBlock andProgressBlock:(fileDownloadProgressBlock)progressBlock {
+    [self.bridge.imageLoader loadImageWithURLRequest:fileRequest.uri
+                                                size:CGSizeZero
+                                               scale:1
+                                             clipped:YES
+                                          resizeMode:RCTResizeModeStretch
+                                       progressBlock:^(int64_t progress, int64_t total) {
+                                           progressBlock(progress, total);
+                                       }
+                                    partialLoadBlock:nil
+                                     completionBlock:^(NSError *error, UIImage *loadedImage) {
+                                         if (error) {
+                                             return completeBlock(NO, error, fileRequest.localIdentifier, nil);
+                                         }
+                                         
+                                         NSString *fullFileName = [fileRequest.dir stringByAppendingPathComponent:fileRequest.fileName];
+
+                                         NSData * binaryImageData = UIImagePNGRepresentation(loadedImage);
+                                         
+                                         BOOL success = [binaryImageData writeToFile:fullFileName atomically:YES];
+                                         if(success) {
+                                             return completeBlock(YES, nil, fileRequest.localIdentifier, fullFileName);
+                                         }
+                                         
+                                     }];
 
 }
 
+-(void) writeVideoToFile:(PHSaveAssetFileRequest *)fileRequest andCompleteBLock:(assetFileSaveOperationBlock)completeBlock andProgressBlock:(fileDownloadExtendedPrograessBlock)progressBlock {
+    
+    PHAsset* asset = [PHAssetsService getAssetsFromArrayOfLocalIdentifiers:@[fileRequest.localIdentifier]].firstObject;
+    
+    fileRequest.videoRequestOptions.progressHandler = ^(double progress, NSError * _Nullable error, BOOL * _Nonnull stop, NSDictionary * _Nullable info) {
+        NSLog(@"iCloud %f", progress);
+    };
+    
+    [[PHImageManager defaultManager] requestAVAssetForVideo:asset
+                                                    options:fileRequest.videoRequestOptions
+                                              resultHandler:
+     ^(AVAsset * _Nullable avasset,
+       AVAudioMix * _Nullable audioMix,
+       NSDictionary * _Nullable info)
+     {
+         NSError *error;
+         AVURLAsset *avurlasset = (AVURLAsset*) avasset;
+         
+         __block NSString *fullFileName = [fileRequest.dir stringByAppendingPathComponent:fileRequest.fileName];
+         NSURL *fileURL = [NSURL fileURLWithPath:fullFileName];
+         
+         if ([[NSFileManager defaultManager] fileExistsAtPath:fullFileName] && [[NSFileManager defaultManager] isDeletableFileAtPath:fullFileName]) {
+             BOOL success = [[NSFileManager defaultManager] removeItemAtPath:fullFileName error:&error];
+             if (!success) {
+                 NSLog(@"Error removing file at path: %@", error.localizedDescription);
+             }
+         }
+         
+         if ([[NSFileManager defaultManager] copyItemAtURL:avurlasset.URL
+                                                     toURL:fileURL
+                                                     error:&error]) {
+             if(error) {
+                 return completeBlock(NO, error, fileRequest.localIdentifier, nil);
+             }else {
+                 return completeBlock(YES, nil, fileRequest.localIdentifier, fullFileName);
+             }
+         }
+     }];
+}
+
+/*
+ CREATEASSETS
+ */
+
+
+#pragma mark - CreateAssets
 RCT_EXPORT_METHOD(createAssets:(NSDictionary *)params
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
@@ -602,7 +524,6 @@ RCT_EXPORT_METHOD(createAssets:(NSDictionary *)params
             }
             [iDebounce debounce:^{
                 dispatch_async(self.currentQueue, ^{
-                    NSLog(@"Sending");
                     [self sendEventWithName:@"onCreateAssetsProgress" body:@{@"id" : progressEventId, @"data" : arrayWithProgress}];
                 });
             } withIdentifier:progressEventId wait:0.050];
@@ -613,7 +534,7 @@ RCT_EXPORT_METHOD(createAssets:(NSDictionary *)params
 -(void) saveMediaMany:(NSArray<PHSaveAssetRequest *> *)requests andCollectionLocalIdentifier:(NSString *)collectionLocalIdentifier andCompleteBLock:(createAssetsCompleteBlock)completeBlock andProgressBlock:(fileDownloadExtendedPrograessBlock)progressBlock {
     
     NSMutableArray<PHOperationResult *> *resultArray = [[NSMutableArray alloc] initWithCapacity:requests.count];
-    NSOperationQueue *myOQ=[[NSOperationQueue alloc] init];
+    NSOperationQueue *myOQ = [[NSOperationQueue alloc] init];
     [myOQ setMaxConcurrentOperationCount:5];
     assetOperationBlock onTaskFinnished = ^void(BOOL success, NSError *__nullable error, NSString  * __nullable localIdentifier) {
         if(!myOQ.isSuspended) {
@@ -704,14 +625,190 @@ RCT_EXPORT_METHOD(createAssets:(NSDictionary *)params
     }];
 }
 
-- (NSString *)valueForKey:(NSString *)key
-           fromQueryItems:(NSArray *)queryItems
+/*
+ GetAlbums
+ */
+
+#pragma mark - GetAlbums
+
+RCT_EXPORT_METHOD(getAlbums:(NSDictionary *)params
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
 {
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"name=%@", key];
-    NSURLQueryItem *queryItem = [[queryItems
-                                  filteredArrayUsingPredicate:predicate]
-                                 firstObject];
-    return queryItem.value;
+    return resolve([PHCollectionService getAlbums:params]);
+}
+
+RCT_EXPORT_METHOD(stopTracking:(NSString *)cacheKey
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+    if(cacheKey != nil) {
+        [[PHCache sharedPHCache] removeFetchResultFromCacheWithUUID:cacheKey];
+    }
+    return resolve(@{@"success" : @(YES)});
+}
+
+RCT_EXPORT_METHOD(getAlbumsMany:(NSArray *)params
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+    NSMutableArray *responseArray = [NSMutableArray new];
+    for(int i = 0; i < params.count;i++) {
+        NSDictionary *albumsQuery = [params objectAtIndex:i];
+        [responseArray addObject:[PHCollectionService getAlbums:albumsQuery]];
+    }
+    return resolve(responseArray);
+}
+
+RCT_EXPORT_METHOD(getAlbumsByTitles:(NSDictionary *)params
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+    NSArray * albumTitles = [RCTConvert NSArray:params[@"albumTitles"]];
+    if(albumTitles == nil) {
+        return reject(@"albumTitles cannot be null", nil, nil);
+    }
+    PHFetchResult<PHAssetCollection *> * collections = [PHCollectionService getUserAlbumsByTitles:albumTitles withParams:params];
+    resolve([PHCollectionService generateCollectionResponseWithCollections:(PHFetchResult<PHCollection *> *)collections andParams:params]);
+}
+
+/*
+ CreateAlbums
+ */
+
+#pragma mark - CreateAlbums
+
+RCT_EXPORT_METHOD(createAlbums:(NSArray *)albumTitles
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+    if(albumTitles == nil) {
+        return reject(@"input array with album-names array<string> cannot be null", nil, nil);
+    }
+    
+    if(albumTitles.count == 0) {
+        return resolve(@[]);
+    }
+    
+    [PHCollectionService createAlbumsWithTitles:albumTitles andCompleteBLock:^(BOOL success, NSError * _Nullable error, NSArray<NSString *> *localIdentifiers) {
+        if(success) {
+            PHFetchResult<PHAssetCollection *> *collections = [PHCollectionService getAlbumsWithLocalIdentifiers:localIdentifiers andParams:nil];
+            
+            NSMutableDictionary *response = [PHCollectionService generateCollectionResponseWithCollections:(PHFetchResult<PHCollection *> *)collections andParams:[NSDictionary dictionaryWithObjectsAndKeys:@"true", @"noCache", nil]];
+            
+            return resolve([response objectForKey:@"albums"]);
+        }else{
+            return reject([NSString stringWithFormat:@"Error creating albumTitles %@", albumTitles], nil, error);
+        }
+    }];
+}
+
+/*
+ DeleteAlbums
+ */
+
+#pragma mark - DeleteAlbums
+
+RCT_EXPORT_METHOD(deleteAlbums:(NSArray *)albumsLocalIdentifiers
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+    if(albumsLocalIdentifiers == nil) {
+        return reject(@"input array with album-localIdentifiers array<string> cannot be null", nil, nil);
+    }
+    
+    if(albumsLocalIdentifiers.count == 0) {
+        return resolve(@[]);
+    }
+    
+    [PHCollectionService deleteAlbumsWithLocalIdentifers:albumsLocalIdentifiers andCompleteBLock:^(BOOL success, NSError * _Nullable error) {
+        if(success) {
+            return resolve(@{@"success" : @(success)});
+        }else{
+            return reject(@"Error deleting albums", nil, error);
+        }
+    }];
+}
+
+/*
+ UpdateAlbum
+ */
+
+#pragma mark - UpdateAlbum
+
+RCT_EXPORT_METHOD(updateAlbumTitle:(NSDictionary *)params
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+    PHAssetCollection *collection = [PHCollectionService getAssetCollectionForParams:params];
+    NSString *newTitle = [RCTConvert NSString:params[@"newTitle"]];
+    if(newTitle == nil) {
+        return reject(@"You have to provide newTitle-prop to rename album", nil, nil);
+    }
+    if (![collection canPerformEditOperation:PHCollectionEditOperationRename]) {
+        return reject(@"Can't PerformEditOperation", nil, nil);
+    }
+    
+    [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+        PHAssetCollectionChangeRequest *changeTitlerequest =[PHAssetCollectionChangeRequest changeRequestForAssetCollection:collection];
+        changeTitlerequest.title = newTitle;
+        
+    } completionHandler:^(BOOL success, NSError *error) {
+        if(success) {
+            return resolve(@{ @"success" : @(success) });
+        }else {
+            return reject(@"Error updating title", nil, error);
+        }
+    }];
+}
+
+RCT_EXPORT_METHOD(addAssetsToAlbum:(NSDictionary *)params
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+    PHAssetCollection *assetCollection = [PHCollectionService getAssetCollectionForParams:params];
+    PHFetchResult<PHAsset *> *fetchedAssets = [PHAssetsService getAssetsFromArrayOfLocalIdentifiers:[RCTConvert NSArray:params[@"assets"]]];
+    [PHCollectionService addAssets:fetchedAssets toAssetCollection:assetCollection andCompleteBLock:^(BOOL success, NSError * _Nullable error) {
+        if(success) {
+            return resolve(@{ @"success" : @(success) });
+        }else {
+            return reject(@"Error adding assets to album", nil, error);
+        }
+        
+    }];
+}
+
+RCT_EXPORT_METHOD(removeAssetsFromAlbum:(NSDictionary *)params
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+    PHAssetCollection *assetCollection = [PHCollectionService getAssetCollectionForParams:params];
+    PHFetchResult<PHAsset *> *fetchedAssets = [PHAssetsService getAssetsFromArrayOfLocalIdentifiers:[RCTConvert NSArray:params[@"assets"]]];
+    [PHCollectionService removeAssets:fetchedAssets fromAssetCollection:assetCollection andCompleteBLock:^(BOOL success, NSError * _Nullable error) {
+        if(success) {
+            return resolve(@{ @"success" : @(success) });
+        }else {
+            return reject(@"Error removing assets from album", nil, error);
+        }
+        
+    }];
+}
+
+#pragma mark - Helpers
+-(void) prepareAssetsForDisplayWithParams:(NSDictionary *)params andAssets:(NSArray<PHAssetWithCollectionIndex *> *)assets {
+    NSString *prepareProp = params[@"prepareForSizeDisplay"];
+    if(prepareProp != nil) {
+        CGSize prepareForSizeDisplay = [RCTConvert CGSize:params[@"prepareForSizeDisplay"]];
+        CGFloat prepareScale = [RCTConvert CGFloat:params[@"prepareScale"]];
+        PHCachingImageManager *cacheManager = [PHCachingImageManagerInstance sharedCachingManager];
+        
+        if(prepareForSizeDisplay.width != 0 && prepareForSizeDisplay.height != 0) {
+            if(prepareScale < 0.1) {
+                prepareScale = 2;
+            }
+            [cacheManager startCachingImagesForAssets:[PHAssetWithCollectionIndex toAssetsArray:assets] targetSize:CGSizeApplyAffineTransform(prepareForSizeDisplay, CGAffineTransformMakeScale(prepareScale, prepareScale)) contentMode:PHImageContentModeAspectFill options:nil];
+        }
+    }
 }
 
 

@@ -79,5 +79,38 @@
     return (NSString*)[NSNull null];
 }
 
++(PHVideoRequestOptions *)getVideoRequestOptionsFromParams:(NSDictionary *)params {
+    PHVideoRequestOptions *videoRequestOptions = [PHVideoRequestOptions new];
+    videoRequestOptions.networkAccessAllowed = YES;
+    
+    NSString *deliveryModeQuery = [RCTConvert NSString:params[@"deliveryMode"]];
+    NSString *versionQuery = [RCTConvert NSString:params[@"version"]];
+    
+    PHVideoRequestOptionsVersion version = PHVideoRequestOptionsVersionOriginal;
+    
+    if(versionQuery) {
+        if([versionQuery isEqualToString:@"current"]) {
+            version = PHVideoRequestOptionsVersionCurrent;
+        }
+    }
+    
+    PHVideoRequestOptionsDeliveryMode deliveryMode = PHVideoRequestOptionsDeliveryModeAutomatic;
+    if(deliveryModeQuery != nil) {
+        if([deliveryModeQuery isEqualToString:@"mediumQuality"]) {
+            deliveryMode = PHVideoRequestOptionsDeliveryModeMediumQualityFormat;
+        }
+        else if([deliveryModeQuery isEqualToString:@"highQuality"]) {
+            deliveryMode = PHVideoRequestOptionsDeliveryModeHighQualityFormat;
+        }
+        else if([deliveryModeQuery isEqualToString:@"fast"]) {
+            deliveryMode = PHVideoRequestOptionsDeliveryModeFastFormat;
+        }
+    }
+    videoRequestOptions.deliveryMode = deliveryMode;
+    videoRequestOptions.version = version;
+    
+    return videoRequestOptions;
+}
+
 
 @end

@@ -70,9 +70,12 @@
         if([assetObj isKindOfClass:[PHAsset class]]) {
             asset = assetObj;
         }else {
+            NSLog(@"Before send");
             PHAssetWithCollectionIndex *assetWithCollectionIndex = assetObj;
             asset = assetWithCollectionIndex.asset;
             assetIndex = assetWithCollectionIndex.collectionIndex;
+            NSLog(@"After send");
+
         }
 
         NSMutableDictionary *responseDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:
@@ -163,9 +166,8 @@
 
 +(NSMutableArray<PHAssetWithCollectionIndex*> *) getAssetsForFetchResult:(PHFetchResult *)assetsFetchResult startIndex:(int)startIndex endIndex:(int)endIndex assetDisplayStartToEnd:(BOOL)assetDisplayStartToEnd andAssetDisplayBottomUp:(BOOL)assetDisplayBottomUp {
 
-    NSMutableArray<PHAssetWithCollectionIndex *> *assets = [NSMutableArray new];
     int assetCount = (int)assetsFetchResult.count;
-
+    NS_VALID_UNTIL_END_OF_SCOPE NSMutableArray *assets = [[NSMutableArray alloc] init];
     if(assetCount != 0) {
 
         NSIndexSet *indexSet = [self getIndexSetForAssetEnumerationWithAssetCount:(int)assetsFetchResult.count startIndex:startIndex endIndex:endIndex assetDisplayStartToEnd:assetDisplayStartToEnd];
@@ -176,7 +178,8 @@
         NSEnumerationOptions enumerationOptions = assetDisplayStartToEnd ? enumerationOptionsStartToEnd : enumerationOptionsEndToStart;
 
         [assetsFetchResult enumerateObjectsAtIndexes:indexSet options:enumerationOptions usingBlock:^(PHAsset *asset, NSUInteger idx, BOOL * _Nonnull stop) {
-            [assets addObject:[[PHAssetWithCollectionIndex alloc] initWithAsset:asset andCollectionIndex:@(idx)]];
+             NS_VALID_UNTIL_END_OF_SCOPE PHAssetWithCollectionIndex *assetCollectionIndex = [[PHAssetWithCollectionIndex alloc] initWithAsset:asset andCollectionIndex:@(idx)];
+            [assets addObject:assetCollectionIndex];
         }];
     }
 

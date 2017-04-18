@@ -1,6 +1,6 @@
 #import <React/RCTConvert.h>
 #import "RCTConvert+RNPhotosFramework.h"
-#import "PHSaveAssetRequest.h"
+
 @import Photos;
 @implementation RCTConvert(ReactNativePhotosFramework)
 
@@ -185,6 +185,37 @@ RCT_ENUM_CONVERTER_WITH_REVERSED(PHAssetResourceType, (@{
     NSMutableArray *outputArray = [NSMutableArray arrayWithCapacity:inputArray.count];
     for(int i = 0; i < inputArray.count; i++) {
         [outputArray addObject:[self PHSaveAssetRequest:[inputArray objectAtIndex:i]]];
+    }
+    return outputArray;
+}
+
+
++(PHSaveAssetFileRequest *)PHSaveAssetFileRequest:(id)json {
+    PHSaveAssetFileRequest *assetRequest = [PHSaveAssetFileRequest new];
+    assetRequest.uriString = [RCTConvert NSString:json[@"uri"]];
+    assetRequest.uri = [RCTConvert NSURLRequest:json[@"uri"]];
+    assetRequest.localIdentifier = [RCTConvert NSString:json[@"localIdentifier"]];
+    assetRequest.mediaType = [RCTConvert NSString:json[@"mediaType"]];
+    assetRequest.fileName = [RCTConvert NSString:json[@"fileName"]];
+    assetRequest.dir = [RCTConvert NSString:json[@"dir"]];
+    if(assetRequest.dir == nil) {
+        NSArray * paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        NSString * basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
+        assetRequest.dir = basePath;
+    }
+    
+    if([assetRequest.mediaType isEqualToString:@"video"]) {
+        assetRequest.videoRequestOptions = [RNPFHelpers getVideoRequestOptionsFromParams:json];
+    }
+
+    return assetRequest;
+}
+
++(NSArray<PHSaveAssetFileRequest *> *)PHSaveAssetFileRequestArray:(id)json {
+    NSArray *inputArray = [RCTConvert NSArray:json];
+    NSMutableArray *outputArray = [NSMutableArray arrayWithCapacity:inputArray.count];
+    for(int i = 0; i < inputArray.count; i++) {
+        [outputArray addObject:[self PHSaveAssetFileRequest:[inputArray objectAtIndex:i]]];
     }
     return outputArray;
 }

@@ -388,7 +388,7 @@ RCT_EXPORT_METHOD(saveAssetToDisk:(NSDictionary *)params
                                                  }
                                                  return [ImageResizer createResizedImage:loadedImage width:width height:height format:format quality:quality rotation:rotation outputPath:path andCompleteBLock:^(NSString *error, NSString *path) {
                                                      if(error != nil) {
-                                                         reject(error, nil, nil);
+                                                         return reject(error, nil, nil);
                                                      }
                                                      return resolve(path);
                                                  }];
@@ -399,7 +399,7 @@ RCT_EXPORT_METHOD(saveAssetToDisk:(NSDictionary *)params
 
                                              BOOL success = [binaryImageData writeToFile:fullFileName atomically:YES];
                                              if(success) {
-                                                 resolve(fullFileName);
+                                                 return resolve(fullFileName);
                                              }
                                            
                                          }];

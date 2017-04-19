@@ -136,39 +136,34 @@ class CameraRollPicker extends Component {
             outputFileType: 'public.mpeg-4', //defaults to 'public.mpeg-4'(AVFileTypeMPEG4), other avaliable:  https://github.com/phracker/MacOSX-SDKs/blob/master/MacOSX10.7.sdk/System/Library/Frameworks/AVFoundation.framework/Versions/A/Headers/AVMediaFormat.h#L50
             codecKey: 'avc1', //defaults to 'avc1' (AVVideoCodecH264), other avaliable: https://github.com/bruce0505/ios7frameworks/blob/master/AVFoundation/AVVideoSettings.h#L35
             bitrateMultiplier: 3,
-            minimumBitrate: 300000
-
+            minimumBitrate: 300000,
+            width : 100,
+            height : 50
           }
         };
-        RNPhotosFramework.saveAssetsToDisk(data.assets.map(asset => ({
+       /* RNPhotosFramework.saveAssetsToDisk(data.assets.map(asset => ({
           asset: asset,
-          options: imageOptions
+          options: videoOptions
         })), {
             onProgress: (e) => {
               console.log(e);
             }
           }).then((result) => {
             //debugger;
-          });
-        /*data.assets[1].saveAssetToDisk({ 
+          });*/
+        data.assets[0].saveAssetToDisk({ 
           fileName : 'test.png',
           dir: RNFetchBlob.fs.dirs.DocumentDir,
-          deliveryMode : 'mediumQuality',
-          version : 'current',
-          resizeOptions : {
-            width : 700, //0 means same as original
-            height : 700,  //0 means same as original
-            quality : 10,  //0 means 100 (uncompressed)
-            roatation : 0, //0 means 0 DEG
-            format : 'JPEG' //Also accepts 'PNG'
-          }
-        }).then((uri) => {
+          ...videoOptions
+        }, (e) => {
+          console.log(e);
+        }).then((result) => {
           console.log('finnished');
-          RNFetchBlob.fs.exists(uri)
+          RNFetchBlob.fs.exists(result.fileUrl)
             .then((exist) => {
-              console.log(`file ${uri} ${exist ? '' : 'not'} exists`)
+              console.log(`file ${result.fileUrl} ${exist ? '' : 'not'} exists`)
             });
-        });*/
+        });
 
 
         console.log(data.assets.map(x => x.collectionIndex));

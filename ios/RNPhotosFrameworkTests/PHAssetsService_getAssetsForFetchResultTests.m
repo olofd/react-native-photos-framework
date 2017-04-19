@@ -121,4 +121,14 @@ NSMutableArray *scenarioAssets;
     XCTAssertEqual([self assetAsInt:result[1]], 2015);
 }
 
+-(void) testOrderScenarioFive {
+    // load assets from oldest to newest from the bottom to top of screen
+    NSArray <NSNumber *> *result = [PHAssetsService getAssetsForFetchResult:scenarioAssets startIndex:3 endIndex:7 assetDisplayStartToEnd:YES andAssetDisplayBottomUp:YES];
+    
+    XCTAssertEqual(result.count, 2);
+    XCTAssertEqual([self assetAsInt:result[0]], 2016);
+    XCTAssertEqual([self assetAsInt:result[1]], 2015);
+}
+
+
 @end

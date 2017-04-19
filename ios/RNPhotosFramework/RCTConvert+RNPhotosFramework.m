@@ -198,6 +198,10 @@ RCT_ENUM_CONVERTER_WITH_REVERSED(PHAssetResourceType, (@{
     assetRequest.mediaType = [RCTConvert NSString:json[@"mediaType"]];
     assetRequest.fileName = [RCTConvert NSString:json[@"fileName"]];
     assetRequest.dir = [RCTConvert NSString:json[@"dir"]];
+    assetRequest.loadOptions = [RCTConvert NSDictionary:json[@"loadOptions"]];
+    assetRequest.postProcessOptions = [RCTConvert NSDictionary:json[@"postProcessOptions"]];
+
+
     if(assetRequest.dir == nil) {
         NSArray * paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
         NSString * basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
@@ -205,7 +209,7 @@ RCT_ENUM_CONVERTER_WITH_REVERSED(PHAssetResourceType, (@{
     }
     
     if([assetRequest.mediaType isEqualToString:@"video"]) {
-        assetRequest.videoRequestOptions = [RNPFHelpers getVideoRequestOptionsFromParams:json];
+        assetRequest.videoRequestOptions = [RNPFHelpers getVideoRequestOptionsFromParams:assetRequest.loadOptions];
     }
 
     return assetRequest;

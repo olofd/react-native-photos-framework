@@ -22,12 +22,4 @@
     }];
     return arrayWithAssets;
 }
-
-- (void)dealloc
-{
-    NSLog(@"Dealloc %@", self.collectionIndex);
-    self.asset = nil;
-    self.collectionIndex = nil;
-}
-
 @end

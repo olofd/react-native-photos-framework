@@ -11,6 +11,10 @@
 @property (strong, nonatomic) NSString *fileName;
 @property (strong, nonatomic) NSString *dir;
 
+@property (strong, nonatomic) NSDictionary *loadOptions;
+@property (strong, nonatomic) NSDictionary *postProcessOptions;
+
+
 
 //Only used for videos:
 @property (strong, nonatomic) PHVideoRequestOptions* videoRequestOptions;

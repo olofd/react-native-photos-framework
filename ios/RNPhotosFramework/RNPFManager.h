@@ -17,9 +17,13 @@ typedef void(^assetsFileSaveCompleteBlock)( NSMutableArray<PHSaveAssetToFileOper
 
 typedef void (^assetOperationBlock)(BOOL success, NSError *__nullable error, NSString  * __nullable localIdentifier);
 typedef void (^fileDownloadExtendedPrograessBlock)(NSString * _Nonnull uri, int index, int64_t progress, int64_t total);
+typedef void (^fileDownloadExtendedPrograessBlockSimple)(NSString * _Nonnull uri, int index, float progress);
+
 typedef void(^createAssetsCompleteBlock)( NSMutableArray<PHOperationResult *> * _Nonnull  result);
 
-@interface RNPFManager : RCTEventEmitter <RCTBridgeModule>
+@interface RNPFManager : RCTEventEmitter <RCTBridgeModule> {
+    bool hasListeners;
+}
 @property (nonatomic, strong) __nonnull dispatch_queue_t currentQueue;
 @property (nonatomic, strong)  PHChangeObserver * __nullable changeObserver;
 @end

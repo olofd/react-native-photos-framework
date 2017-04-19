@@ -348,18 +348,25 @@ class RNPhotosFramework {
       }
   */
 
-  saveAssetsToDisk(assets, options, generateFileName) {
-    return this.updateAssetsWithResoucesMetadata(assets).then((assets) => {
-      return RNPFManager.saveAssetsToDisk({ 
-        media: assets.map(asset => {
-          const resourceMetadata = asset.resourcesMetadata[0];
-          const fileName = generateFileName !== undefined ? generateFileName(asset, resourceMetadata) : resourceMetadata.originalFilename;
+  saveAssetsToDisk(assetsWithOptions, options, generateFileName) {
+    const {
+      args,
+      unsubscribe
+    } = this.withUniqueEventListener('onSaveAssetsToFileProgress', {}, options.onProgress);
+
+    return this.updateAssetsWithResoucesMetadata(assetsWithOptions.map(assetWithOption => assetWithOption.asset)).then(() => {
+      return RNPFManager.saveAssetsToDisk({
+        media: assetsWithOptions.map(assetWithOption => {
+          const { asset } = assetWithOption;
+          const resourceMetadata = assetWithOption.asset.resourcesMetadata[0];
+          const fileName = generateFileName !== undefined ? generateFileName(assetWithOption.asset, resourceMetadata) : resourceMetadata.originalFilename;
           return {
             fileName,
-            ...asset.resourcesMetadata[0],
+            ...resourceMetadata,
             uri: asset.uri,
             localIdentifier: asset.localIdentifier,
             mediaType: asset.mediaType,
+            ...assetWithOption.options
           };
         }),
         ...options

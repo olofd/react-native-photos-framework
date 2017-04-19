@@ -5,6 +5,11 @@
 
 @interface PHAssetsService : NSObject
 
+typedef NS_OPTIONS(NSUInteger, AssetEnumerationDirection) {
+    AssetEnumerationDirectionFromStart = (1UL << 0),
+    AssetEnumerationDirectionFromEnd = (1UL << 1),
+};
+
 +(PHFetchResult<PHAsset *> *) getAssetsForParams:(NSDictionary *)params;
 +(NSArray<NSDictionary *> *) assetsArrayToUriArray:(NSArray<id> *)assetsArray andincludeMetadata:(BOOL)includeMetadata andIncludeAssetResourcesMetadata:(BOOL)includeResourcesMetadata;
 +(NSMutableArray<PHAssetWithCollectionIndex*> *) getAssetsForFetchResult:(PHFetchResult *)assetsFetchResult startIndex:(int)startIndex endIndex:(int)endIndex assetDisplayStartToEnd:(BOOL)assetDisplayStartToEnd andAssetDisplayBottomUp:(BOOL)assetDisplayBottomUp;

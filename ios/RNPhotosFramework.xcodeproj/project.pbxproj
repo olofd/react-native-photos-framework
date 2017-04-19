@@ -16,8 +16,8 @@
 		632F8C271DB75A4A007E83E1 /* RNPFImageLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 632F8C241DB75A4A007E83E1 /* RNPFImageLoader.m */; };
 		6342E0701DC346E300F7765E /* PHSaveAssetRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 6342E06F1DC346E300F7765E /* PHSaveAssetRequest.m */; };
 		63880A7B1E1281F3007532B2 /* RCTConvert+RNPhotosFrameworkTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 63880A7A1E1281F3007532B2 /* RCTConvert+RNPhotosFrameworkTests.m */; };
-		638C48C11E9A3CDE00D1A6CB /* PHSaveAssetFileRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 638C48C01E9A3CDE00D1A6CB /* PHSaveAssetFileRequest.m */; };
-		638C48C41E9A561F00D1A6CB /* PHSaveAssetToFileOperationResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 638C48C31E9A561F00D1A6CB /* PHSaveAssetToFileOperationResult.m */; };
+		6394ACE61EA6AB4800AC445F /* ImageHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 6394ACE51EA6AB4800AC445F /* ImageHelpers.m */; };
+		6394ACE91EA6AB5600AC445F /* RCTImageResizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6394ACE81EA6AB5600AC445F /* RCTImageResizer.m */; };
 		639BE3591DB82A7C00A2BE6F /* RCTConvert+RNPhotosFramework.m in Sources */ = {isa = PBXBuildFile; fileRef = 639BE3581DB82A7C00A2BE6F /* RCTConvert+RNPhotosFramework.m */; };
 		639BE3661DBB902E00A2BE6F /* PHChangeObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 639BE3651DBB902E00A2BE6F /* PHChangeObserver.m */; };
 		63A33AA51DBE94350022B5FF /* PHCachedFetchResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 63A33AA41DBE94350022B5FF /* PHCachedFetchResult.m */; };
@@ -26,6 +26,8 @@
 		63A33AB11DBEA06C0022B5FF /* PHCollectionService.m in Sources */ = {isa = PBXBuildFile; fileRef = 63A33AB01DBEA06C0022B5FF /* PHCollectionService.m */; };
 		63C543481DC00BDA004BFE57 /* RNPFHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 63C543471DC00BDA004BFE57 /* RNPFHelpers.m */; };
 		63D8F94B1E65C7F200A74433 /* RNPFUrlRequestHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 63D8F94A1E65C7F200A74433 /* RNPFUrlRequestHandler.m */; };
+		63DCC8E71EA750ED000E46F9 /* PHSaveAssetFileRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 63DCC8E61EA750ED000E46F9 /* PHSaveAssetFileRequest.m */; };
+		63DCC8EA1EA7510D000E46F9 /* PHSaveAssetToFileOperationResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 63DCC8E91EA7510D000E46F9 /* PHSaveAssetToFileOperationResult.m */; };
 		8C2A0F491E22FBB500E31596 /* PHSaveAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C2A0F481E22FBB500E31596 /* PHSaveAsset.m */; };
 		8C2A0FB81E2584F300E31596 /* RNPFFileDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C2A0FB71E2584F300E31596 /* RNPFFileDownloader.m */; };
 		8C2A0FC71E2788F800E31596 /* PHCreateMediaQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C2A0FC61E2788F800E31596 /* PHCreateMediaQueue.m */; };
@@ -74,10 +76,10 @@
 		6342E06F1DC346E300F7765E /* PHSaveAssetRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHSaveAssetRequest.m; sourceTree = "<group>"; };
 		6349B2B91E6700DF00A153FD /* RNPFGlobals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNPFGlobals.h; sourceTree = "<group>"; };
 		63880A7A1E1281F3007532B2 /* RCTConvert+RNPhotosFrameworkTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+RNPhotosFrameworkTests.m"; sourceTree = "<group>"; };
-		638C48BF1E9A3CDE00D1A6CB /* PHSaveAssetFileRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHSaveAssetFileRequest.h; sourceTree = "<group>"; };
-		638C48C01E9A3CDE00D1A6CB /* PHSaveAssetFileRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHSaveAssetFileRequest.m; sourceTree = "<group>"; };
-		638C48C21E9A561F00D1A6CB /* PHSaveAssetToFileOperationResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHSaveAssetToFileOperationResult.h; sourceTree = "<group>"; };
-		638C48C31E9A561F00D1A6CB /* PHSaveAssetToFileOperationResult.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHSaveAssetToFileOperationResult.m; sourceTree = "<group>"; };
+		6394ACE41EA6AB4800AC445F /* ImageHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageHelpers.h; sourceTree = "<group>"; };
+		6394ACE51EA6AB4800AC445F /* ImageHelpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageHelpers.m; sourceTree = "<group>"; };
+		6394ACE71EA6AB5600AC445F /* RCTImageResizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTImageResizer.h; sourceTree = "<group>"; };
+		6394ACE81EA6AB5600AC445F /* RCTImageResizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageResizer.m; sourceTree = "<group>"; };
 		639BE3571DB82A7C00A2BE6F /* RCTConvert+RNPhotosFramework.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RCTConvert+RNPhotosFramework.h"; sourceTree = "<group>"; };
 		639BE3581DB82A7C00A2BE6F /* RCTConvert+RNPhotosFramework.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+RNPhotosFramework.m"; sourceTree = "<group>"; };
 		639BE3641DBB902E00A2BE6F /* PHChangeObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHChangeObserver.h; sourceTree = "<group>"; };
@@ -94,6 +96,10 @@
 		63C543471DC00BDA004BFE57 /* RNPFHelpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNPFHelpers.m; sourceTree = "<group>"; };
 		63D8F9491E65C7F200A74433 /* RNPFUrlRequestHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNPFUrlRequestHandler.h; sourceTree = "<group>"; };
 		63D8F94A1E65C7F200A74433 /* RNPFUrlRequestHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNPFUrlRequestHandler.m; sourceTree = "<group>"; };
+		63DCC8E51EA750ED000E46F9 /* PHSaveAssetFileRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHSaveAssetFileRequest.h; sourceTree = "<group>"; };
+		63DCC8E61EA750ED000E46F9 /* PHSaveAssetFileRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHSaveAssetFileRequest.m; sourceTree = "<group>"; };
+		63DCC8E81EA7510D000E46F9 /* PHSaveAssetToFileOperationResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHSaveAssetToFileOperationResult.h; sourceTree = "<group>"; };
+		63DCC8E91EA7510D000E46F9 /* PHSaveAssetToFileOperationResult.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHSaveAssetToFileOperationResult.m; sourceTree = "<group>"; };
 		8C2A0F471E22FBB500E31596 /* PHSaveAsset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHSaveAsset.h; sourceTree = "<group>"; };
 		8C2A0F481E22FBB500E31596 /* PHSaveAsset.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHSaveAsset.m; sourceTree = "<group>"; };
 		8C2A0FB61E2584F300E31596 /* RNPFFileDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNPFFileDownloader.h; sourceTree = "<group>"; };
@@ -185,6 +191,10 @@
 		8CA929DB1E1FADB900F79455 /* Base */ = {
 			isa = PBXGroup;
 			children = (
+				6394ACE71EA6AB5600AC445F /* RCTImageResizer.h */,
+				6394ACE81EA6AB5600AC445F /* RCTImageResizer.m */,
+				6394ACE41EA6AB4800AC445F /* ImageHelpers.h */,
+				6394ACE51EA6AB4800AC445F /* ImageHelpers.m */,
 				639BE3571DB82A7C00A2BE6F /* RCTConvert+RNPhotosFramework.h */,
 				639BE3581DB82A7C00A2BE6F /* RCTConvert+RNPhotosFramework.m */,
 				63C543461DC00BDA004BFE57 /* RNPFHelpers.h */,
@@ -198,6 +208,10 @@
 		8CA929DC1E1FADDA00F79455 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				63DCC8E81EA7510D000E46F9 /* PHSaveAssetToFileOperationResult.h */,
+				63DCC8E91EA7510D000E46F9 /* PHSaveAssetToFileOperationResult.m */,
+				63DCC8E51EA750ED000E46F9 /* PHSaveAssetFileRequest.h */,
+				63DCC8E61EA750ED000E46F9 /* PHSaveAssetFileRequest.m */,
 				8C2A0FCB1E2826E200E31596 /* iDebounce.h */,
 				8C2A0FCC1E2826E200E31596 /* iDebounce.m */,
 				6302902B1E0C7A1900A39835 /* PHAssetWithCollectionIndex.h */,
@@ -212,10 +226,6 @@
 				8C2A0FC61E2788F800E31596 /* PHCreateMediaQueue.m */,
 				8C2A0FC81E27940300E31596 /* PHOperationResult.h */,
 				8C2A0FC91E27940300E31596 /* PHOperationResult.m */,
-				638C48BF1E9A3CDE00D1A6CB /* PHSaveAssetFileRequest.h */,
-				638C48C01E9A3CDE00D1A6CB /* PHSaveAssetFileRequest.m */,
-				638C48C21E9A561F00D1A6CB /* PHSaveAssetToFileOperationResult.h */,
-				638C48C31E9A561F00D1A6CB /* PHSaveAssetToFileOperationResult.m */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -340,6 +350,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6394ACE91EA6AB5600AC445F /* RCTImageResizer.m in Sources */,
+				63DCC8E71EA750ED000E46F9 /* PHSaveAssetFileRequest.m in Sources */,
 				632F8C251DB75A4A007E83E1 /* PHCachingImageManagerInstance.m in Sources */,
 				63A33AAE1DBE9DB80022B5FF /* PHFetchOptionsService.m in Sources */,
 				63A33AA51DBE94350022B5FF /* PHCachedFetchResult.m in Sources */,
@@ -347,12 +359,11 @@
 				63A33AB11DBEA06C0022B5FF /* PHCollectionService.m in Sources */,
 				639BE3591DB82A7C00A2BE6F /* RCTConvert+RNPhotosFramework.m in Sources */,
 				8C2A0FCA1E27940300E31596 /* PHOperationResult.m in Sources */,
-				638C48C11E9A3CDE00D1A6CB /* PHSaveAssetFileRequest.m in Sources */,
 				8C2A0FC71E2788F800E31596 /* PHCreateMediaQueue.m in Sources */,
 				63C543481DC00BDA004BFE57 /* RNPFHelpers.m in Sources */,
 				632F8C261DB75A4A007E83E1 /* RNPFManager.m in Sources */,
 				8C2A0FD01E283B6400E31596 /* PHCache.m in Sources */,
-				638C48C41E9A561F00D1A6CB /* PHSaveAssetToFileOperationResult.m in Sources */,
+				6394ACE61EA6AB4800AC445F /* ImageHelpers.m in Sources */,
 				8C2A0FCD1E2826E300E31596 /* iDebounce.m in Sources */,
 				63D8F94B1E65C7F200A74433 /* RNPFUrlRequestHandler.m in Sources */,
 				6342E0701DC346E300F7765E /* PHSaveAssetRequest.m in Sources */,
@@ -360,6 +371,7 @@
 				63A33AA81DBE9D3F0022B5FF /* PHAssetsService.m in Sources */,
 				8C2A0FB81E2584F300E31596 /* RNPFFileDownloader.m in Sources */,
 				632F8C271DB75A4A007E83E1 /* RNPFImageLoader.m in Sources */,
+				63DCC8EA1EA7510D000E46F9 /* PHSaveAssetToFileOperationResult.m in Sources */,
 				639BE3661DBB902E00A2BE6F /* PHChangeObserver.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

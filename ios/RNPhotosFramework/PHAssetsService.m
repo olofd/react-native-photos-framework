@@ -70,12 +70,9 @@
         if([assetObj isKindOfClass:[PHAsset class]]) {
             asset = assetObj;
         }else {
-            NSLog(@"Before send");
             PHAssetWithCollectionIndex *assetWithCollectionIndex = assetObj;
             asset = assetWithCollectionIndex.asset;
             assetIndex = assetWithCollectionIndex.collectionIndex;
-            NSLog(@"After send");
-
         }
 
         NSMutableDictionary *responseDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:
@@ -166,21 +163,34 @@
 
 +(NSMutableArray<PHAssetWithCollectionIndex*> *) getAssetsForFetchResult:(PHFetchResult *)assetsFetchResult startIndex:(int)startIndex endIndex:(int)endIndex assetDisplayStartToEnd:(BOOL)assetDisplayStartToEnd andAssetDisplayBottomUp:(BOOL)assetDisplayBottomUp {
 
+    NSMutableArray<PHAssetWithCollectionIndex *> *assets = [NSMutableArray new];
     int assetCount = (int)assetsFetchResult.count;
-    NS_VALID_UNTIL_END_OF_SCOPE NSMutableArray *assets = [[NSMutableArray alloc] init];
+
     if(assetCount != 0) {
 
-        NSIndexSet *indexSet = [self getIndexSetForAssetEnumerationWithAssetCount:(int)assetsFetchResult.count startIndex:startIndex endIndex:endIndex assetDisplayStartToEnd:assetDisplayStartToEnd];
+        NSDictionary *startAndEndIndex = [self getStartAndEndIndexorAssetEnumerationWithAssetCount:(int)assetsFetchResult.count startIndex:startIndex endIndex:endIndex assetDisplayStartToEnd:assetDisplayStartToEnd];
+        int first = [[startAndEndIndex objectForKey:@"startIndex"] intValue];
+        int last = [[startAndEndIndex objectForKey:@"endIndex"] intValue];
 
-        NSEnumerationOptions enumerationOptionsStartToEnd = assetDisplayBottomUp ? NSEnumerationReverse : NSEnumerationConcurrent;
-        NSEnumerationOptions enumerationOptionsEndToStart = assetDisplayBottomUp ? NSEnumerationConcurrent : NSEnumerationReverse;
+        AssetEnumerationDirection enumerationOptionsStartToEnd = assetDisplayBottomUp ? AssetEnumerationDirectionFromEnd : AssetEnumerationDirectionFromStart;
+        AssetEnumerationDirection enumerationOptionsEndToStart = assetDisplayBottomUp ? AssetEnumerationDirectionFromStart : AssetEnumerationDirectionFromEnd;
         // display assets from the bottom to top of page if assetDisplayBottomUp is true
-        NSEnumerationOptions enumerationOptions = assetDisplayStartToEnd ? enumerationOptionsStartToEnd : enumerationOptionsEndToStart;
-
-        [assetsFetchResult enumerateObjectsAtIndexes:indexSet options:enumerationOptions usingBlock:^(PHAsset *asset, NSUInteger idx, BOOL * _Nonnull stop) {
-             NS_VALID_UNTIL_END_OF_SCOPE PHAssetWithCollectionIndex *assetCollectionIndex = [[PHAssetWithCollectionIndex alloc] initWithAsset:asset andCollectionIndex:@(idx)];
-            [assets addObject:assetCollectionIndex];
-        }];
+        AssetEnumerationDirection enumerationOptions = assetDisplayStartToEnd ? enumerationOptionsStartToEnd : enumerationOptionsEndToStart;
+        
+        
+        if(enumerationOptions == AssetEnumerationDirectionFromStart) {
+            for(int i = first; i < last; i++) {
+                PHAsset *asset = [assetsFetchResult objectAtIndex:i];
+                [assets addObject:[[PHAssetWithCollectionIndex alloc] initWithAsset:asset andCollectionIndex:[NSNumber numberWithInt:i]]];
+                
+            }
+        }else {
+            for(int i = (last - 1); i >= first; i--) {
+                PHAsset *asset = [assetsFetchResult objectAtIndex:i];
+                [assets addObject:[[PHAssetWithCollectionIndex alloc] initWithAsset:asset andCollectionIndex:[NSNumber numberWithInt:i]]];
+                
+            }
+        }
     }
 
     return assets;
@@ -233,6 +243,43 @@
         }
         return [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(startIndex, indexRangeLength)];
 }
+
++(NSDictionary *) getStartAndEndIndexorAssetEnumerationWithAssetCount:(int)assetCount startIndex:(int)startIndex endIndex:(int)endIndex assetDisplayStartToEnd:(BOOL)assetDisplayStartToEnd {
+    int originalStartIndex = startIndex;
+    int originalEndIndex = endIndex;
+    startIndex = (assetCount - endIndex) - 1;
+    endIndex = assetCount - originalStartIndex;
+    // load oldest assets from library first if assetDisplayStartToEnd is true
+    if(assetDisplayStartToEnd) {
+        startIndex = originalStartIndex;
+        endIndex = originalEndIndex;
+    }
+    if(startIndex < 0) {
+        startIndex = 0;
+    }
+    if(endIndex < 0) {
+        endIndex = 0;
+    }
+    if(startIndex >= assetCount) {
+        startIndex = assetCount;
+    }
+    if(endIndex >= assetCount) {
+        endIndex = assetCount;
+    }
+    int indexRangeLength = endIndex - startIndex;
+    // adjust range length calculation if original and active index are 0
+    if(originalStartIndex == 0 && startIndex == 0){
+        indexRangeLength = (endIndex - startIndex) + 1;
+    }
+    if(indexRangeLength >= assetCount){
+        indexRangeLength = assetCount;
+    }
+    return @{
+             @"startIndex" : @(startIndex),
+             @"endIndex" : @(startIndex + indexRangeLength),
+            };
+}
+
 
 +(void)deleteAssets:(PHFetchResult<PHAsset *> *)assetsToDelete andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error, NSArray<NSString *> * localIdentifiers))completeBlock {
     __block NSMutableArray<NSString *> *deletedAssetsLocalIdentifers = [NSMutableArray arrayWithCapacity:assetsToDelete.count];

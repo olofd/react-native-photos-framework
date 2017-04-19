@@ -425,6 +425,40 @@ RCT_EXPORT_METHOD(saveAssetsToDisk:(NSDictionary *)params
                                          }
                                          
                                      }];
+    
+    
+    /*
+     NSString *path = [self getFilePathFromParamsObj:params];
+     NSString *fileName = [self getFileNameFromParamsObj:params];
+     NSDictionary *resizeOptions = [RCTConvert NSDictionary:params[@"resizeOptions"]];
+     if(resizeOptions != nil) {
+     float width = [RCTConvert float:resizeOptions[@"width"]];
+     float height = [RCTConvert float:resizeOptions[@"height"]];
+     float quality = [RCTConvert float:resizeOptions[@"quality"]];
+     float rotation = [RCTConvert float:resizeOptions[@"rotation"]];
+     
+     if(width < 0.1) {
+     width = loadedImage.size.width;
+     }
+     if(height < 0.1) {
+     height = loadedImage.size.height;
+     }
+     if(quality < 0.1) {
+     quality = 100;
+     }
+     
+     NSString *format = [RCTConvert NSString:resizeOptions[@"format"]];
+     if(![format isEqualToString:@"JPEG"] || ![format isEqualToString:@"PNG"]) {
+     format = @"JPEG";
+     }
+     return [ImageResizer createResizedImage:loadedImage width:width height:height format:format quality:quality rotation:rotation outputPath:path fileName:fileName andCompleteBLock:^(NSString *error, NSString *path) {
+     if(error != nil) {
+     return reject(error, nil, nil);
+     }
+     return resolve(path);
+     }];
+     }
+     */
 
 }
 

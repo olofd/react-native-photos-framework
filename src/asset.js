@@ -128,17 +128,16 @@ export default class Asset {
     }
 
     //name and extension are optional
-    saveAssetToDisk(options) {
-        return this.getResourcesMetadata().then((assetResourceMetadata) => {
-            return NativeApi.saveAssetToDisk({
-                ...assetResourceMetadata.resourcesMetadata[0],
-                uri : this.uri,
-                localIdentifier : this.localIdentifier,
-                mediaType : this.mediaType,
-                ...options
+    saveAssetToDisk(options, onProgress, generateFileName) {
+        return NativeApi.saveAssetsToDisk([{
+            asset: this,
+            options: options
+        }], {
+                onProgress: onProgress
+            }, generateFileName).then((results) => {
+                return results[0];
             });
-        });
-    } 
+    }
 
     _updateProperty(property, value, precheckValue) {
         return new Promise((resolve, reject) => {

@@ -139,28 +139,92 @@ RCT_EXPORT_MODULE()
         contentMode = PHImageContentModeAspectFit;
     }
     
+    PHImageRequestOptionsVersion version = PHImageRequestOptionsVersionCurrent;
     __block PHImageRequestOptionsDeliveryMode deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
     imageOptions.deliveryMode = deliveryMode;
+    imageOptions.version = version;
     
     if(imageURL.query != nil) {
         NSURLComponents *urlComponents = [NSURLComponents componentsWithURL:imageURL
                                                     resolvingAgainstBaseURL:NO];
         NSArray *queryItems = urlComponents.queryItems;
+        
+        //DeliveryMode
         NSString *deliveryModeQuery = [self valueForKey:@"deliveryMode"
                                          fromQueryItems:queryItems];
         if(deliveryModeQuery != nil) {
             if([deliveryModeQuery isEqualToString:@"opportunistic"]) {
-                deliveryMode = PHImageRequestOptionsDeliveryModeOpportunistic;
+                imageOptions.deliveryMode = PHImageRequestOptionsDeliveryModeOpportunistic;
             }
             else if([deliveryModeQuery isEqualToString:@"highQuality"]) {
-                deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+                imageOptions.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
             }
             else if([deliveryModeQuery isEqualToString:@"fast"]) {
-                deliveryMode = PHImageRequestOptionsDeliveryModeFastFormat;
+                imageOptions.deliveryMode = PHImageRequestOptionsDeliveryModeFastFormat;
+            }
+        }
+        
+        
+        //Version
+        NSString *versionQuery = [self valueForKey:@"version"
+                                         fromQueryItems:queryItems];
+        if(versionQuery != nil) {
+            if([versionQuery isEqualToString:@"original"]) {
+                imageOptions.version = PHImageRequestOptionsVersionOriginal;
+            }
+            if([versionQuery isEqualToString:@"unadjusted"]) {
+                imageOptions.version = PHImageRequestOptionsVersionUnadjusted;
+            }
+        }
+        
+        //ResizeMode
+        NSString *resizeModeQuery = [self valueForKey:@"resizeMode"
+                                        fromQueryItems:queryItems];
+        if(resizeModeQuery != nil) {
+            if([resizeModeQuery isEqualToString:@"none"]) {
+                imageOptions.resizeMode = PHImageRequestOptionsResizeModeNone;
+            }
+            if([resizeModeQuery isEqualToString:@"fast"]) {
+                imageOptions.resizeMode = PHImageRequestOptionsResizeModeFast;
+            }
+            if([resizeModeQuery isEqualToString:@"exact"]) {
+                imageOptions.resizeMode = PHImageRequestOptionsResizeModeExact;
+            }
+        }
+        
+        //ResizeMode
+        NSString *normalizedCropRectQuery = [self valueForKey:@"cropRect"
+                                       fromQueryItems:queryItems];
+        if(normalizedCropRectQuery != nil) {
+            NSArray<NSString *> * splittedRect = [normalizedCropRectQuery componentsSeparatedByString:@"|"];
+            float x = [splittedRect[0] floatValue];
+            float y = [splittedRect[1] floatValue];
+            float width = [splittedRect[2] floatValue];
+            float height = [splittedRect[3] floatValue];
+            
+            CGRect cropRect = CGRectMake(x, y, width, height);
+            CGRect normalizedRect = CGRectApplyAffineTransform(cropRect,
+                                                               CGAffineTransformMakeScale(1.0 / asset.pixelWidth,
+                                                                                          1.0 / asset.pixelHeight));
+            imageOptions.normalizedCropRect = normalizedRect;
+            imageOptions.resizeMode = PHImageRequestOptionsResizeModeExact;
+            targetSize = CGSizeApplyAffineTransform(CGSizeMake(width, height), CGAffineTransformMakeScale(scale, scale));
+        }
+        
+        //ContentMode
+        NSString *contentModeQuery = [self valueForKey:@"contentMode"
+                                        fromQueryItems:queryItems];
+        if(contentModeQuery != nil) {
+            if([contentModeQuery isEqualToString:@"fit"]) {
+                contentMode = PHImageContentModeAspectFit;
+            }
+            if([contentModeQuery isEqualToString:@"fill"]) {
+                contentMode = PHImageContentModeAspectFill;
             }
         }
     }
-    
+
+
     
     PHImageRequestID requestID =
     [[PHCachingImageManagerInstance sharedCachingManager] requestImageForAsset:asset
@@ -184,6 +248,16 @@ RCT_EXPORT_MODULE()
     return ^{
         [[PHCachingImageManagerInstance sharedCachingManager] cancelImageRequest:requestID];
     };
+}
+
+-(NSDictionary*)splitQuery:(NSString*)url {
+    NSMutableDictionary *params = [[NSMutableDictionary alloc] init];
+    for (NSString *param in [url componentsSeparatedByString:@"&"]) {
+        NSArray *elts = [param componentsSeparatedByString:@"="];
+        if([elts count] < 2) continue;
+        [params setObject:[elts lastObject] forKey:[elts firstObject]];
+    }
+    return params;
 }
 
 - (NSString *)valueForKey:(NSString *)key

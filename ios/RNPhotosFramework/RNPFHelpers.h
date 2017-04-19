@@ -1,5 +1,6 @@
 #import <Foundation/Foundation.h>
 #import <CoreLocation/CLLocation.h>
+@import Photos;
 
 @interface RNPFHelpers : NSObject
 +(NSDateFormatter *)getISODateFormatter;
@@ -9,4 +10,5 @@
 +(NSString *)convertEnumToStringValue:(int)type andValues:(NSDictionary *)values;
 +(NSArray*) nsOptionsToArray:(int)option andBitSize:(int)bitSize andReversedEnumDict:(NSDictionary *)dict;
 +(NSString*) nsOptionsToValue:(int)option andBitSize:(int)bitSize andReversedEnumDict:(NSDictionary *)dict;
++(PHVideoRequestOptions *)getVideoRequestOptionsFromParams:(NSDictionary *)params;
 @end

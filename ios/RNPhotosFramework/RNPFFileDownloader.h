@@ -4,6 +4,8 @@
 
 typedef void (^fileDownloadCompleteBlock)(NSURL *downloadUrl);
 typedef void (^fileDownloadProgressBlock)(int64_t progress, int64_t total);
+typedef void (^fileDownloadProgressBlockSimple)(float progress);
+
 typedef void (^fileDownloadErrorBlock)(NSError *error);
 
 - (void)startDownload:(NSURL *)url andSaveWithExtension:(NSString *)extension andProgressBlock:(fileDownloadProgressBlock)progressBlock andCompletionBlock:(fileDownloadCompleteBlock)completeBlock andErrorBlock:(fileDownloadErrorBlock)errorBlock;

@@ -212,6 +212,22 @@ class RNPhotosFramework {
     return RNPFManager.getAssetsResourcesMetadata(assetsLocalIdentifiers);
   }
 
+  updateAssetsWithResoucesMetadata(assets) {
+    return new Promise((resolve, reject) => {
+      const assetsWithoutRoesourceMetaData = assets.filter(asset => asset.resourcesMetadata === undefined);
+      if (assetsWithoutRoesourceMetaData.length) {
+        RNPFManager.getAssetsResourcesMetadata(assetsWithoutRoesourceMetaData.map(asset => asset.localIdentifier)).then((result) => {
+          assetsWithoutRoesourceMetaData.forEach((asset) => {
+            Object.assign(asset, result[asset.localIdentifier]);
+          });
+          resolve(assets);
+        });
+      } else {
+        resolve(assets);
+      }
+    });
+  }
+
   getImageAssetsMetadata(assetsLocalIdentifiers) {
     return RNPFManager.getImageAssetsMetadata(assetsLocalIdentifiers);
   }
@@ -322,8 +338,40 @@ class RNPhotosFramework {
     }
   }
 
-  saveAssetToDisk(data) {
-    return RNPFManager.saveAssetToDisk(data);
+  /*
+      assets,
+      options : {
+        dir : '/path', //optional
+      },
+      generateFileName : (asset, resourceMetadata) => {
+        return 'newFileName';
+      }
+  */
+
+  saveAssetsToDisk(assetsWithOptions, options, generateFileName) {
+    const {
+      args,
+      unsubscribe
+    } = this.withUniqueEventListener('onSaveAssetsToFileProgress', {}, options.onProgress);
+
+    return this.updateAssetsWithResoucesMetadata(assetsWithOptions.map(assetWithOption => assetWithOption.asset)).then(() => {
+      return RNPFManager.saveAssetsToDisk({
+        media: assetsWithOptions.map(assetWithOption => {
+          const { asset } = assetWithOption;
+          const resourceMetadata = assetWithOption.asset.resourcesMetadata[0];
+          const fileName = generateFileName !== undefined ? generateFileName(assetWithOption.asset, resourceMetadata) : resourceMetadata.originalFilename;
+          return {
+            fileName,
+            ...resourceMetadata,
+            uri: asset.uri,
+            localIdentifier: asset.localIdentifier,
+            mediaType: asset.mediaType,
+            ...assetWithOption.options
+          };
+        }),
+        ...options
+      });
+    });
   }
 }
 

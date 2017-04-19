@@ -26,6 +26,10 @@
 		63A33AB11DBEA06C0022B5FF /* PHCollectionService.m in Sources */ = {isa = PBXBuildFile; fileRef = 63A33AB01DBEA06C0022B5FF /* PHCollectionService.m */; };
 		63C543481DC00BDA004BFE57 /* RNPFHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 63C543471DC00BDA004BFE57 /* RNPFHelpers.m */; };
 		63D8F94B1E65C7F200A74433 /* RNPFUrlRequestHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 63D8F94A1E65C7F200A74433 /* RNPFUrlRequestHandler.m */; };
+		63DCC8E71EA750ED000E46F9 /* PHSaveAssetFileRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 63DCC8E61EA750ED000E46F9 /* PHSaveAssetFileRequest.m */; };
+		63DCC8EA1EA7510D000E46F9 /* PHSaveAssetToFileOperationResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 63DCC8E91EA7510D000E46F9 /* PHSaveAssetToFileOperationResult.m */; };
+		63DCC8F01EA7945F000E46F9 /* PHVideoExporter.m in Sources */ = {isa = PBXBuildFile; fileRef = 63DCC8EF1EA7945F000E46F9 /* PHVideoExporter.m */; };
+		63DCC8F31EA7CA42000E46F9 /* SDAVAssetExportSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 63DCC8F21EA7CA42000E46F9 /* SDAVAssetExportSession.m */; };
 		8C2A0F491E22FBB500E31596 /* PHSaveAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C2A0F481E22FBB500E31596 /* PHSaveAsset.m */; };
 		8C2A0FB81E2584F300E31596 /* RNPFFileDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C2A0FB71E2584F300E31596 /* RNPFFileDownloader.m */; };
 		8C2A0FC71E2788F800E31596 /* PHCreateMediaQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C2A0FC61E2788F800E31596 /* PHCreateMediaQueue.m */; };
@@ -94,6 +98,14 @@
 		63C543471DC00BDA004BFE57 /* RNPFHelpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNPFHelpers.m; sourceTree = "<group>"; };
 		63D8F9491E65C7F200A74433 /* RNPFUrlRequestHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNPFUrlRequestHandler.h; sourceTree = "<group>"; };
 		63D8F94A1E65C7F200A74433 /* RNPFUrlRequestHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNPFUrlRequestHandler.m; sourceTree = "<group>"; };
+		63DCC8E51EA750ED000E46F9 /* PHSaveAssetFileRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHSaveAssetFileRequest.h; sourceTree = "<group>"; };
+		63DCC8E61EA750ED000E46F9 /* PHSaveAssetFileRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHSaveAssetFileRequest.m; sourceTree = "<group>"; };
+		63DCC8E81EA7510D000E46F9 /* PHSaveAssetToFileOperationResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHSaveAssetToFileOperationResult.h; sourceTree = "<group>"; };
+		63DCC8E91EA7510D000E46F9 /* PHSaveAssetToFileOperationResult.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHSaveAssetToFileOperationResult.m; sourceTree = "<group>"; };
+		63DCC8EE1EA7945F000E46F9 /* PHVideoExporter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHVideoExporter.h; sourceTree = "<group>"; };
+		63DCC8EF1EA7945F000E46F9 /* PHVideoExporter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHVideoExporter.m; sourceTree = "<group>"; };
+		63DCC8F11EA7CA42000E46F9 /* SDAVAssetExportSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDAVAssetExportSession.h; sourceTree = "<group>"; };
+		63DCC8F21EA7CA42000E46F9 /* SDAVAssetExportSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDAVAssetExportSession.m; sourceTree = "<group>"; };
 		8C2A0F471E22FBB500E31596 /* PHSaveAsset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHSaveAsset.h; sourceTree = "<group>"; };
 		8C2A0F481E22FBB500E31596 /* PHSaveAsset.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHSaveAsset.m; sourceTree = "<group>"; };
 		8C2A0FB61E2584F300E31596 /* RNPFFileDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNPFFileDownloader.h; sourceTree = "<group>"; };
@@ -185,6 +197,8 @@
 		8CA929DB1E1FADB900F79455 /* Base */ = {
 			isa = PBXGroup;
 			children = (
+				63DCC8F11EA7CA42000E46F9 /* SDAVAssetExportSession.h */,
+				63DCC8F21EA7CA42000E46F9 /* SDAVAssetExportSession.m */,
 				6394ACE71EA6AB5600AC445F /* RCTImageResizer.h */,
 				6394ACE81EA6AB5600AC445F /* RCTImageResizer.m */,
 				6394ACE41EA6AB4800AC445F /* ImageHelpers.h */,
@@ -195,6 +209,8 @@
 				63C543471DC00BDA004BFE57 /* RNPFHelpers.m */,
 				8C2A0FB61E2584F300E31596 /* RNPFFileDownloader.h */,
 				8C2A0FB71E2584F300E31596 /* RNPFFileDownloader.m */,
+				63DCC8EE1EA7945F000E46F9 /* PHVideoExporter.h */,
+				63DCC8EF1EA7945F000E46F9 /* PHVideoExporter.m */,
 			);
 			name = Base;
 			sourceTree = "<group>";
@@ -202,6 +218,10 @@
 		8CA929DC1E1FADDA00F79455 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				63DCC8E81EA7510D000E46F9 /* PHSaveAssetToFileOperationResult.h */,
+				63DCC8E91EA7510D000E46F9 /* PHSaveAssetToFileOperationResult.m */,
+				63DCC8E51EA750ED000E46F9 /* PHSaveAssetFileRequest.h */,
+				63DCC8E61EA750ED000E46F9 /* PHSaveAssetFileRequest.m */,
 				8C2A0FCB1E2826E200E31596 /* iDebounce.h */,
 				8C2A0FCC1E2826E200E31596 /* iDebounce.m */,
 				6302902B1E0C7A1900A39835 /* PHAssetWithCollectionIndex.h */,
@@ -341,6 +361,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6394ACE91EA6AB5600AC445F /* RCTImageResizer.m in Sources */,
+				63DCC8E71EA750ED000E46F9 /* PHSaveAssetFileRequest.m in Sources */,
 				632F8C251DB75A4A007E83E1 /* PHCachingImageManagerInstance.m in Sources */,
 				63A33AAE1DBE9DB80022B5FF /* PHFetchOptionsService.m in Sources */,
 				63A33AA51DBE94350022B5FF /* PHCachedFetchResult.m in Sources */,
@@ -351,8 +372,10 @@
 				8C2A0FC71E2788F800E31596 /* PHCreateMediaQueue.m in Sources */,
 				63C543481DC00BDA004BFE57 /* RNPFHelpers.m in Sources */,
 				632F8C261DB75A4A007E83E1 /* RNPFManager.m in Sources */,
+				63DCC8F01EA7945F000E46F9 /* PHVideoExporter.m in Sources */,
 				8C2A0FD01E283B6400E31596 /* PHCache.m in Sources */,
 				6394ACE61EA6AB4800AC445F /* ImageHelpers.m in Sources */,
+				63DCC8F31EA7CA42000E46F9 /* SDAVAssetExportSession.m in Sources */,
 				8C2A0FCD1E2826E300E31596 /* iDebounce.m in Sources */,
 				63D8F94B1E65C7F200A74433 /* RNPFUrlRequestHandler.m in Sources */,
 				6342E0701DC346E300F7765E /* PHSaveAssetRequest.m in Sources */,
@@ -360,6 +383,7 @@
 				63A33AA81DBE9D3F0022B5FF /* PHAssetsService.m in Sources */,
 				8C2A0FB81E2584F300E31596 /* RNPFFileDownloader.m in Sources */,
 				632F8C271DB75A4A007E83E1 /* RNPFImageLoader.m in Sources */,
+				63DCC8EA1EA7510D000E46F9 /* PHSaveAssetToFileOperationResult.m in Sources */,
 				639BE3661DBB902E00A2BE6F /* PHChangeObserver.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

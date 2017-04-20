@@ -369,7 +369,7 @@ class RNPhotosFramework {
             ...assetWithOption.options
           };
         }),
-        ...options
+        ...args
       });
     });
   }

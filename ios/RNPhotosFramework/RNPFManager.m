@@ -371,11 +371,13 @@ RCT_EXPORT_METHOD(saveAssetsToDisk:(NSDictionary *)params
                 currentProgress = progress;
                 [dictForEntry setObject:@(currentProgress) forKey:uri];
             }
-            [iDebounce debounce:^{
-                dispatch_async(self.currentQueue, ^{
-                    [self sendEventWithName:@"onSaveAssetsToFileProgress" body:@{@"id" : progressEventId, @"data" : arrayWithProgress}];
-                });
-            } withIdentifier:progressEventId wait:0.050];
+            if(progressEventId != nil) {
+                [iDebounce debounce:^{
+                    dispatch_async(self.currentQueue, ^{
+                        [self sendEventWithName:@"onSaveAssetsToFileProgress" body:@{@"id" : progressEventId, @"data" : arrayWithProgress}];
+                    });
+                } withIdentifier:progressEventId wait:0.050];
+            }
         }
         
     }];

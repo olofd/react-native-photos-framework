@@ -1,4 +1,4 @@
-import ReactPropTypes from 'react/lib/ReactPropTypes';
+import ReactPropTypes from 'prop-types';
 import {
   NativeEventEmitter,
   NativeModules

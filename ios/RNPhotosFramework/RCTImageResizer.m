@@ -2,7 +2,7 @@
 #include "ImageHelpers.h"
 #import <React/RCTImageLoader.h>
 
-@implementation ImageResizer
+@implementation RNPFImageResizer
 
 
 bool saveImage(NSString * fullPath, UIImage * image, NSString * format, float quality)

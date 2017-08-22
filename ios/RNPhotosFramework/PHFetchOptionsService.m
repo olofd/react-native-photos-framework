@@ -88,7 +88,8 @@
     NSPredicate *mediaTypePredicate = [PHFetchOptionsService getMediaTypePredicate:params];
     NSPredicate *subTypePredicate = [PHFetchOptionsService getMediaSubTypePredicate:params];
     NSPredicate *customPredicate = [PHFetchOptionsService getCustomPredicatesForParams:params];
-    NSMutableArray *arrayWithPredicates = [NSMutableArray arrayWithCapacity:3];
+    NSPredicate *creationDatePredicate = [PHFetchOptionsService getCreationDatePredicate:params];
+    NSMutableArray *arrayWithPredicates = [NSMutableArray arrayWithCapacity:4];
     if(mediaTypePredicate) {
         [arrayWithPredicates addObject:mediaTypePredicate];
     }
@@ -97,6 +98,9 @@
     }
     if(customPredicate) {
         [arrayWithPredicates addObject:customPredicate];
+    }
+    if(creationDatePredicate) {
+        [arrayWithPredicates addObject:creationDatePredicate];
     }
     return [NSCompoundPredicate andPredicateWithSubpredicates:arrayWithPredicates];
 }
@@ -122,6 +126,24 @@
     }
     
     return [NSCompoundPredicate orPredicateWithSubpredicates:arrayWithPredicates];
+}
+
++(NSPredicate *) getCreationDatePredicate:(NSDictionary *)params {
+    NSString * olderThan = [RCTConvert NSString:params[@"olderThan"]];
+    if(olderThan == nil) {
+        return nil;
+    }
+    NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
+    f.numberStyle = NSNumberFormatterDecimalStyle;
+    NSNumber * timestamp = [f numberFromString:olderThan];
+    if(timestamp == nil) {
+        return nil;
+    }
+    NSDate * date = [NSDate dateWithTimeIntervalSince1970:timestamp.doubleValue / 1000];
+    if(date == nil) {
+        return nil;
+    }
+    return [NSPredicate predicateWithFormat:@"creationDate < %@", date];
 }
 
 

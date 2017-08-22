@@ -5,7 +5,7 @@
 @implementation RNPFImageResizer
 
 
-bool saveImage(NSString * fullPath, UIImage * image, NSString * format, float quality)
+bool RNPFsaveImage(NSString * fullPath, UIImage * image, NSString * format, float quality)
 {
     NSData* data = nil;
     if ([format isEqualToString:@"JPEG"]) {
@@ -22,7 +22,7 @@ bool saveImage(NSString * fullPath, UIImage * image, NSString * format, float qu
     return YES;
 }
 
-NSString * generateFilePath(NSString * ext, NSString *name, NSString * outputPath)
+NSString * RNPFgenerateFilePath(NSString * ext, NSString *name, NSString * outputPath)
 {
     NSString* directory;
 
@@ -42,7 +42,7 @@ NSString * generateFilePath(NSString * ext, NSString *name, NSString * outputPat
     return fullPath;
 }
 
-UIImage * rotateImage(UIImage *inputImage, float rotationDegrees)
+UIImage * RNPFrotateImage(UIImage *inputImage, float rotationDegrees)
 {
 
     // We want only fixed 0, 90, 180, 270 degree rotations.
@@ -87,11 +87,11 @@ UIImage * rotateImage(UIImage *inputImage, float rotationDegrees)
 
 {
     CGSize newSize = CGSizeMake(width, height);
-    NSString* fullPath = generateFilePath(@"jpg", fileName, outputPath);
+    NSString* fullPath = RNPFgenerateFilePath(@"jpg", fileName, outputPath);
 
         // Rotate image if rotation is specified.
         if (0 != (int)rotation) {
-            image = rotateImage(image, rotation);
+            image = RNPFrotateImage(image, rotation);
             if (image == nil) {
                 completeBlock(@"Can't rotate the image.", @"");
                 return;
@@ -106,7 +106,7 @@ UIImage * rotateImage(UIImage *inputImage, float rotationDegrees)
         }
 
         // Compress and save the image
-        if (!saveImage(fullPath, scaledImage, format, quality)) {
+        if (!RNPFsaveImage(fullPath, scaledImage, format, quality)) {
             completeBlock(@"Can't save the image. Check your compression format.", @"");
             return;
         }

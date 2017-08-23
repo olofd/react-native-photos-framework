@@ -1,7 +1,8 @@
 import ReactPropTypes from 'react/lib/ReactPropTypes';
 import {
   NativeEventEmitter,
-  NativeModules
+  NativeModules,
+  Platform
 } from 'react-native';
 import Asset from './asset';
 import Album from './album';
@@ -14,7 +15,7 @@ import videoPropsResolver from './video-props-resolver';
 import uuidGenerator from './uuid-generator';
 
 const RNPFManager = NativeModules.RNPFManager;
-if (!RNPFManager) {
+if (!RNPFManager && Platform.OS === "ios") {
   throw new Error("Could not find react-native-photos-framework's native module. It seems it's not linked correctly in your xcode-project.");
 }
 export const eventEmitter = new EventEmitter();

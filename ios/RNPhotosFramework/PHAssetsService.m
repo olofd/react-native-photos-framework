@@ -120,6 +120,18 @@
         [dictToExtend setObject:@([asset representsBurst]) forKey:@"representsBurst"];
         [dictToExtend setObject:[RNPFHelpers nsOptionsToArray:[asset burstSelectionTypes] andBitSize:32 andReversedEnumDict:[RCTConvert PHAssetBurstSelectionTypeValuesReversed]] forKey:@"burstSelectionTypes"];
     }
+
+    NSMutableArray *albumNames = [NSMutableArray array];
+    PHFetchResult *albums = [PHAssetCollection fetchAssetCollectionsContainingAsset:asset withType:PHAssetCollectionTypeAlbum options:nil];
+    for(PHCollection *album in albums) {
+        [albumNames addObject: album.localizedTitle];
+    }
+    PHFetchResult *smartAlbums = [PHAssetCollection fetchAssetCollectionsContainingAsset:asset withType:PHAssetCollectionTypeSmartAlbum options:nil];
+    for(PHCollection *album in smartAlbums) {
+        [albumNames addObject: album.localizedTitle];
+    }
+    [dictToExtend setObject:albumNames forKey:@"inAlbums"];
+
     return dictToExtend;
 }
 

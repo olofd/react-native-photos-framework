@@ -1,7 +1,7 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-@interface ImageResizer : NSObject
+@interface RNPFImageResizer : NSObject
 +(void) createResizedImage:(UIImage *)image
                      width:(float)width
                     height:(float)height

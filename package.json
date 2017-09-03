@@ -45,9 +45,10 @@
     "babel-cli": "^6.23.0",
     "babel-jest": "^19.0.0",
     "babel-polyfill": "^6.23.0",
-    "babel-preset-latest": "^6.22.0",
+    "babel-preset-react-native": "^2.0.0",
     "jest": "^19.0.2",
-    "jest-react-native": "^18.0.0"
+    "jest-react-native": "^18.0.0",
+    "prop-types": "^15.5.10"
   },
   "jest": {
     "testPathIgnorePatterns": [

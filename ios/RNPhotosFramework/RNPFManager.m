@@ -451,7 +451,7 @@ RCT_EXPORT_METHOD(saveAssetsToDisk:(NSDictionary *)params
                                              if(![format isEqualToString:@"JPEG"] || ![format isEqualToString:@"PNG"]) {
                                                  format = @"JPEG";
                                              }
-                                             return [ImageResizer createResizedImage:loadedImage width:width height:height format:format quality:quality rotation:rotation outputPath:fileRequest.dir fileName:fileRequest.fileName andCompleteBLock:^(NSString *error, NSString *path) {
+                                             return [RNPFImageResizer createResizedImage:loadedImage width:width height:height format:format quality:quality rotation:rotation outputPath:fileRequest.dir fileName:fileRequest.fileName andCompleteBLock:^(NSString *error, NSString *path) {
                                                  if(error != nil) {
                                                      return completeBlock(NO, nil, fileRequest.localIdentifier, nil);
                                                  }

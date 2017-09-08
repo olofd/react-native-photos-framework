@@ -137,29 +137,33 @@
 
 +(NSMutableDictionary *)extendAssetDictWithAssetResourcesMetadata:(NSMutableDictionary *)dictToExtend andPHAsset:(PHAsset *)asset {
 
-    NSArray<PHAssetResource *> *resources = [PHAssetResource assetResourcesForAsset:asset];
-    NSMutableArray *arrayWithResourcesMetadata = [NSMutableArray new];
+    if (NSClassFromString(@"PHAssetResource")) {
+        NSArray<PHAssetResource *> *resources = [PHAssetResource assetResourcesForAsset:asset];
+        NSMutableArray *arrayWithResourcesMetadata = [NSMutableArray new];
 
-    for(int i = 0; i < resources.count;i++) {
-        PHAssetResource *resourceMetadata = [resources objectAtIndex:i];
-        
-        NSString *mimeType = (NSString *)[NSNull null];
-        CFStringRef mimeTypeCString = UTTypeCopyPreferredTagWithClass((__bridge CFStringRef _Nonnull)(resourceMetadata.uniformTypeIdentifier), kUTTagClassMIMEType);
-        if(mimeTypeCString != nil) {
-            mimeType = (__bridge NSString *)(mimeTypeCString);
+        for(int i = 0; i < resources.count;i++) {
+            PHAssetResource *resourceMetadata = [resources objectAtIndex:i];
+            
+            NSString *mimeType = (NSString *)[NSNull null];
+            CFStringRef mimeTypeCString = UTTypeCopyPreferredTagWithClass((__bridge CFStringRef _Nonnull)(resourceMetadata.uniformTypeIdentifier), kUTTagClassMIMEType);
+            if(mimeTypeCString != nil) {
+                mimeType = (__bridge NSString *)(mimeTypeCString);
+            }
+            
+            [arrayWithResourcesMetadata addObject:@{
+                                                        @"originalFilename" : resourceMetadata.originalFilename,
+                                                        @"assetLocalIdentifier" : resourceMetadata.assetLocalIdentifier,
+                                                        @"uniformTypeIdentifier" : resourceMetadata.uniformTypeIdentifier,
+                                                        @"type" : [[RCTConvert PHAssetResourceTypeValuesReversed] objectForKey:@(resourceMetadata.type)],
+                                                        @"mimeType" : mimeType,
+                                                        @"fileExtension" : [resourceMetadata.originalFilename pathExtension]
+                                                        }];
         }
-        
-        [arrayWithResourcesMetadata addObject:@{
-                                                     @"originalFilename" : resourceMetadata.originalFilename,
-                                                     @"assetLocalIdentifier" : resourceMetadata.assetLocalIdentifier,
-                                                     @"uniformTypeIdentifier" : resourceMetadata.uniformTypeIdentifier,
-                                                     @"type" : [[RCTConvert PHAssetResourceTypeValuesReversed] objectForKey:@(resourceMetadata.type)],
-                                                     @"mimeType" : mimeType,
-                                                     @"fileExtension" : [resourceMetadata.originalFilename pathExtension]
-                                                     }];
-    }
 
-    [dictToExtend setObject:arrayWithResourcesMetadata forKey:@"resourcesMetadata"];
+        [dictToExtend setObject:arrayWithResourcesMetadata forKey:@"resourcesMetadata"];
+    } else {
+        NSLog(@"PHAssetResource is not available on iOS 8 or below. resourceMetadata could not be added.");
+    }
 
     return dictToExtend;
 }

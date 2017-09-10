@@ -341,7 +341,7 @@ RCT_EXPORT_METHOD(saveAssetsToDisk:(NSDictionary *)params
     NSString *progressEventId = [RCTConvert NSString:events[@"onSaveAssetsToFileProgress"]];
     NSString *cancellationEventId = [RCTConvert NSString:events[@"onCancellationTokenCreated"]];
     
-    [self sendEventWithName:@"onCancellationTokenCreated" body:@{@"id" : cancellationEventId, @"data" : arrayWithProgress}];
+   // [self sendEventWithName:@"onCancellationTokenCreated" body:@{@"id" : cancellationEventId, @"data" : arrayWithProgress}];
 
     if(progressEventId != nil) {
         arrayWithProgress = [NSMutableArray arrayWithCapacity:media.count];

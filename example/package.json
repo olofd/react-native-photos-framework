@@ -10,8 +10,8 @@
   "dependencies": {
     "babel": "^6.23.0",
     "babel-plugin-module-alias": "^1.6.0",
-    "react": "16.0.0-alpha.6",
-    "react-native": "^0.48.2",
+    "react": "16.0.0-alpha.12",
+    "react-native": "0.48.2",
     "react-native-fetch-blob": "^0.10.8",
     "react-native-photos-framework": "latest",
     "react-native-router-flux": "^4.0.0-beta.21",

@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		6302902D1E0C7A1900A39835 /* PHAssetWithCollectionIndex.m in Sources */ = {isa = PBXBuildFile; fileRef = 6302902C1E0C7A1900A39835 /* PHAssetWithCollectionIndex.m */; };
+		6326189F1F5C85C4008A3E90 /* PHCancellationTokenManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6326189E1F5C85C4008A3E90 /* PHCancellationTokenManager.m */; };
+		632618A21F5C85E4008A3E90 /* PHCancellationToken.m in Sources */ = {isa = PBXBuildFile; fileRef = 632618A11F5C85E4008A3E90 /* PHCancellationToken.m */; };
 		632D5ED31DF19458006A862C /* PHAssetsService_getAssetsForFetchResultTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 632D5ED21DF19458006A862C /* PHAssetsService_getAssetsForFetchResultTests.m */; };
 		632D5ED51DF19458006A862C /* libRNPhotosFramework.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 632F8C131DB758E7007E83E1 /* libRNPhotosFramework.a */; };
 		632D5EDD1DF19526006A862C /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 632D5EDC1DF19526006A862C /* libReact.a */; };
@@ -63,6 +65,10 @@
 /* Begin PBXFileReference section */
 		6302902B1E0C7A1900A39835 /* PHAssetWithCollectionIndex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHAssetWithCollectionIndex.h; sourceTree = "<group>"; };
 		6302902C1E0C7A1900A39835 /* PHAssetWithCollectionIndex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHAssetWithCollectionIndex.m; sourceTree = "<group>"; };
+		6326189D1F5C85C4008A3E90 /* PHCancellationTokenManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHCancellationTokenManager.h; sourceTree = "<group>"; };
+		6326189E1F5C85C4008A3E90 /* PHCancellationTokenManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHCancellationTokenManager.m; sourceTree = "<group>"; };
+		632618A01F5C85E4008A3E90 /* PHCancellationToken.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PHCancellationToken.h; sourceTree = "<group>"; };
+		632618A11F5C85E4008A3E90 /* PHCancellationToken.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PHCancellationToken.m; sourceTree = "<group>"; };
 		632D5ED01DF19458006A862C /* RNPhotosFrameworkTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RNPhotosFrameworkTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		632D5ED21DF19458006A862C /* PHAssetsService_getAssetsForFetchResultTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PHAssetsService_getAssetsForFetchResultTests.m; sourceTree = "<group>"; };
 		632D5ED41DF19458006A862C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -236,6 +242,10 @@
 				8C2A0FC61E2788F800E31596 /* PHCreateMediaQueue.m */,
 				8C2A0FC81E27940300E31596 /* PHOperationResult.h */,
 				8C2A0FC91E27940300E31596 /* PHOperationResult.m */,
+				6326189D1F5C85C4008A3E90 /* PHCancellationTokenManager.h */,
+				6326189E1F5C85C4008A3E90 /* PHCancellationTokenManager.m */,
+				632618A01F5C85E4008A3E90 /* PHCancellationToken.h */,
+				632618A11F5C85E4008A3E90 /* PHCancellationToken.m */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -361,6 +371,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6394ACE91EA6AB5600AC445F /* RCTImageResizer.m in Sources */,
+				632618A21F5C85E4008A3E90 /* PHCancellationToken.m in Sources */,
 				63DCC8E71EA750ED000E46F9 /* PHSaveAssetFileRequest.m in Sources */,
 				632F8C251DB75A4A007E83E1 /* PHCachingImageManagerInstance.m in Sources */,
 				63A33AAE1DBE9DB80022B5FF /* PHFetchOptionsService.m in Sources */,
@@ -376,6 +387,7 @@
 				8C2A0FD01E283B6400E31596 /* PHCache.m in Sources */,
 				6394ACE61EA6AB4800AC445F /* ImageHelpers.m in Sources */,
 				63DCC8F31EA7CA42000E46F9 /* SDAVAssetExportSession.m in Sources */,
+				6326189F1F5C85C4008A3E90 /* PHCancellationTokenManager.m in Sources */,
 				8C2A0FCD1E2826E300E31596 /* iDebounce.m in Sources */,
 				63D8F94B1E65C7F200A74433 /* RNPFUrlRequestHandler.m in Sources */,
 				6342E0701DC346E300F7765E /* PHSaveAssetRequest.m in Sources */,

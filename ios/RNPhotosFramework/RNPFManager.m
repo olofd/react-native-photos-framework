@@ -336,7 +336,13 @@ RCT_EXPORT_METHOD(saveAssetsToDisk:(NSDictionary *)params
     
     NSMutableArray *arrayWithProgress;
     
-    NSString *progressEventId = [RCTConvert NSString:params[@"onSaveAssetsToFileProgress"]];
+    NSDictionary *events= [RCTConvert NSDictionary:params[@"events"]];
+    
+    NSString *progressEventId = [RCTConvert NSString:events[@"onSaveAssetsToFileProgress"]];
+    NSString *cancellationEventId = [RCTConvert NSString:events[@"onCancellationTokenCreated"]];
+    
+    [self sendEventWithName:@"onCancellationTokenCreated" body:@{@"id" : cancellationEventId, @"data" : arrayWithProgress}];
+
     if(progressEventId != nil) {
         arrayWithProgress = [NSMutableArray arrayWithCapacity:media.count];
         for(int i = 0; i < media.count;i++) {
@@ -422,10 +428,10 @@ RCT_EXPORT_METHOD(saveAssetsToDisk:(NSDictionary *)params
     [self loadImageWithURLRequest:fileRequest.uri
                                              clipped:YES
                                           resizeMode:RCTResizeModeStretch
-                                       progressBlock:^(int64_t progress, int64_t total) {
+                                    progressBlock:^(int64_t progress, int64_t total) {
                                            return progressBlock(progress, total);
                                        }
-                                    partialLoadBlock:nil
+                                     partialLoadBlock:nil
                                      completionBlock:^(NSError *error, UIImage *loadedImage) {
                                          if (error) {
                                              return completeBlock(NO, error, fileRequest.localIdentifier, nil);

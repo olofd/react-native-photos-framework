@@ -380,6 +380,8 @@ class RNPhotosFramework {
                 return new ImageAsset(nativeObj, options);
             case "video":
                 return new VideoAsset(nativeObj, options);
+            case "unknown":
+                return new Asset(nativeObj, options);
         }
     }
 

@@ -151,15 +151,15 @@ class CameraRollPicker extends Component {
           }).then((result) => {
             //debugger;
           });*/
-        data.assets[0].saveAssetToDisk({ 
+        data.assets[0].saveAssetToDisk({
           fileName : 'test.png',
           dir: RNFetchBlob.fs.dirs.DocumentDir,
           ...videoOptions
         }, (e) => {
           console.log(e);
-        }).then((result) => {
+        }).then((fileUrl) => {
           console.log('finnished');
-          RNFetchBlob.fs.exists(result.fileUrl)
+          RNFetchBlob.fs.exists(fileUrl)
             .then((exist) => {
               console.log(`file ${result.fileUrl} ${exist ? '' : 'not'} exists`)
             });

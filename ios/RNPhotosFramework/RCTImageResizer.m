@@ -5,7 +5,7 @@
 @implementation RNPFImageResizer
 
 
-bool RNPFsaveImage(NSString * fullPath, UIImage * image, NSString * format, float quality)
+bool RNPFsaveImage(NSString * fullPath, UIImage * image, NSString * format, float quality, NSError ** errorPtr)
 {
     NSData* data = nil;
     if ([format isEqualToString:@"JPEG"]) {
@@ -15,11 +15,10 @@ bool RNPFsaveImage(NSString * fullPath, UIImage * image, NSString * format, floa
     }
     
     if (data == nil) {
-        return NO;
+        return NO; // TODO set &errorPtr
     }
     
-    [data writeToFile:fullPath atomically:YES];
-    return YES;
+    return [data writeToFile:fullPath options:NSDataWritingAtomic error:errorPtr];
 }
 
 NSString * RNPFgenerateFilePath(NSString * ext, NSString *name, NSString * outputPath)
@@ -83,7 +82,7 @@ UIImage * RNPFrotateImage(UIImage *inputImage, float rotationDegrees)
                   rotation:(float)rotation
                   outputPath:(NSString *)outputPath
                   fileName:(NSString *)fileName
-                  andCompleteBLock:(void(^)(NSString *error, NSString *path))completeBlock
+                  andCompleteBLock:(void(^)(NSString *path, NSError *error))completeBlock
 
 {
     CGSize newSize = CGSizeMake(width, height);
@@ -93,7 +92,7 @@ UIImage * RNPFrotateImage(UIImage *inputImage, float rotationDegrees)
         if (0 != (int)rotation) {
             image = RNPFrotateImage(image, rotation);
             if (image == nil) {
-                completeBlock(@"Can't rotate the image.", @"");
+                completeBlock(nil, nil); // TODO "Can't rotate the image."
                 return;
             }
         }
@@ -101,17 +100,18 @@ UIImage * RNPFrotateImage(UIImage *inputImage, float rotationDegrees)
         // Do the resizing
         UIImage * scaledImage = [image scaleToSize:newSize];
         if (scaledImage == nil) {
-            completeBlock(@"Can't resize the image.", @"");
+            completeBlock(nil, nil); // TODO "Can't resize the image."
             return;
         }
 
         // Compress and save the image
-        if (!RNPFsaveImage(fullPath, scaledImage, format, quality)) {
-            completeBlock(@"Can't save the image. Check your compression format.", @"");
+        NSError * error;
+        if (!RNPFsaveImage(fullPath, scaledImage, format, quality, &error)) {
+            completeBlock(nil, error);
             return;
         }
         
-        completeBlock(nil, fullPath);
+        completeBlock(fullPath, nil);
 }
 
 @end

@@ -360,9 +360,9 @@ RCT_EXPORT_METHOD(saveAssetsToDisk:(NSDictionary *)params
             PHSaveAssetToFileOperationResult *fileResult = [results objectAtIndex:i];
             [arrayResponse addObject:@{
                                        @"localIdentifier" :fileResult.localIdentifier,
-                                       @"fileUrl" : fileResult.fileUrl,
+                                       @"fileUrl" : fileResult.fileUrl ? fileResult.fileUrl : [NSNull null],
                                        @"success" : @(fileResult.success),
-                                       @"error" : fileResult.error != nil ? [fileResult.error localizedDescription] : [NSNull null]
+                                       @"error" : fileResult.error ? RCTJSErrorFromNSError(fileResult.error) : [NSNull null]
                                        }];
         }
         return resolve(arrayResponse);
@@ -457,9 +457,9 @@ RCT_EXPORT_METHOD(saveAssetsToDisk:(NSDictionary *)params
                                              if(![format isEqualToString:@"JPEG"] || ![format isEqualToString:@"PNG"]) {
                                                  format = @"JPEG";
                                              }
-                                             return [RNPFImageResizer createResizedImage:loadedImage width:width height:height format:format quality:quality rotation:rotation outputPath:fileRequest.dir fileName:fileRequest.fileName andCompleteBLock:^(NSString *error, NSString *path) {
-                                                 if(error != nil) {
-                                                     return completeBlock(NO, nil, fileRequest.localIdentifier, nil);
+                                             return [RNPFImageResizer createResizedImage:loadedImage width:width height:height format:format quality:quality rotation:rotation outputPath:fileRequest.dir fileName:fileRequest.fileName andCompleteBLock:^(NSString *path, NSError *error) {
+                                                 if(!path) {
+                                                     return completeBlock(NO, error, fileRequest.localIdentifier, nil);
                                                  }
                                                  progressBlock(100, 100);
                                                  return completeBlock(YES, nil,fileRequest.localIdentifier, path);
@@ -471,9 +471,13 @@ RCT_EXPORT_METHOD(saveAssetsToDisk:(NSDictionary *)params
                                          
                                          NSData * binaryImageData = UIImagePNGRepresentation(loadedImage);
                                          
-                                         BOOL success = [binaryImageData writeToFile:fullFileName atomically:YES];
+                                         NSError* writeError;
+                                         BOOL success = [binaryImageData writeToFile:fullFileName options:NSDataWritingAtomic error:&writeError];
                                          if(success) {
                                              return completeBlock(YES, nil, fileRequest.localIdentifier, fullFileName);
+                                         }
+                                         else {
+                                             return completeBlock(NO, writeError, fileRequest.localIdentifier, nil);
                                          }
                                          
                                      } andOptions:[RCTConvert NSDictionary:fileRequest.loadOptions]];

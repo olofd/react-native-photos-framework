@@ -135,7 +135,13 @@ export default class Asset {
         }], {
                 onProgress: onProgress
             }, generateFileName).then((results) => {
-                return results[0];
+              const result = results[0];
+              if (result.success) {
+                return result.fileUrl;
+              }
+              else {
+                throw result.error;
+              }
             });
     }
 

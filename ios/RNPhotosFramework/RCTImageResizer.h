@@ -10,5 +10,5 @@
                   rotation:(float)rotation
                 outputPath:(NSString *)outputPath
                   fileName:(NSString *)fileName
-          andCompleteBLock:(void(^)(NSString *error, NSString *path))completeBlock;
+          andCompleteBLock:(void(^)(NSString *path, NSError *error))completeBlock;
 @end

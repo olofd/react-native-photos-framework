@@ -636,7 +636,7 @@ Create a image-asset
   RCTCameraRollRNPhotosFrameworkManager.createVideoAsset(videoWithUriProp);
 ~~~
 Signature: album.createVideoAsset(params) : Promise<Asset>.
-Create a image-asset
+Create a video-asset
 
 ### createAssets
 ~~~js

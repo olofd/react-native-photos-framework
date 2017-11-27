@@ -286,7 +286,7 @@ class RNPhotosFramework {
     createVideoAsset(video) {
         return this.createAssets({
             videos: [video],
-        }).then(result => result[1]);
+        }).then(result => result[0]);
     }
 
     getPostableAssets(localIdentifiers) {

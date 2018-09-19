@@ -187,14 +187,19 @@
         options.networkAccessAllowed = YES;
         [[PHImageManager defaultManager] requestLivePhotoForAsset:asset targetSize:[UIScreen mainScreen].bounds.size contentMode:PHImageContentModeDefault options:options resultHandler:^(PHLivePhoto * _Nullable livePhoto, NSDictionary * _Nullable info) {
             if(livePhoto){
-                [[PHAssetResourceManager defaultManager] writeDataForAssetResource:videoResource toFile:fileUrl options:nil completionHandler:^(NSError * _Nullable error) {
-                    if(!error){
-                        completionBlock(fileUrl);
-                    } else {
-                        NSLog([NSString stringWithFormat:@"debug error %@: %@", NSStringFromClass([error class]) , [error localizedDescription]]);
-                        completionBlock(nil);
-                    }
-                }];
+                NSError *err;
+                if ([fileUrl checkResourceIsReachableAndReturnError:&err] == NO) {
+                    [[PHAssetResourceManager defaultManager] writeDataForAssetResource:videoResource toFile:fileUrl options:nil completionHandler:^(NSError * _Nullable error) {
+                        if(!error){
+                            completionBlock(fileUrl);
+                        } else {
+                            completionBlock(nil);
+                        }
+                    }];
+                } else {
+                    NSLog(@"debug: file already exists, returning url");
+                    completionBlock(fileUrl);
+                }
             } else {
                 completionBlock(nil);
             }

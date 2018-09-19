@@ -58,7 +58,7 @@
     return [PHAsset fetchAssetsWithOptions:options];
 }
 
-+(NSArray<NSDictionary *> *) assetsArrayToUriArray:(NSArray<id> *)assetsArray andincludeMetadata:(BOOL)includeMetadata andIncludeAssetResourcesMetadata:(BOOL)includeResourcesMetadata {
++(void) assetsArrayToUriArray:(NSArray<id> *)assetsArray andincludeMetadata:(BOOL)includeMetadata andIncludeAssetResourcesMetadata:(BOOL)includeResourcesMetadata withCompletionBlock:(void (^)(NSArray<NSDictionary *> *arr))completionBlock{
     RCT_PROFILE_BEGIN_EVENT(0, @"-[RCTCameraRollRNPhotosFrameworkManager assetsArrayToUriArray", nil);
 
     NSMutableArray *uriArray = [NSMutableArray arrayWithCapacity:assetsArray.count];
@@ -91,15 +91,22 @@
             [self extendAssetDictWithAssetMetadata:responseDict andPHAsset:asset];
         }
         if(includeResourcesMetadata) {
-            [self extendAssetDictWithAssetResourcesMetadata:responseDict andPHAsset:asset];
+            [self extendAssetDictWithAssetResourcesMetadata:responseDict andPHAsset:asset withCompletionBlock:^(NSMutableDictionary *dict) {
+                [uriArray addObject:responseDict];
+                if (i == assetsArray.count - 1) {
+                    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
+                    
+                    completionBlock(uriArray);
+                }
+            }];
+        } else {
+            [uriArray addObject:responseDict];
+            
+            RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
+            
+            completionBlock(uriArray);
         }
-        
-
-        [uriArray addObject:responseDict];
     }
-    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
-
-    return uriArray;
 }
 
 +(NSMutableDictionary *)extendAssetDictWithAssetMetadata:(NSMutableDictionary *)dictToExtend andPHAsset:(PHAsset *)asset {
@@ -135,11 +142,11 @@
     return dictToExtend;
 }
 
-+(NSMutableDictionary *)extendAssetDictWithAssetResourcesMetadata:(NSMutableDictionary *)dictToExtend andPHAsset:(PHAsset *)asset {
-
++(void)extendAssetDictWithAssetResourcesMetadata:(NSMutableDictionary *)dictToExtend andPHAsset:(PHAsset *)asset withCompletionBlock:(void (^)(NSMutableDictionary *dict))completionBlock{
     NSArray<PHAssetResource *> *resources = [PHAssetResource assetResourcesForAsset:asset];
     NSMutableArray *arrayWithResourcesMetadata = [NSMutableArray new];
-
+    __block NSMutableSet *remainingResources = [NSMutableSet setWithArray:resources];
+    
     for(int i = 0; i < resources.count;i++) {
         PHAssetResource *resourceMetadata = [resources objectAtIndex:i];
         
@@ -148,20 +155,53 @@
         if(mimeTypeCString != nil) {
             mimeType = (__bridge NSString *)(mimeTypeCString);
         }
-        
-        [arrayWithResourcesMetadata addObject:@{
-                                                     @"originalFilename" : resourceMetadata.originalFilename,
-                                                     @"assetLocalIdentifier" : resourceMetadata.assetLocalIdentifier,
-                                                     @"uniformTypeIdentifier" : resourceMetadata.uniformTypeIdentifier,
-                                                     @"type" : [[RCTConvert PHAssetResourceTypeValuesReversed] objectForKey:@(resourceMetadata.type)],
-                                                     @"mimeType" : mimeType,
-                                                     @"fileExtension" : [resourceMetadata.originalFilename pathExtension]
-                                                     }];
+        [self videoUrlForLivePhotoAsset:asset andVideoResource:resourceMetadata withCompletionBlock:^(NSURL *url) {
+            [arrayWithResourcesMetadata addObject:@{
+                                                    @"originalFilename" : resourceMetadata.originalFilename,
+                                                    @"assetLocalIdentifier" : resourceMetadata.assetLocalIdentifier,
+                                                    @"uniformTypeIdentifier" : resourceMetadata.uniformTypeIdentifier,
+                                                    @"type" : [[RCTConvert PHAssetResourceTypeValuesReversed] objectForKey:@(resourceMetadata.type)],
+                                                    @"mimeType" : mimeType,
+                                                    @"fileExtension" : [resourceMetadata.originalFilename pathExtension],
+                                                    @"videoUrl": url ? [url absoluteString] : @""
+                                                    }];
+            [remainingResources removeObject:resourceMetadata];
+            if ([remainingResources count] == 0) {
+                [dictToExtend setObject:arrayWithResourcesMetadata forKey:@"resourcesMetadata"];
+                completionBlock(dictToExtend);
+            }
+        }];
     }
+}
 
-    [dictToExtend setObject:arrayWithResourcesMetadata forKey:@"resourcesMetadata"];
-
-    return dictToExtend;
++(void)videoUrlForLivePhotoAsset:(PHAsset*)asset andVideoResource:(PHAssetResource *)videoResource withCompletionBlock:(void (^)(NSURL* url))completionBlock{
+    if([asset isKindOfClass:[PHAsset class]]){
+        if (videoResource.type != PHAssetResourceTypePairedVideo) {
+            return completionBlock(nil);
+        }
+        NSString* filePath = [NSTemporaryDirectory() stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.mov",[NSString stringWithFormat:@"%@", [[asset localIdentifier] stringByReplacingOccurrencesOfString:@"/" withString:@""]]]];
+        NSURL *fileUrl = [NSURL fileURLWithPath:filePath];
+        
+        PHLivePhotoRequestOptions* options = [PHLivePhotoRequestOptions new];
+        options.deliveryMode = PHImageRequestOptionsDeliveryModeFastFormat;
+        options.networkAccessAllowed = YES;
+        [[PHImageManager defaultManager] requestLivePhotoForAsset:asset targetSize:[UIScreen mainScreen].bounds.size contentMode:PHImageContentModeDefault options:options resultHandler:^(PHLivePhoto * _Nullable livePhoto, NSDictionary * _Nullable info) {
+            if(livePhoto){
+                [[PHAssetResourceManager defaultManager] writeDataForAssetResource:videoResource toFile:fileUrl options:nil completionHandler:^(NSError * _Nullable error) {
+                    if(!error){
+                        completionBlock(fileUrl);
+                    } else {
+                        NSLog([NSString stringWithFormat:@"debug error %@: %@", NSStringFromClass([error class]) , [error localizedDescription]]);
+                        completionBlock(nil);
+                    }
+                }];
+            } else {
+                completionBlock(nil);
+            }
+        }];
+    } else {
+        completionBlock(nil);
+    }
 }
 
 +(void)extendAssetDictWithPhotoAssetEditingMetadata:(NSMutableDictionary *)dictToExtend andPHAsset:(PHAsset *)asset andCompletionBlock:(void(^)(NSMutableDictionary * dict))completeBlock  {

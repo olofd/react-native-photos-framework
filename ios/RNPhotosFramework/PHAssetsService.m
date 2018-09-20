@@ -63,13 +63,15 @@
 
     NSMutableArray *uriArray = [NSMutableArray arrayWithCapacity:assetsArray.count];
     NSDictionary *reveredMediaTypes = [RCTConvert PHAssetMediaTypeValuesReversed];
+    __block NSMutableSet *remainingAssets = [NSMutableSet setWithArray:assetsArray];
+
     for(int i = 0;i < assetsArray.count; i++) {
         id assetObj = [assetsArray objectAtIndex:i];
         NSNumber *assetIndex = (NSNumber *)[NSNull null];
         PHAsset *asset;
         if([assetObj isKindOfClass:[PHAsset class]]) {
             asset = assetObj;
-        }else {
+        } else {
             PHAssetWithCollectionIndex *assetWithCollectionIndex = assetObj;
             asset = assetWithCollectionIndex.asset;
             assetIndex = assetWithCollectionIndex.collectionIndex;
@@ -93,18 +95,20 @@
         if(includeResourcesMetadata) {
             [self extendAssetDictWithAssetResourcesMetadata:responseDict andPHAsset:asset withCompletionBlock:^(NSMutableDictionary *dict) {
                 [uriArray addObject:responseDict];
-                if (i == assetsArray.count - 1) {
+                [remainingAssets removeObject:assetObj];
+                if ([remainingAssets count] == 0) {
                     RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
-                    
                     completionBlock(uriArray);
                 }
             }];
         } else {
+
             [uriArray addObject:responseDict];
-            
-            RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
-            
-            completionBlock(uriArray);
+            [remainingAssets removeObject:assetObj];
+            if ([remainingAssets count] == 0) {
+                RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
+                completionBlock(uriArray);
+            }
         }
     }
 }
@@ -175,38 +179,33 @@
 }
 
 +(void)videoUrlForLivePhotoAsset:(PHAsset*)asset andVideoResource:(PHAssetResource *)videoResource withCompletionBlock:(void (^)(NSURL* url))completionBlock{
-    if([asset isKindOfClass:[PHAsset class]]){
-        if (videoResource.type != PHAssetResourceTypePairedVideo) {
-            return completionBlock(nil);
-        }
-        NSString* filePath = [NSTemporaryDirectory() stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.mov",[NSString stringWithFormat:@"%@", [[asset localIdentifier] stringByReplacingOccurrencesOfString:@"/" withString:@""]]]];
-        NSURL *fileUrl = [NSURL fileURLWithPath:filePath];
-        
-        PHLivePhotoRequestOptions* options = [PHLivePhotoRequestOptions new];
-        options.deliveryMode = PHImageRequestOptionsDeliveryModeFastFormat;
-        options.networkAccessAllowed = YES;
-        [[PHImageManager defaultManager] requestLivePhotoForAsset:asset targetSize:[UIScreen mainScreen].bounds.size contentMode:PHImageContentModeDefault options:options resultHandler:^(PHLivePhoto * _Nullable livePhoto, NSDictionary * _Nullable info) {
-            if(livePhoto){
-                NSError *err;
-                if ([fileUrl checkResourceIsReachableAndReturnError:&err] == NO) {
-                    [[PHAssetResourceManager defaultManager] writeDataForAssetResource:videoResource toFile:fileUrl options:nil completionHandler:^(NSError * _Nullable error) {
-                        if(!error){
-                            completionBlock(fileUrl);
-                        } else {
-                            completionBlock(nil);
-                        }
-                    }];
-                } else {
-                    NSLog(@"debug: file already exists, returning url");
-                    completionBlock(fileUrl);
-                }
-            } else {
-                completionBlock(nil);
-            }
-        }];
-    } else {
-        completionBlock(nil);
+    if(![asset isKindOfClass:[PHAsset class]] || videoResource.type != PHAssetResourceTypePairedVideo){
+        return completionBlock(nil);
     }
+    NSString* filePath = [NSTemporaryDirectory() stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.mov",[NSString stringWithFormat:@"%@", [[asset localIdentifier] stringByReplacingOccurrencesOfString:@"/" withString:@""]]]];
+    NSURL *fileUrl = [NSURL fileURLWithPath:filePath];
+    
+    PHLivePhotoRequestOptions* options = [PHLivePhotoRequestOptions new];
+    options.deliveryMode = PHImageRequestOptionsDeliveryModeFastFormat;
+    options.networkAccessAllowed = YES;
+    [[PHImageManager defaultManager] requestLivePhotoForAsset:asset targetSize:[UIScreen mainScreen].bounds.size contentMode:PHImageContentModeDefault options:options resultHandler:^(PHLivePhoto * _Nullable livePhoto, NSDictionary * _Nullable info) {
+        if(livePhoto){
+            NSError *err;
+            if ([fileUrl checkResourceIsReachableAndReturnError:&err] == NO) {
+                [[PHAssetResourceManager defaultManager] writeDataForAssetResource:videoResource toFile:fileUrl options:nil completionHandler:^(NSError * _Nullable error) {
+                    if(!error){
+                        completionBlock(fileUrl);
+                    } else {
+                        completionBlock(nil);
+                    }
+                }];
+            } else {
+                completionBlock(fileUrl);
+            }
+        } else {
+            completionBlock(nil);
+        }
+    }];
 }
 
 +(void)extendAssetDictWithPhotoAssetEditingMetadata:(NSMutableDictionary *)dictToExtend andPHAsset:(PHAsset *)asset andCompletionBlock:(void(^)(NSMutableDictionary * dict))completeBlock  {

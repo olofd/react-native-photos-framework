@@ -225,17 +225,12 @@ RCT_EXPORT_METHOD(getAssetsResourcesMetadata:(NSArray<NSString *> *)arrayWithLoc
 {
     PHFetchResult<PHAsset *> * arrayWithAssets = [PHAssetsService getAssetsFromArrayOfLocalIdentifiers:arrayWithLocalIdentifiers];
     NSMutableDictionary<NSString *, NSDictionary *> *dictWithMetadataObjs = [NSMutableDictionary dictionaryWithCapacity:arrayWithAssets.count];
-//    [arrayWithAssets enumerateObjectsUsingBlock:^(PHAsset * _Nonnull asset, NSUInteger idx, BOOL * _Nonnull stop) {
-//        [dictWithMetadataObjs setObject:[PHAssetsService extendAssetDictWithAssetResourcesMetadata:[NSMutableDictionary new] andPHAsset:asset] forKey:asset.localIdentifier];
-//    }];
         [arrayWithAssets enumerateObjectsUsingBlock:^(PHAsset * _Nonnull asset, NSUInteger idx, BOOL * _Nonnull stop) {
             [PHAssetsService extendAssetDictWithAssetResourcesMetadata:[NSMutableDictionary new] andPHAsset:asset withCompletionBlock:^(NSMutableDictionary *dict) {
                 [dictWithMetadataObjs setObject:dict forKey:asset.localIdentifier];
                 resolve(dictWithMetadataObjs);
             }];
         }];
-    
-
 }
 
 

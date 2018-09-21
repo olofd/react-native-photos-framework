@@ -167,7 +167,7 @@
                                                     @"type" : [[RCTConvert PHAssetResourceTypeValuesReversed] objectForKey:@(resourceMetadata.type)],
                                                     @"mimeType" : mimeType,
                                                     @"fileExtension" : [resourceMetadata.originalFilename pathExtension],
-                                                    @"videoUrl": url ? [url absoluteString] : @""
+                                                    @"videoUrl": url ? [url absoluteString] : [NSNull null]
                                                     }];
             [remainingResources removeObject:resourceMetadata];
             if ([remainingResources count] == 0) {

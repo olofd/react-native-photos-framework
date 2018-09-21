@@ -148,11 +148,13 @@ RCT_EXPORT_METHOD(getAssets:(NSDictionary *)params
     [self prepareAssetsForDisplayWithParams:params andAssets:assets];
     NSInteger assetCount = assetsFetchResult.count;
     BOOL includesLastAsset = assetCount == 0 || endIndex >= (assetCount -1);
-    return resolve(@{
-                     @"assets" : [PHAssetsService assetsArrayToUriArray:assets andincludeMetadata:includeMetadata andIncludeAssetResourcesMetadata:includeResourcesMetadata],
-                     @"includesLastAsset" : @(includesLastAsset)
-                     });
-    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
+    [PHAssetsService assetsArrayToUriArray:assets andincludeMetadata:includeMetadata andIncludeAssetResourcesMetadata:includeResourcesMetadata withCompletionBlock:^(NSArray<NSDictionary *> *arr) {
+        return resolve(@{
+                         @"assets" : arr,
+                         @"includesLastAsset" : @(includesLastAsset)
+                         });
+        RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
+    }];
 }
 
 RCT_EXPORT_METHOD(getAssetsWithIndecies:(NSDictionary *)params
@@ -165,9 +167,11 @@ RCT_EXPORT_METHOD(getAssetsWithIndecies:(NSDictionary *)params
     PHFetchResult<PHAsset *> *assetsFetchResult = [PHAssetsService getAssetsForParams:params];
     NSArray<PHAssetWithCollectionIndex *> *assets = [PHAssetsService getAssetsForFetchResult:assetsFetchResult atIndecies:[RCTConvert NSArray:params[@"indecies"]]];
     [self prepareAssetsForDisplayWithParams:params andAssets:assets];
-    resolve(@{
-              @"assets" : [PHAssetsService assetsArrayToUriArray:assets andincludeMetadata:includeMetadata andIncludeAssetResourcesMetadata:includeResourcesMetadata],
-              });
+    [PHAssetsService assetsArrayToUriArray:assets andincludeMetadata:includeMetadata andIncludeAssetResourcesMetadata:includeResourcesMetadata withCompletionBlock:^(NSArray<NSDictionary *> *arr) {
+        resolve(@{
+                  @"assets": arr,
+                  });
+    }];
 }
 
 /*
@@ -221,10 +225,12 @@ RCT_EXPORT_METHOD(getAssetsResourcesMetadata:(NSArray<NSString *> *)arrayWithLoc
 {
     PHFetchResult<PHAsset *> * arrayWithAssets = [PHAssetsService getAssetsFromArrayOfLocalIdentifiers:arrayWithLocalIdentifiers];
     NSMutableDictionary<NSString *, NSDictionary *> *dictWithMetadataObjs = [NSMutableDictionary dictionaryWithCapacity:arrayWithAssets.count];
-    [arrayWithAssets enumerateObjectsUsingBlock:^(PHAsset * _Nonnull asset, NSUInteger idx, BOOL * _Nonnull stop) {
-        [dictWithMetadataObjs setObject:[PHAssetsService extendAssetDictWithAssetResourcesMetadata:[NSMutableDictionary new] andPHAsset:asset] forKey:asset.localIdentifier];
-    }];
-    resolve(dictWithMetadataObjs);
+        [arrayWithAssets enumerateObjectsUsingBlock:^(PHAsset * _Nonnull asset, NSUInteger idx, BOOL * _Nonnull stop) {
+            [PHAssetsService extendAssetDictWithAssetResourcesMetadata:[NSMutableDictionary new] andPHAsset:asset withCompletionBlock:^(NSMutableDictionary *dict) {
+                [dictWithMetadataObjs setObject:dict forKey:asset.localIdentifier];
+                resolve(dictWithMetadataObjs);
+            }];
+        }];
 }
 
 
@@ -576,9 +582,9 @@ RCT_EXPORT_METHOD(createAssets:(NSDictionary *)params
         BOOL includeResourcesMetadata = [RCTConvert BOOL:params[@"includeResourcesMetadata"]];
         
         PHFetchResult<PHAsset *> *newAssets = [PHAssetsService getAssetsFromArrayOfLocalIdentifiers:arrayWithLocalIdentfiers];
-        NSArray<NSDictionary *> *assetResponse = [PHAssetsService assetsArrayToUriArray:(NSArray<id> *)newAssets andincludeMetadata:includeMetadata andIncludeAssetResourcesMetadata:includeResourcesMetadata];
-        return resolve(@{@"assets" : assetResponse, @"success" : @(YES) });
-        
+        [PHAssetsService assetsArrayToUriArray:(NSArray<id> *)newAssets andincludeMetadata:includeMetadata andIncludeAssetResourcesMetadata:includeResourcesMetadata withCompletionBlock:^(NSArray<NSDictionary *> *arr) {
+                return resolve(@{@"assets" : arr, @"success" : @(YES) });
+        }];
     } andProgressBlock:^(NSString *uri, int index, int64_t progress, int64_t total) {
         if(hasListeners && progressEventId != nil) {
             @synchronized(arrayWithProgress)

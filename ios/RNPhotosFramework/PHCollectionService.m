@@ -180,8 +180,13 @@ static id ObjectOrNull(id object)
             if(numberOfPreviewAssets > 0) {
                 BOOL assetDisplayStartToEnd = [RCTConvert BOOL:assetFetchParams[@"assetDisplayStartToEnd"]];
                 BOOL assetDisplayBottomUp = [RCTConvert BOOL:assetFetchParams[@"assetDisplayBottomUp"]];
-                NSArray<NSDictionary *> *previewAssets = [PHAssetsService assetsArrayToUriArray:[PHAssetsService getAssetsForFetchResult:assets startIndex:0 endIndex:(numberOfPreviewAssets-1) assetDisplayStartToEnd:assetDisplayStartToEnd andAssetDisplayBottomUp:assetDisplayBottomUp] andincludeMetadata:NO andIncludeAssetResourcesMetadata:resourcesMetadata];
-                [albumDictionary setObject:previewAssets forKey:@"previewAssets"];
+                dispatch_group_t group = dispatch_group_create();
+                dispatch_group_enter(group);
+                [PHAssetsService assetsArrayToUriArray:[PHAssetsService getAssetsForFetchResult:assets startIndex:0 endIndex:(numberOfPreviewAssets - 1) assetDisplayStartToEnd:assetDisplayStartToEnd andAssetDisplayBottomUp:assetDisplayBottomUp] andincludeMetadata:NO andIncludeAssetResourcesMetadata:resourcesMetadata withCompletionBlock:^(NSArray<NSDictionary *> *arr) {
+                    [albumDictionary setObject:arr forKey:@"previewAssets"];
+                    dispatch_group_leave(group);
+                }];
+                dispatch_group_wait(group,  DISPATCH_TIME_FOREVER);
             }
             
         }

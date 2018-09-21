@@ -27,7 +27,7 @@
 
 - (void)photoLibraryDidChange:(PHChange *)changeInstance {
     if(changeInstance != nil) {
-
+        dispatch_group_t group = dispatch_group_create();
         NSMutableDictionary<NSString *, PHCachedFetchResult *> *previousFetches = [[PHCache sharedPHCache] fetchResults];
 
         [previousFetches enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull uuid, PHCachedFetchResult * _Nonnull cachedFetchResult, BOOL * _Nonnull stop) {
@@ -35,8 +35,6 @@
             PHFetchResultChangeDetails *changeDetails = [changeInstance changeDetailsForFetchResult:cachedFetchResult.fetchResult];
 
             if(changeDetails != nil) {
-
-
                 BOOL trackInsertsAndDeletes = [RCTConvert BOOL:cachedFetchResult.originalFetchParams[@"trackInsertsAndDeletes"]];
                 BOOL trackChanges = [RCTConvert BOOL:cachedFetchResult.originalFetchParams[@"trackChanges"]];
 
@@ -77,15 +75,19 @@
                         if([object isKindOfClass:[PHAsset class]]) {
                             BOOL includeMetadata = [RCTConvert BOOL:cachedFetchResult.originalFetchParams[@"includeMetadata"]];
                             BOOL includeResourcesMetadata = [RCTConvert BOOL:cachedFetchResult.originalFetchParams[@"includeResourcesMetadata"]];
-
-                            NSDictionary *insertedObject = [[PHAssetsService assetsArrayToUriArray:@[object] andincludeMetadata:includeMetadata andIncludeAssetResourcesMetadata:includeResourcesMetadata] objectAtIndex:0];
-                            NSNumber *collectionIndex = [insertedIndexes objectAtIndex:i];
-                            NSMutableDictionary *mutableInsertedDict = [insertedObject mutableCopy];
-                            [mutableInsertedDict setObject:collectionIndex forKey:@"collectionIndex"];
-                            [insertedObjects addObject:@{
-                                                         @"index" : collectionIndex,
-                                                         @"obj" : mutableInsertedDict
-                                                         }];
+                            dispatch_group_enter(group);
+                            [PHAssetsService assetsArrayToUriArray:@[object] andincludeMetadata:includeMetadata andIncludeAssetResourcesMetadata:includeResourcesMetadata withCompletionBlock:^(NSArray<NSDictionary *> *arr) {
+                                NSDictionary *insertedObject = [arr objectAtIndex:0];
+                                NSNumber *collectionIndex = [insertedIndexes objectAtIndex:i];
+                                NSMutableDictionary *mutableInsertedDict = [insertedObject mutableCopy];
+                                [mutableInsertedDict setObject:collectionIndex forKey:@"collectionIndex"];
+                                [insertedObjects addObject:@{
+                                                             @"index" : collectionIndex,
+                                                             @"obj" : mutableInsertedDict
+                                                             }];
+                                dispatch_group_leave(group);
+                            }];
+                            dispatch_group_wait(group,  DISPATCH_TIME_FOREVER);
                         }
                     }
                 }
@@ -112,14 +114,19 @@
 
                             BOOL includeMetadata = [RCTConvert BOOL:cachedFetchResult.originalFetchParams[@"includeMetadata"]];
                             BOOL includeResourcesMetadata = [RCTConvert BOOL:cachedFetchResult.originalFetchParams[@"includeResourcesMetadata"]];
-                            NSDictionary *changedObject = [[PHAssetsService assetsArrayToUriArray:@[object] andincludeMetadata:includeMetadata andIncludeAssetResourcesMetadata:includeResourcesMetadata] objectAtIndex:0];
-                            NSNumber *collectionIndex = [changedIndexes objectAtIndex:i];
-                            NSMutableDictionary *mutableChangedDict = [changedObject mutableCopy];
-                            [mutableChangedDict setObject:collectionIndex forKey:@"collectionIndex"];
-                            [changedObjects addObject:@{
-                                                        @"index" : collectionIndex,
-                                                        @"obj" : mutableChangedDict
-                                                        }];
+                            dispatch_group_enter(group);
+                            [PHAssetsService assetsArrayToUriArray:@[object] andincludeMetadata:includeMetadata andIncludeAssetResourcesMetadata:includeResourcesMetadata withCompletionBlock:^(NSArray<NSDictionary *> *arr) {
+                                NSDictionary *changedObject = [arr objectAtIndex:0];
+                                NSNumber *collectionIndex = [insertedIndexes objectAtIndex:i];
+                                NSMutableDictionary *mutableChangedDict = [changedObject mutableCopy];
+                                [mutableChangedDict setObject:collectionIndex forKey:@"collectionIndex"];
+                                [changedObjects addObject:@{
+                                                            @"index" : collectionIndex,
+                                                            @"obj" : mutableChangedDict
+                                                            }];
+                                dispatch_group_leave(group);
+                            }];
+                            dispatch_group_wait(group,  DISPATCH_TIME_FOREVER);
                         }
 
                     }

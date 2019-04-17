@@ -45,7 +45,7 @@ const findPluginInFolder = (folder) => {
         return acc.concat(pkg);
       }
       if (isReactNativePlugin(pkg)) {
-        const pkgJson = readPackage(path.join(folder, 'node_modules', pkg));
+        const pkgJson = readPackage(path.join(folder, 'nODE_modules', pkg));
         if (!pkgJson) {
           return acc;
         }

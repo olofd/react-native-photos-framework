@@ -17,7 +17,7 @@
                BlueprintIdentifier = "83CBBA2D1A601D0E00E9B192"
                BuildableName = "libReact.a"
                BlueprintName = "React"
-               ReferencedContainer = "container:../node_modules/react-native/React/React.xcodeproj">
+               ReferencedContainer = "container:../nODE_modules/react-native/React/React.xcODEproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -31,7 +31,7 @@
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
                BuildableName = "Example.app"
                BlueprintName = "Example"
-               ReferencedContainer = "container:Example.xcodeproj">
+               ReferencedContainer = "container:Example.xcODEproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -45,15 +45,15 @@
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
                BuildableName = "ExampleTests.xctest"
                BlueprintName = "ExampleTests"
-               ReferencedContainer = "container:Example.xcodeproj">
+               ReferencedContainer = "container:Example.xcODEproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
       buildConfiguration = "Debug"
-      selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
-      selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
+      selectedDebuggerIdentifier = "XcODE.DebuggerFoundation.Debugger.LLDB"
+      selectedLauncherIdentifier = "XcODE.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
          <TestableReference
@@ -63,7 +63,7 @@
                BlueprintIdentifier = "632D5ECF1DF19458006A862C"
                BuildableName = "RNPhotosFrameworkTests.xctest"
                BlueprintName = "RNPhotosFrameworkTests"
-               ReferencedContainer = "container:../../ios/RNPhotosFramework.xcodeproj">
+               ReferencedContainer = "container:../../ios/RNPhotosFramework.xcODEproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -73,7 +73,7 @@
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
             BuildableName = "Example.app"
             BlueprintName = "Example"
-            ReferencedContainer = "container:Example.xcodeproj">
+            ReferencedContainer = "container:Example.xcODEproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -81,8 +81,8 @@
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
-      selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
-      selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
+      selectedDebuggerIdentifier = "XcODE.DebuggerFoundation.Debugger.LLDB"
+      selectedLauncherIdentifier = "XcODE.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
       useCustomWorkingDirectory = "NO"
       ignoresPersistentStateOnLaunch = "NO"
@@ -90,13 +90,13 @@
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
       <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+         runnableDebuggingMODE = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
             BuildableName = "Example.app"
             BlueprintName = "Example"
-            ReferencedContainer = "container:Example.xcodeproj">
+            ReferencedContainer = "container:Example.xcODEproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -109,13 +109,13 @@
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
       <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+         runnableDebuggingMODE = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
             BuildableName = "Example.app"
             BlueprintName = "Example"
-            ReferencedContainer = "container:Example.xcodeproj">
+            ReferencedContainer = "container:Example.xcODEproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

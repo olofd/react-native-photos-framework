@@ -2,7 +2,7 @@
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
+ * This source cODE is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
@@ -29,7 +29,7 @@ function dependencies(argv, config, args, packagerInstance) {
     blacklistRE: config.getBlacklistRE(args.platform),
     getTransformOptionsModulePath: config.getTransformOptionsModulePath,
     transformModulePath: transformModulePath,
-    extraNodeModules: config.extraNodeModules,
+    extraNODEModules: config.extraNODEModules,
     verbose: config.verbose,
   };
 
@@ -57,7 +57,7 @@ function dependencies(argv, config, args, packagerInstance) {
       deps.forEach(modulePath => {
         // Temporary hack to disable listing dependencies not under this directory.
         // Long term, we need either
-        // (a) JS code to not depend on anything outside this directory, or
+        // (a) JS cODE to not depend on anything outside this directory, or
         // (b) Come up with a way to declare this dependency in Buck.
         const isInsideProjectRoots = packageOpts.projectRoots.filter(
           root => modulePath.startsWith(root)
@@ -68,7 +68,7 @@ function dependencies(argv, config, args, packagerInstance) {
         }
       });
       return writeToFile
-        ? Promise.denodeify(outStream.end).bind(outStream)()
+        ? Promise.denODEify(outStream.end).bind(outStream)()
         : Promise.resolve();
     }
   ));

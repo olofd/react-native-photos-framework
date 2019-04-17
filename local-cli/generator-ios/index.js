@@ -2,7 +2,7 @@
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
+ * This source cODE is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
@@ -33,15 +33,15 @@ module.exports = yeoman.generators.NamedBase.extend({
       this.destinationPath(path.join('ios', this.name + 'Tests', 'Info.plist'))
     );
 
-    // SomeApp/ios/SomeApp.xcodeproj
+    // SomeApp/ios/SomeApp.xcODEproj
     this.fs.copyTpl(
-      this.templatePath(path.join('xcodeproj', 'project.pbxproj')),
-      this.destinationPath(path.join('ios', this.name + '.xcodeproj', 'project.pbxproj')),
+      this.templatePath(path.join('xcODEproj', 'project.pbxproj')),
+      this.destinationPath(path.join('ios', this.name + '.xcODEproj', 'project.pbxproj')),
       templateVars
     );
     this.fs.copyTpl(
-      this.templatePath(path.join('xcodeproj', 'xcshareddata', 'xcschemes', '_xcscheme')),
-      this.destinationPath(path.join('ios', this.name + '.xcodeproj', 'xcshareddata', 'xcschemes', this.name + '.xcscheme')),
+      this.templatePath(path.join('xcODEproj', 'xcshareddata', 'xcschemes', '_xcscheme')),
+      this.destinationPath(path.join('ios', this.name + '.xcODEproj', 'xcshareddata', 'xcschemes', this.name + '.xcscheme')),
       templateVars
     );
   },
@@ -52,7 +52,7 @@ module.exports = yeoman.generators.NamedBase.extend({
     this.log(chalk.white('   cd ' + this.destinationRoot()));
     this.log(chalk.white('   react-native run-ios'));
     this.log(chalk.white('   - or -'));
-    this.log(chalk.white('   Open ' + projectPath + '.xcodeproj in Xcode'));
+    this.log(chalk.white('   Open ' + projectPath + '.xcODEproj in XcODE'));
     this.log(chalk.white('   Hit the Run button'));
   }
 });

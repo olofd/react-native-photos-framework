@@ -13,7 +13,7 @@ import uuidGenerator from "./uuid-generator";
 const RNPFManager = NativeModules.RNPFManager;
 if (!RNPFManager && Platform.OS === "ios") {
     throw new Error(
-        "Could not find react-native-photos-framework's native module. It seems it's not linked correctly in your xcode-project."
+        "Could not find react-native-photos-framework's native module. It seems it's not linked correctly in your xcODE-project."
     );
 }
 export const eventEmitter = new EventEmitter();

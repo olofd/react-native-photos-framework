@@ -21,7 +21,7 @@
     "native",
     "camera",
     "photo",
-    "code"
+    "cODE"
   ],
   "files": [
     "LICENSE",
@@ -35,9 +35,9 @@
     "react-native-photos-framework.podspec"
   ],
   "scripts": {
-    "postinstall": "node install.js",
+    "postinstall": "nODE install.js",
     "test": "jest",
-    "test-ios": "set -o pipefail && xcodebuild test -verbose -project example/ios/Example.xcodeproj -scheme Example -destination 'id=E40727B3-41FB-4D6E-B4CB-BFA87109EB12' | xcpretty",
+    "test-ios": "set -o pipefail && xcODEbuild test -verbose -project example/ios/Example.xcODEproj -scheme Example -destination 'id=E40727B3-41FB-4D6E-B4CB-BFA87109EB12' | xcpretty",
     "update": "git add . && git commit -m \"Updated\" && npm version patch && git push --tags && git push origin master && npm publish",
     "update-small": "git add . && git commit -m \"Updated\" && git push origin master"
   },
@@ -52,7 +52,7 @@
   },
   "jest": {
     "testPathIgnorePatterns": [
-      "/node_modules/",
+      "/nODE_modules/",
       "/example/",
       "local-cli/"
     ]

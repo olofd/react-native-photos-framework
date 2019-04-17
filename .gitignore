@@ -2,15 +2,15 @@
 #
 .DS_Store
 
-# Xcode
+# XcODE
 #
 build/
 *.pbxuser
 !default.pbxuser
-*.mode1v3
-!default.mode1v3
-*.mode2v3
-!default.mode2v3
+*.mODE1v3
+!default.mODE1v3
+*.mODE2v3
+!default.mODE2v3
 *.perspectivev3
 !default.perspectivev3
 xcuserdata
@@ -28,14 +28,15 @@ project.xcworkspace
 .gradle
 local.properties
 
-# node.js
+# nODE.js
 #
-node_modules/
+nODE_modules/
 npm-debug.log
 
 article-web/article-web.zip
 example/react-native-photos-framework/src/
 
 # REMINDER: do not edit Icon^M^M Carriage Returns
-Icon
+Icon
+
 # END REMINDER

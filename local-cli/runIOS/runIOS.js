@@ -2,7 +2,7 @@
 * Copyright (c) 2015-present, Facebook, Inc.
 * All rights reserved.
 *
-* This source code is licensed under the BSD-style license found in the
+* This source cODE is licensed under the BSD-style license found in the
 * LICENSE file in the root directory of this source tree. An additional grant
 * of patent rights can be found in the PATENTS file in the same directory.
 */
@@ -11,27 +11,27 @@
 const child_process = require('child_process');
 const fs = require('fs');
 const path = require('path');
-const findXcodeProject = require('./findXcodeProject');
+const findXcODEProject = require('./findXcODEProject');
 const parseIOSDevicesList = require('./parseIOSDevicesList');
 const findMatchingSimulator = require('./findMatchingSimulator');
 
 function runIOS(argv, config, args) {
   process.chdir(args.projectPath);
-  const xcodeProject = findXcodeProject(fs.readdirSync('.'));
-  if (!xcodeProject) {
-    throw new Error('Could not find Xcode project files in ios folder');
+  const xcODEProject = findXcODEProject(fs.readdirSync('.'));
+  if (!xcODEProject) {
+    throw new Error('Could not find XcODE project files in ios folder');
   }
 
-  const inferredSchemeName = path.basename(xcodeProject.name, path.extname(xcodeProject.name));
+  const inferredSchemeName = path.basename(xcODEProject.name, path.extname(xcODEProject.name));
   const scheme = args.scheme || inferredSchemeName;
-  console.log(`Found Xcode ${xcodeProject.isWorkspace ? 'workspace' : 'project'} ${xcodeProject.name}`);
+  console.log(`Found XcODE ${xcODEProject.isWorkspace ? 'workspace' : 'project'} ${xcODEProject.name}`);
   const devices = parseIOSDevicesList(
     child_process.execFileSync('xcrun', ['instruments', '-s'], {encoding: 'utf8'})
   );
   if (args.device) {
     const selectedDevice = matchingDevice(devices, args.device);
     if (selectedDevice){
-      runOnDevice(selectedDevice, scheme, xcodeProject);
+      runOnDevice(selectedDevice, scheme, xcODEProject);
     } else {
       if (devices){
         console.log('Could not find device with the name: "' + args.device + '".');
@@ -42,16 +42,16 @@ function runIOS(argv, config, args) {
       }
     }
   } else if (args.udid) {
-    runOnDeviceByUdid(args.udid, scheme, xcodeProject, devices);
+    runOnDeviceByUdid(args.udid, scheme, xcODEProject, devices);
   } else {
-    runOnSimulator(xcodeProject, args, inferredSchemeName, scheme);
+    runOnSimulator(xcODEProject, args, inferredSchemeName, scheme);
   }
 }
 
-function runOnDeviceByUdid(udid, scheme, xcodeProject, devices) {
+function runOnDeviceByUdid(udid, scheme, xcODEProject, devices) {
   const selectedDevice = matchingDeviceByUdid(devices, udid);
   if (selectedDevice){
-    runOnDevice(selectedDevice, scheme, xcodeProject);
+    runOnDevice(selectedDevice, scheme, xcODEProject);
   } else {
     if (devices){
       console.log('Could not find device with the udid: "' + udid + '".');
@@ -63,7 +63,7 @@ function runOnDeviceByUdid(udid, scheme, xcodeProject, devices) {
   }
 }
 
-function runOnSimulator(xcodeProject, args, inferredSchemeName, scheme){
+function runOnSimulator(xcODEProject, args, inferredSchemeName, scheme){
   try {
     var simulators = JSON.parse(
     child_process.execFileSync('xcrun', ['simctl', 'list', '--json', 'devices'], {encoding: 'utf8'})
@@ -86,7 +86,7 @@ function runOnSimulator(xcodeProject, args, inferredSchemeName, scheme){
     // but we want it to only launch the simulator
   }
 
-  buildProject(xcodeProject, selectedSimulator.udid, scheme);
+  buildProject(xcODEProject, selectedSimulator.udid, scheme);
 
   const appPath = `build/Build/Products/Debug-iphonesimulator/${inferredSchemeName}.app`;
   console.log(`Installing ${appPath}`);
@@ -102,8 +102,8 @@ function runOnSimulator(xcodeProject, args, inferredSchemeName, scheme){
   child_process.spawnSync('xcrun', ['simctl', 'launch', 'booted', bundleID], {stdio: 'inherit'});
 }
 
-function runOnDevice(selectedDevice, scheme, xcodeProject){
-  buildProject(xcodeProject, selectedDevice.udid, scheme);
+function runOnDevice(selectedDevice, scheme, xcODEProject){
+  buildProject(xcODEProject, selectedDevice.udid, scheme);
   const iosDeployInstallArgs = [
     '--bundle', 'build/Build/Products/Debug-iphoneos/' + scheme + '.app',
     '--id' , selectedDevice.udid,
@@ -121,15 +121,15 @@ function runOnDevice(selectedDevice, scheme, xcodeProject){
   }
 }
 
-function buildProject(xcodeProject, udid, scheme) {
-  const xcodebuildArgs = [
-    xcodeProject.isWorkspace ? '-workspace' : '-project', xcodeProject.name,
+function buildProject(xcODEProject, udid, scheme) {
+  const xcODEbuildArgs = [
+    xcODEProject.isWorkspace ? '-workspace' : '-project', xcODEProject.name,
     '-scheme', scheme,
     '-destination', `id=${udid}`,
     '-derivedDataPath', 'build',
   ];
-  console.log(`Building using "xcodebuild ${xcodebuildArgs.join(' ')}"`);
-  child_process.spawnSync('xcodebuild', xcodebuildArgs, {stdio: 'inherit'});
+  console.log(`Building using "xcODEbuild ${xcODEbuildArgs.join(' ')}"`);
+  child_process.spawnSync('xcODEbuild', xcODEbuildArgs, {stdio: 'inherit'});
 }
 
 function matchingDevice(devices, deviceName) {
@@ -182,11 +182,11 @@ module.exports = {
     default: 'iPhone 6',
   }, {
     command: '--scheme [string]',
-    description: 'Explicitly set Xcode scheme to use',
+    description: 'Explicitly set XcODE scheme to use',
   }, {
     command: '--project-path [string]',
-    description: 'Path relative to project root where the Xcode project '
-      + '(.xcodeproj) lives. The default is \'ios\'.',
+    description: 'Path relative to project root where the XcODE project '
+      + '(.xcODEproj) lives. The default is \'ios\'.',
     default: 'ios',
   }, {
     command: '--device [string]',

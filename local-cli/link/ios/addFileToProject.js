@@ -1,7 +1,7 @@
-const PbxFile = require('xcode/lib/pbxFile');
+const PbxFile = require('xcODE/lib/pbxFile');
 
 /**
- * Given xcodeproj and filePath, it creates new file
+ * Given xcODEproj and filePath, it creates new file
  * from path provided, adds it to the project
  * and returns newly created instance of a file
  */

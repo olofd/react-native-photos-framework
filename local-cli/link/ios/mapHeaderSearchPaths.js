@@ -1,5 +1,5 @@
 /**
- * Given Xcode project and path, iterate over all build configurations
+ * Given XcODE project and path, iterate over all build configurations
  * and execute func with HEADER_SEARCH_PATHS from current section
  *
  * We cannot use builtin addToHeaderSearchPaths method since react-native init does not

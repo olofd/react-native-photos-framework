@@ -2,15 +2,15 @@
 #
 .DS_Store
 
-# Xcode
+# XcODE
 #
 build/
 *.pbxuser
 !default.pbxuser
-*.mode1v3
-!default.mode1v3
-*.mode2v3
-!default.mode2v3
+*.mODE1v3
+!default.mODE1v3
+*.mODE2v3
+!default.mODE2v3
 *.perspectivev3
 !default.perspectivev3
 xcuserdata
@@ -30,9 +30,9 @@ build/
 local.properties
 *.iml
 
-# node.js
+# nODE.js
 #
-node_modules/
+nODE_modules/
 npm-debug.log
 
 # BUCK

@@ -1,4 +1,4 @@
-const xcode = require('xcode');
+const xcODE = require('xcODE');
 const path = require('path');
 const fs = require('fs');
 const difference = require('lodash').difference;
@@ -20,8 +20,8 @@ const removeSharedLibraries = require('./removeSharedLibraries');
  * If library is already unlinked, this action is a no-op.
  */
 module.exports = function unregisterNativeModule(dependencyConfig, projectConfig, iOSDependencies) {
-  const project = xcode.project(projectConfig.pbxprojPath).parseSync();
-  const dependencyProject = xcode.project(dependencyConfig.pbxprojPath).parseSync();
+  const project = xcODE.project(projectConfig.pbxprojPath).parseSync();
+  const dependencyProject = xcODE.project(dependencyConfig.pbxprojPath).parseSync();
 
   const libraries = getGroup(project, projectConfig.libraryFolder);
 

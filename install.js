@@ -4,7 +4,7 @@ const configPath = path.join(process.cwd(), '../../package.json');
 if (fs.existsSync(configPath)) {
     const rnpmConfig = require('./local-cli/core/config');
     const link = require('./local-cli/link/link.js');
-    const xcode = require('xcode');
+    const xcODE = require('xcODE');
     const getPlist = require('./local-cli/link/ios/getPlist');
     const getPlistPath = require('./local-cli/link/ios/getPlistPath');
     const plistParser = require('plist');
@@ -15,7 +15,7 @@ if (fs.existsSync(configPath)) {
     };
 
     const projectConfig = config.getProjectConfig(path.join(process.cwd(), '../../'));
-    const project = xcode.project(projectConfig.ios.pbxprojPath).parseSync();
+    const project = xcODE.project(projectConfig.ios.pbxprojPath).parseSync();
     const plist = getPlist(project, projectConfig.ios.sourceDir);
     if (!plist.NSPhotoLibraryUsageDescription) {
         plist.NSPhotoLibraryUsageDescription = 'Using photo library to select pictures';

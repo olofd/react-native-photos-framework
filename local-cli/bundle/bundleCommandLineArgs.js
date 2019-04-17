@@ -2,7 +2,7 @@
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
+ * This source cODE is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
@@ -35,7 +35,7 @@ module.exports = [
     description: 'File name where to store the resulting bundle, ex. /tmp/groups.bundle',
   }, {
     command: '--bundle-encoding [string]',
-    description: 'Encoding the bundle should be written in (https://nodejs.org/api/buffer.html#buffer_buffer).',
+    description: 'Encoding the bundle should be written in (https://nODEjs.org/api/buffer.html#buffer_buffer).',
     default: 'utf8',
   }, {
     command: '--sourcemap-output [string]',

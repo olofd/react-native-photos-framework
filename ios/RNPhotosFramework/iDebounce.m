@@ -29,7 +29,7 @@
         }
 
 
-        [[NSRunLoop mainRunLoop] addTimer:[NSTimer scheduledTimerWithTimeInterval:seconds target:instance selector:@selector( executeDebouncedBlockForTimer: ) userInfo:@{ @"name": identifier } repeats:NO] forMode:NSRunLoopCommonModes];
+        [[NSRunLoop mainRunLoop] addTimer:[NSTimer scheduledTimerWithTimeInterval:seconds target:instance selector:@selector( executeDebouncedBlockForTimer: ) userInfo:@{ @"name": identifier } repeats:NO] forMODE:NSRunLoopCommonMODEs];
 
         [instance.iDebounceBlockMap setObject:block forKey:identifier];
     });

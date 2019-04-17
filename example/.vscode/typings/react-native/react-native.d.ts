@@ -122,7 +122,7 @@ declare namespace  __React {
     export var Promise: PromiseConstructor;
 
     //TODO: BGR: Replace with ComponentClass ?
-    // node_modules/react-tools/src/classic/class/ReactClass.js
+    // nODE_modules/react-tools/src/classic/class/ReactClass.js
     export interface ReactClass<D, P, S> {
         // TODO:
     }
@@ -130,7 +130,7 @@ declare namespace  __React {
     // see react-jsx.d.ts
     export function createElement<P>( type: React.ReactType,
                                       props?: P,
-                                      ...children: React.ReactNode[] ): React.ReactElement<P>;
+                                      ...children: React.ReactNODE[] ): React.ReactElement<P>;
 
 
     export type Runnable = ( appParameters: any ) => void;
@@ -184,7 +184,7 @@ declare namespace  __React {
         pageY: number
 
         /**
-         * The node id of the element receiving the touch event
+         * The nODE id of the element receiving the touch event
          */
         target: string
 
@@ -454,7 +454,7 @@ declare namespace  __React {
          * enum('never', 'while-editing', 'unless-editing', 'always')
          * When the clear button should appear on the right side of the text view
          */
-        clearButtonMode?: string
+        clearButtonMODE?: string
 
         /**
          * If true, clears the text field automatically when editing begins
@@ -752,7 +752,7 @@ declare namespace  __React {
 
         /**
          * onStartShouldSetResponder and onMoveShouldSetResponder are called with a bubbling pattern,
-         * where the deepest node is called first.
+         * where the deepest nODE is called first.
          * That means that the deepest component will become responder when multiple Views return true for *ShouldSetResponder handlers.
          * This is desirable in most cases, because it makes sure all controls and buttons are usable.
          *
@@ -767,7 +767,7 @@ declare namespace  __React {
 
         /**
          * onStartShouldSetResponder and onMoveShouldSetResponder are called with a bubbling pattern,
-         * where the deepest node is called first.
+         * where the deepest nODE is called first.
          * That means that the deepest component will become responder when multiple Views return true for *ShouldSetResponder handlers.
          * This is desirable in most cases, because it makes sure all controls and buttons are usable.
          *
@@ -901,7 +901,7 @@ declare namespace  __React {
     export interface ViewProperties extends ViewPropertiesAndroid, ViewPropertiesIOS, GestureResponderHandlers, Touchable, React.Props<ViewStatic> {
 
         /**
-         * Overrides the text that's read by the screen reader when the user interacts with the element. By default, the label is constructed by traversing all the children and accumulating all the Text nodes separated by space.
+         * Overrides the text that's read by the screen reader when the user interacts with the element. By default, the label is constructed by traversing all the children and accumulating all the Text nODEs separated by space.
          */
         accessibilityLabel?: string;
 
@@ -948,7 +948,7 @@ declare namespace  __React {
          *   pointer-events: none;
          * }
          *
-         * But since pointerEvents does not affect layout/appearance, and we are already deviating from the spec by adding additional modes,
+         * But since pointerEvents does not affect layout/appearance, and we are already deviating from the spec by adding additional mODEs,
          * we opt to not include pointerEvents on style. On some platforms, we would need to implement it as a className anyways. Using style or not is an implementation detail of the platform.
          */
         pointerEvents?: string;
@@ -980,7 +980,7 @@ declare namespace  __React {
     }
 
     /**
-     * //FIXME: No documentation extracted from code comment on WebView.ios.js
+     * //FIXME: No documentation extracted from cODE comment on WebView.ios.js
      */
     export interface NavState {
 
@@ -1243,9 +1243,9 @@ declare namespace  __React {
 
         /**
          *  enum('date', 'time', 'datetime')
-         *  The date picker mode.
+         *  The date picker mODE.
          */
-        mode?: string
+        mODE?: string
 
         /**
          * Date change handler.
@@ -1435,9 +1435,9 @@ declare namespace  __React {
 
 
     /**
-     * @see ImageResizeMode.js
+     * @see ImageResizeMODE.js
      */
-    export interface ImageResizeModeStatic {
+    export interface ImageResizeMODEStatic {
         /**
          * contain - The image will be resized such that it will be completely
          * visible, contained within the frame of the View.
@@ -1461,7 +1461,7 @@ declare namespace  __React {
      * @see https://facebook.github.io/react-native/docs/image.html#style
      */
     export interface ImageStyle extends FlexStyle, TransformsStyle {
-        resizeMode?: string //Obttct.keys(ImageResizeMode)
+        resizeMODE?: string //Obttct.keys(ImageResizeMODE)
         backgroundColor?: string
         borderColor?: string
         borderWidth?: number
@@ -1540,7 +1540,7 @@ declare namespace  __React {
          *
          * enum('cover', 'contain', 'stretch')
          */
-        resizeMode?: string;
+        resizeMODE?: string;
 
         /**
          * uri is a string representing the resource identifier for the image,
@@ -1564,7 +1564,7 @@ declare namespace  __React {
 
     export interface ImageStatic extends React.ComponentClass<ImageProperties> {
         uri: string;
-        resizeMode: ImageResizeModeStatic
+        resizeMODE: ImageResizeMODEStatic
     }
 
 
@@ -2001,8 +2001,8 @@ declare namespace  __React {
     /**
      * A wrapper for making views respond properly to touches (Android only).
      * On Android this component uses native state drawable to display touch feedback.
-     * At the moment it only supports having a single View instance as a child node,
-     * as it's implemented by replacing that View with another instance of RCTView node with some additional properties set.
+     * At the moment it only supports having a single View instance as a child nODE,
+     * as it's implemented by replacing that View with another instance of RCTView nODE with some additional properties set.
      *
      * Background drawable of native feedback touchable can be customized with background property.
      *
@@ -2293,7 +2293,7 @@ declare namespace  __React {
     }
 
     /**
-     * //FIXME: Could not find docs. Inferred from examples and jscode : ListViewDataSource.js
+     * //FIXME: Could not find docs. Inferred from examples and jscODE : ListViewDataSource.js
      */
     export interface DataSourceAssetCallback {
         rowHasChanged?: ( r1: any, r2: any ) => boolean
@@ -2303,7 +2303,7 @@ declare namespace  __React {
     }
 
     /**
-     * //FIXME: Could not find docs. Inferred from examples and js code: ListViewDataSource.js
+     * //FIXME: Could not find docs. Inferred from examples and js cODE: ListViewDataSource.js
      */
     export interface ListViewDataSource {
         new( onAsset: DataSourceAssetCallback ): ListViewDataSource;
@@ -2616,7 +2616,7 @@ declare namespace  __React {
 
         /**
          * This controls how often the scroll event will be fired while scrolling (in events per seconds).
-         * A higher number yields better accuracy for code that is tracking the scroll position,
+         * A higher number yields better accuracy for cODE that is tracking the scroll position,
          * but can lead to scroll performance problems due to the volume of information being send over the bridge.
          * The default value is zero, which means the scroll event will be sent only once each time the view is scrolled.
          */
@@ -2698,7 +2698,7 @@ declare namespace  __React {
          *     and moves in synchrony with the touch; dragging upwards cancels the
          *     dismissal.
          */
-        keyboardDismissMode?: string
+        keyboardDismissMODE?: string
 
         /**
          * When false tapping outside of the focused text input when the keyboard
@@ -2934,7 +2934,7 @@ declare namespace  __React {
         assetType?: string
     }
 
-    export interface CameraRollNodeInfo {
+    export interface CameraRollNODEInfo {
         image: Image;
         group_name: string;
         timestamp: number;
@@ -2942,7 +2942,7 @@ declare namespace  __React {
     }
 
     export interface CameraRollEdgeInfo {
-        node: CameraRollNodeInfo;
+        nODE: CameraRollNODEInfo;
     }
 
     export interface CameraRollAssetInfo {
@@ -3145,8 +3145,8 @@ declare namespace  __React {
          *  as well.
          *
          *  Be careful with onStartShould* callbacks. They only reflect updated
-         *  `gestureState` for start/end events that bubble/capture to the Node.
-         *  Once the node is the responder, you can rely on every start/end event
+         *  `gestureState` for start/end events that bubble/capture to the NODE.
+         *  Once the nODE is the responder, you can rely on every start/end event
          *  being processed by the gesture and `gestureState` being updated
          *  accordingly. (numberActiveTouches) may not be totally accurate unless you
          *  are the responder.

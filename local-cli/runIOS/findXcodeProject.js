@@ -2,7 +2,7 @@
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
+ * This source cODE is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
@@ -17,7 +17,7 @@ type ProjectInfo = {
   isWorkspace: boolean;
 }
 
-function findXcodeProject(files: Array<string>): ?ProjectInfo {
+function findXcODEProject(files: Array<string>): ?ProjectInfo {
   const sortedFiles = files.sort();
   for (let i = sortedFiles.length - 1; i >= 0; i--) {
     const fileName = files[i];
@@ -29,7 +29,7 @@ function findXcodeProject(files: Array<string>): ?ProjectInfo {
         isWorkspace: true,
       };
     }
-    if (ext === '.xcodeproj') {
+    if (ext === '.xcODEproj') {
       return {
         name: fileName,
         isWorkspace: false,
@@ -40,4 +40,4 @@ function findXcodeProject(files: Array<string>): ?ProjectInfo {
   return null;
 }
 
-module.exports = findXcodeProject;
+module.exports = findXcODEProject;

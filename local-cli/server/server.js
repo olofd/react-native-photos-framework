@@ -2,7 +2,7 @@
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
+ * This source cODE is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
@@ -43,7 +43,7 @@ function server(argv, config, args) {
   );
 
   process.on('uncaughtException', error => {
-    if (error.code === 'EADDRINUSE') {
+    if (error.cODE === 'EADDRINUSE') {
       console.log(
         chalk.bgRed.bold(' ERROR '),
         chalk.red('Packager can\'t listen on port', chalk.bold(args.port))

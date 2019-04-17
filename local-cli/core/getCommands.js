@@ -16,8 +16,8 @@ module.exports = function getCommands() {
       const name = pathToCommands.split(path.sep)[0];
 
       return attachPackage(
-        require(path.join(appRoot, 'node_modules', pathToCommands)),
-        require(path.join(appRoot, 'node_modules', name, 'package.json'))
+        require(path.join(appRoot, 'nODE_modules', pathToCommands)),
+        require(path.join(appRoot, 'nODE_modules', name, 'package.json'))
       );
     });
 

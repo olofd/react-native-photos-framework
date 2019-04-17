@@ -518,7 +518,7 @@ Delete asset.
 
 ## Images/Photo-Assets
 An Image/Photo-asset is fully compatible with RN's `<Image source={asset.image}></Image>`-tag.
-This includes all resizeModes.
+This includes all resizeMODEs.
 NOTE: Use the property `.image` on an asset for the `<Image>`-tag. Otherwise
 RN will freeze your asset object. And they are, right now at least, mutable.
 
@@ -536,23 +536,23 @@ Fetch image specific metadata for a specific image-asset, this includes formats 
 `withOptions` define special rules and options when loading an asset.
 If you want to know more about how an asset is loaded. Read below on chapter `About Asset-Loaders`.
 
-### deliveryMode
-Apple's Photo Framework will download images from iCloud on demand, and will generally be very smart about caching and loading resources quickly. You can however define how an Image should be loaded. We have 3 different options in PHImageRequestOptionsDeliveryMode:
+### deliveryMODE
+Apple's Photo Framework will download images from iCloud on demand, and will generally be very smart about caching and loading resources quickly. You can however define how an Image should be loaded. We have 3 different options in PHImageRequestOptionsDeliveryMODE:
 
 ~~~
-PHImageRequestOptionsDeliveryModeOpportunistic = 0, // client may get several image results when the call is asynchronous or will get one result when the call is synchronous
-PHImageRequestOptionsDeliveryModeHighQualityFormat = 1, // client will get one result only and it will be as asked or better than asked (sync requests are automatically processed this way regardless of the specified mode)
-PHImageRequestOptionsDeliveryModeFastFormat = 2 // client will get one result only and it may be degraded
+PHImageRequestOptionsDeliveryMODEOpportunistic = 0, // client may get several image results when the call is asynchronous or will get one result when the call is synchronous
+PHImageRequestOptionsDeliveryMODEHighQualityFormat = 1, // client will get one result only and it will be as asked or better than asked (sync requests are automatically processed this way regardless of the specified mODE)
+PHImageRequestOptionsDeliveryMODEFastFormat = 2 // client will get one result only and it may be degraded
 ~~~
 
-This library defaults to loading assets with `PHImageRequestOptionsDeliveryModeHighQualityFormat`.
+This library defaults to loading assets with `PHImageRequestOptionsDeliveryMODEHighQualityFormat`.
 This can be considered to be the same as RN normally loads images. It will simply download the image in the size of your <Image> (iCloud-images are stored in multiple sizes, and Photos Framework will download the one closest to your target size) and display it.
 
-But you can choose to use the other two deliveryMode's to. you do this by calling:
+But you can choose to use the other two deliveryMODE's to. you do this by calling:
 ~~~js
-  const assetWithNewDeliveryMode = asset.withOptions({
+  const assetWithNewDeliveryMODE = asset.withOptions({
       //one of opportunistic|highQuality|fast
-      deliveryMode : 'opportunistic'
+      deliveryMODE : 'opportunistic'
   });
 ~~~
 If you choose to use opportunistic here you will see a low-res-version of the image displayed
@@ -580,7 +580,7 @@ or add : `"react-native-video": "git://github.com/olofd/react-native-video.git#r
         ref={(ref) => {
           this.player = ref
         }}
-        resizeMode='cover'
+        resizeMODE='cover'
         muted={false}
         paused={this.state.videoPaused}  
         style={styles.thumbVideo}/>
@@ -594,13 +594,13 @@ For more info on supported properties see:
 
 | Prop  | Default  | Type | Description |
 | :------------ |:---------------:| :---------------:| :-----|
-| deliveryMode | `'automatic'` | `string/enum` | Maps to native [PHVideoRequestOptionsDeliveryMode (Apple's docs)](https://developer.apple.com/reference/photos/phvideorequestoptionsdeliverymode?language=objc).  Possible values : `automatic`, `mediumQuality`, `highQuality`, `fast`|
+| deliveryMODE | `'automatic'` | `string/enum` | Maps to native [PHVideoRequestOptionsDeliveryMODE (Apple's docs)](https://developer.apple.com/reference/photos/phvideorequestoptionsdeliverymODE?language=objc).  Possible values : `automatic`, `mediumQuality`, `highQuality`, `fast`|
 | version | `'current'` | `string/enum` | Maps to native [PHVideoRequestOptionsVersion (Apple's docs)](https://developer.apple.com/reference/photos/phvideorequestoptionsversion).  Possible values : `current`, `original`|
 
 ### withOptions example usage for video:
 ~~~js
-  const assetWithNewDeliveryMode = asset.withOptions({
-      deliveryMode : 'mediumQuality'
+  const assetWithNewDeliveryMODE = asset.withOptions({
+      deliveryMODE : 'mediumQuality'
   });
 ~~~
 
@@ -613,7 +613,7 @@ ImageLoader. When RN later gets a request to display a <Image> it will query
 all ImageLoaders loaded in the system and ask which loader can load a specific resource.
 If the resource starts with `https://` for instance, RN's own network-image-loader will take care of loading that resource. While if the scheme of the resource is `asset-library://` another ImageLoader will load that Image.
 
-This library defines it's own ImageLoader which can load images from iCloud. (RN actually already have a ImageLoader that can load iCloud images, but we define our own/extend their original loader so we can have some extra functionality on our loader. (See deliveryMode below)).
+This library defines it's own ImageLoader which can load images from iCloud. (RN actually already have a ImageLoader that can load iCloud images, but we define our own/extend their original loader so we can have some extra functionality on our loader. (See deliveryMODE below)).
 A ´uri´ that our loader can load is defined in scheme: `photos://` and localIdentifier eg: `9509A678-2A07-405F-B3C6-49FD806915CC/L0/001`
 URI-example: photos://9509A678-2A07-405F-B3C6-49FD806915CC/L0/001
 ~~~

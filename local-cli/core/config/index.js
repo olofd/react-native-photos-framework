@@ -24,14 +24,14 @@ exports.getProjectConfig = function getProjectConfig(root) {
 };
 
 /**
- * Returns a dependency config from node_modules/<package_name>
+ * Returns a dependency config from nODE_modules/<package_name>
  * @param {String} packageName Dependency name
  * @return {Object}
  */
 exports.getDependencyConfig = function getDependencyConfig(packageName, rootPath) {
-  const folder = path.join(rootPath || process.cwd(), 'node_modules', packageName);
+  const folder = path.join(rootPath || process.cwd(), 'nODE_modules', packageName);
   const rnpm = getRNPMConfig(
-    path.join(rootPath || process.cwd(), 'node_modules', packageName)
+    path.join(rootPath || process.cwd(), 'nODE_modules', packageName)
   );
 
   return Object.assign({}, rnpm, {

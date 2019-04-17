@@ -1,7 +1,7 @@
 rootProttct.name = 'Example'
 include ':react-native-fetch-blob'
-prottct(':react-native-fetch-blob').prottctDir = new File(rootProttct.prottctDir, '../node_modules/react-native-fetch-blob/android')
+prottct(':react-native-fetch-blob').prottctDir = new File(rootProttct.prottctDir, '../nODE_modules/react-native-fetch-blob/android')
 include ':react-native-video'
-prottct(':react-native-video').prottctDir = new File(rootProttct.prottctDir, '../node_modules/react-native-video/android')
+prottct(':react-native-video').prottctDir = new File(rootProttct.prottctDir, '../nODE_modules/react-native-video/android')
 
 include ':app'

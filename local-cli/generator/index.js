@@ -2,7 +2,7 @@
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
+ * This source cODE is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
@@ -56,8 +56,8 @@ module.exports = yeoman.generators.NamedBase.extend({
       this.templatePath('../../../.flowconfig'),
       this.destinationPath('.flowconfig'),
       {
-        'Libraries\/react-native\/react-native-interface.js' : 'node_modules/react-native/Libraries/react-native/react-native-interface.js',
-        '^flow/$' : 'node_modules/react-native/flow\nflow/'
+        'Libraries\/react-native\/react-native-interface.js' : 'nODE_modules/react-native/Libraries/react-native/react-native-interface.js',
+        '^flow/$' : 'nODE_modules/react-native/flow\nflow/'
       }
     );
 

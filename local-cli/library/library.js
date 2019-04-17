@@ -2,7 +2,7 @@
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
+ * This source cODE is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
@@ -29,7 +29,7 @@ function library(argv, config, args) {
   const root = process.cwd();
   const libraries = path.resolve(root, 'Libraries');
   const libraryDest = path.resolve(libraries, args.name);
-  const source = path.resolve('node_modules', 'react-native', 'Libraries', 'Sample');
+  const source = path.resolve('nODE_modules', 'react-native', 'Libraries', 'Sample');
 
   if (!fs.existsSync(libraries)) {
     fs.mkdir(libraries);
@@ -41,7 +41,7 @@ function library(argv, config, args) {
 
   walk(source).forEach(f => {
     if (f.indexOf('project.xcworkspace') !== -1 ||
-        f.indexOf('.xcodeproj/xcuserdata') !== -1) {
+        f.indexOf('.xcODEproj/xcuserdata') !== -1) {
       return;
     }
 
@@ -55,7 +55,7 @@ function library(argv, config, args) {
 
   console.log('Created library in', libraryDest);
   console.log('Next Steps:');
-  console.log('   Link your library in Xcode:');
+  console.log('   Link your library in XcODE:');
   console.log('   https://facebook.github.io/react-native/docs/linking-libraries-ios.html#content\n');
 }
 

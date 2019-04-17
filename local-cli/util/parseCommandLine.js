@@ -2,7 +2,7 @@
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
+ * This source cODE is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
@@ -58,7 +58,7 @@ function parseCommandLine(config, args) {
       argv[command] = false;
     }
     if (config[i].type === 'string') {
-      // According to https://github.com/substack/node-optimist#numbers,
+      // According to https://github.com/substack/nODE-optimist#numbers,
       // every argument that looks like a number should be converted to one.
       var strValue = argv[command];
       var numValue = strValue ? Number(strValue) : undefined;

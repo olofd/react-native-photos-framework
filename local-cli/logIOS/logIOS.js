@@ -24,7 +24,7 @@ function _logIOS() {
     );
   } catch (e) {
     console.log(chalk.red(
-      'xcrun invocation failed. Please check that Xcode is installed.'
+      'xcrun invocation failed. Please check that XcODE is installed.'
     ));
     return Promise.reject(e);
   }

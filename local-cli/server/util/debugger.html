@@ -3,7 +3,7 @@
   Copyright (c) 2015-present, Facebook, Inc.
   All rights reserved.
 
-  This source code is licensed under the BSD-style license found in the
+  This source cODE is licensed under the BSD-style license found in the
   LICENSE file in the root directory of this source tree. An additional grant
   of patent rights can be found in the PATENTS file in the same directory.
 -->
@@ -31,12 +31,12 @@ window.onload = function() {
 
 var INITIAL_MESSAGE = 'Waiting, press <span class="shortcut">' + refresh_shortcut + '</span> in simulator to reload and connect.';
 
-function connectToDebuggerProxy() {
+function connectTODEbuggerProxy() {
   var worker;
   var ws = new WebSocket('ws://' + window.location.host + '/debugger-proxy?role=debugger&name=Chrome');
 
   function createJSRuntime() {
-    // This worker will run the application javascript code,
+    // This worker will run the application javascript cODE,
     // making sure that it's run in an environment without a global
     // document, to make it consistent with the JSC executor environment.
     worker = new Worker('debuggerWorker.js');
@@ -95,16 +95,16 @@ function connectToDebuggerProxy() {
 
   ws.onclose = function(e) {
     shutdownJSRuntime();
-    setStatus('Disconnected from proxy. Attempting reconnection. Is node server running?');
+    setStatus('Disconnected from proxy. Attempting reconnection. Is nODE server running?');
     if (e.reason) {
       setStatus(e.reason);
       console.warn(e.reason);
     }
-    setTimeout(connectToDebuggerProxy, 500);
+    setTimeout(connectTODEbuggerProxy, 500);
   };
 }
 
-connectToDebuggerProxy();
+connectTODEbuggerProxy();
 
 })();
 </script>
@@ -133,7 +133,7 @@ connectToDebuggerProxy();
 <body>
   <div class="content">
     <p>
-      React Native JS code runs inside this Chrome tab.
+      React Native JS cODE runs inside this Chrome tab.
     </p>
     <p>Press <kbd id='dev_tools_shortcut' class="shortcut">⌘⌥J</kbd> to open Developer Tools. Enable <a href="https://stackoverflow.com/a/17324511/232122" target="_blank">Pause On Caught Exceptions</a> for a better debugging experience.</p>
     <p>Status: <span id="status">Loading...</span></p>

@@ -1,10 +1,10 @@
-const PbxFile = require('xcode/lib/pbxFile');
+const PbxFile = require('xcODE/lib/pbxFile');
 const removeFromPbxReferenceProxySection = require('./removeFromPbxReferenceProxySection');
 
 /**
  * Removes file from static libraries
  *
- * Similar to `node-xcode` addStaticLibrary
+ * Similar to `nODE-xcODE` addStaticLibrary
  */
 module.exports = function removeFromStaticLibraries(project, path, opts) {
   const file = new PbxFile(path);

@@ -111,12 +111,12 @@ class CameraRollPicker extends Component {
         const imageOptions = {
           loadOptions: {
             scale: 1, //defaults to 1
-            deliveryMode: 'highQuality', //defaults to highQuality, avaliable: highQuality, fast, opportunistic(should not be used)
+            deliveryMODE: 'highQuality', //defaults to highQuality, avaliable: highQuality, fast, opportunistic(should not be used)
             version : 'current', //defaults to current, also avaliable: 'original', 'unadjusted'
-            contentMode: 'fill', //default to fill, also avaliable: fit
+            contentMODE: 'fill', //default to fill, also avaliable: fit
             width: 20, //defaults to 0, 0 means original width
             height: 20, //default to 0, 0 means original height,
-            resizeMode: 'none', //Default to none if width and height is not specified, otherwise defaults fast, avaliable: 'none', 'fast', 'exact'
+            resizeMODE: 'none', //Default to none if width and height is not specified, otherwise defaults fast, avaliable: 'none', 'fast', 'exact'
             cropRect: '1000|700|500|500' //Rect to crop image to. x,y,width,height (!!Will override properies 'width' and 'height')
           },
           postProcessOptions: {
@@ -128,13 +128,13 @@ class CameraRollPicker extends Component {
 
         const videoOptions = {
           loadOptions: {
-            deliveryMode: 'automatic', //defaults to automatic, avaliable: highQuality, mediumQuality, fast
+            deliveryMODE: 'automatic', //defaults to automatic, avaliable: highQuality, mediumQuality, fast
             version : 'current' //defaults to current, also avaliable: 'original'
           },
-          //For docs on values see links provided and se string values. Can be outdate. refer to SDK in xcode for updated values
+          //For docs on values see links provided and se string values. Can be outdate. refer to SDK in xcODE for updated values
           postProcessOptions: {
             outputFileType: 'public.mpeg-4', //defaults to 'public.mpeg-4'(AVFileTypeMPEG4), other avaliable:  https://github.com/phracker/MacOSX-SDKs/blob/master/MacOSX10.7.sdk/System/Library/Frameworks/AVFoundation.framework/Versions/A/Headers/AVMediaFormat.h#L50
-            codecKey: 'avc1', //defaults to 'avc1' (AVVideoCodecH264), other avaliable: https://github.com/bruce0505/ios7frameworks/blob/master/AVFoundation/AVVideoSettings.h#L35
+            cODEcKey: 'avc1', //defaults to 'avc1' (AVVideoCODEcH264), other avaliable: https://github.com/bruce0505/ios7frameworks/blob/master/AVFoundation/AVVideoSettings.h#L35
             bitrateMultiplier: 3,
             minimumBitrate: 300000,
             width : 100,

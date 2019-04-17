@@ -56,8 +56,8 @@ RCT_EXPORT_MODULE()
      
     PHImageRequestOptions *imageOptions = [PHImageRequestOptions new];
     imageOptions.networkAccessAllowed = YES;
-    imageOptions.resizeMode = PHImageRequestOptionsResizeModeNone;
-    imageOptions.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+    imageOptions.resizeMODE = PHImageRequestOptionsResizeMODENone;
+    imageOptions.deliveryMODE = PHImageRequestOptionsDeliveryMODEHighQualityFormat;
     
     PHImageRequestID requestID =
     [[PHCachingImageManagerInstance sharedCachingManager] requestImageDataForAsset:asset options:imageOptions resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
@@ -100,7 +100,7 @@ RCT_EXPORT_MODULE()
 - (RCTImageLoaderCancellationBlock)loadImageForURL:(NSURL *)imageURL
                                               size:(CGSize)size
                                              scale:(CGFloat)scale
-                                        resizeMode:(RCTResizeMode)resizeMode
+                                        resizeMODE:(RCTResizeMODE)resizeMODE
                                    progressHandler:(RCTImageLoaderProgressBlock)progressHandler
                                 partialLoadHandler:(RCTImageLoaderPartialLoadBlock)partialLoadHandler
                                  completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
@@ -128,20 +128,20 @@ RCT_EXPORT_MODULE()
     CGSize targetSize;
     if (useMaximumSize) {
         targetSize = PHImageManagerMaximumSize;
-        imageOptions.resizeMode = PHImageRequestOptionsResizeModeNone;
+        imageOptions.resizeMODE = PHImageRequestOptionsResizeMODENone;
     } else {
         targetSize = CGSizeApplyAffineTransform(size, CGAffineTransformMakeScale(scale, scale));
-        imageOptions.resizeMode = PHImageRequestOptionsResizeModeFast;
+        imageOptions.resizeMODE = PHImageRequestOptionsResizeMODEFast;
     }
     
-    PHImageContentMode contentMode = PHImageContentModeAspectFill;
-    if (resizeMode == RCTResizeModeContain) {
-        contentMode = PHImageContentModeAspectFit;
+    PHImageContentMODE contentMODE = PHImageContentMODEAspectFill;
+    if (resizeMODE == RCTResizeMODEContain) {
+        contentMODE = PHImageContentMODEAspectFit;
     }
     
     PHImageRequestOptionsVersion version = PHImageRequestOptionsVersionCurrent;
-    __block PHImageRequestOptionsDeliveryMode deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
-    imageOptions.deliveryMode = deliveryMode;
+    __block PHImageRequestOptionsDeliveryMODE deliveryMODE = PHImageRequestOptionsDeliveryMODEHighQualityFormat;
+    imageOptions.deliveryMODE = deliveryMODE;
     imageOptions.version = version;
     
     if(imageURL.query != nil) {
@@ -149,18 +149,18 @@ RCT_EXPORT_MODULE()
                                                     resolvingAgainstBaseURL:NO];
         NSArray *queryItems = urlComponents.queryItems;
         
-        //DeliveryMode
-        NSString *deliveryModeQuery = [self valueForKey:@"deliveryMode"
+        //DeliveryMODE
+        NSString *deliveryMODEQuery = [self valueForKey:@"deliveryMODE"
                                          fromQueryItems:queryItems];
-        if(deliveryModeQuery != nil) {
-            if([deliveryModeQuery isEqualToString:@"opportunistic"]) {
-                imageOptions.deliveryMode = PHImageRequestOptionsDeliveryModeOpportunistic;
+        if(deliveryMODEQuery != nil) {
+            if([deliveryMODEQuery isEqualToString:@"opportunistic"]) {
+                imageOptions.deliveryMODE = PHImageRequestOptionsDeliveryMODEOpportunistic;
             }
-            else if([deliveryModeQuery isEqualToString:@"highQuality"]) {
-                imageOptions.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+            else if([deliveryMODEQuery isEqualToString:@"highQuality"]) {
+                imageOptions.deliveryMODE = PHImageRequestOptionsDeliveryMODEHighQualityFormat;
             }
-            else if([deliveryModeQuery isEqualToString:@"fast"]) {
-                imageOptions.deliveryMode = PHImageRequestOptionsDeliveryModeFastFormat;
+            else if([deliveryMODEQuery isEqualToString:@"fast"]) {
+                imageOptions.deliveryMODE = PHImageRequestOptionsDeliveryMODEFastFormat;
             }
         }
         
@@ -177,22 +177,22 @@ RCT_EXPORT_MODULE()
             }
         }
         
-        //ResizeMode
-        NSString *resizeModeQuery = [self valueForKey:@"resizeMode"
+        //ResizeMODE
+        NSString *resizeMODEQuery = [self valueForKey:@"resizeMODE"
                                         fromQueryItems:queryItems];
-        if(resizeModeQuery != nil) {
-            if([resizeModeQuery isEqualToString:@"none"]) {
-                imageOptions.resizeMode = PHImageRequestOptionsResizeModeNone;
+        if(resizeMODEQuery != nil) {
+            if([resizeMODEQuery isEqualToString:@"none"]) {
+                imageOptions.resizeMODE = PHImageRequestOptionsResizeMODENone;
             }
-            if([resizeModeQuery isEqualToString:@"fast"]) {
-                imageOptions.resizeMode = PHImageRequestOptionsResizeModeFast;
+            if([resizeMODEQuery isEqualToString:@"fast"]) {
+                imageOptions.resizeMODE = PHImageRequestOptionsResizeMODEFast;
             }
-            if([resizeModeQuery isEqualToString:@"exact"]) {
-                imageOptions.resizeMode = PHImageRequestOptionsResizeModeExact;
+            if([resizeMODEQuery isEqualToString:@"exact"]) {
+                imageOptions.resizeMODE = PHImageRequestOptionsResizeMODEExact;
             }
         }
         
-        //ResizeMode
+        //ResizeMODE
         NSString *normalizedCropRectQuery = [self valueForKey:@"cropRect"
                                        fromQueryItems:queryItems];
         if(normalizedCropRectQuery != nil) {
@@ -207,19 +207,19 @@ RCT_EXPORT_MODULE()
                                                                CGAffineTransformMakeScale(1.0 / asset.pixelWidth,
                                                                                           1.0 / asset.pixelHeight));
             imageOptions.normalizedCropRect = normalizedRect;
-            imageOptions.resizeMode = PHImageRequestOptionsResizeModeExact;
+            imageOptions.resizeMODE = PHImageRequestOptionsResizeMODEExact;
             targetSize = CGSizeApplyAffineTransform(CGSizeMake(width, height), CGAffineTransformMakeScale(scale, scale));
         }
         
-        //ContentMode
-        NSString *contentModeQuery = [self valueForKey:@"contentMode"
+        //ContentMODE
+        NSString *contentMODEQuery = [self valueForKey:@"contentMODE"
                                         fromQueryItems:queryItems];
-        if(contentModeQuery != nil) {
-            if([contentModeQuery isEqualToString:@"fit"]) {
-                contentMode = PHImageContentModeAspectFit;
+        if(contentMODEQuery != nil) {
+            if([contentMODEQuery isEqualToString:@"fit"]) {
+                contentMODE = PHImageContentMODEAspectFit;
             }
-            if([contentModeQuery isEqualToString:@"fill"]) {
-                contentMode = PHImageContentModeAspectFill;
+            if([contentMODEQuery isEqualToString:@"fill"]) {
+                contentMODE = PHImageContentMODEAspectFill;
             }
         }
     }
@@ -229,11 +229,11 @@ RCT_EXPORT_MODULE()
     PHImageRequestID requestID =
     [[PHCachingImageManagerInstance sharedCachingManager] requestImageForAsset:asset
                                                                     targetSize:targetSize
-                                                                   contentMode:contentMode
+                                                                   contentMODE:contentMODE
                                                                        options:imageOptions
                                                                  resultHandler:^(UIImage *result, NSDictionary<NSString *, id> *info) {
                                                                      if (result) {
-                                                                         if(deliveryMode == PHImageRequestOptionsDeliveryModeOpportunistic && [info[@"PHImageResultIsDegradedKey"] boolValue] == YES) {
+                                                                         if(deliveryMODE == PHImageRequestOptionsDeliveryMODEOpportunistic && [info[@"PHImageResultIsDegradedKey"] boolValue] == YES) {
                                                                              if (partialLoadHandler) {
                                                                                  partialLoadHandler(result);
                                                                              }

@@ -2,7 +2,7 @@
  * Copyright (c) 2016-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
+ * This source cODE is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
@@ -199,7 +199,7 @@ edgeRef.reactParent=visitorClone;
 });
 });
 // build tree of react internal instances (since that's what has the structure)
-// fill in ref.reactTree = path registry node
+// fill in ref.reactTree = path registry nODE
 forEachRef(refs,function(visitor){
 buildReactComponentTree(visitor,registry);
 });

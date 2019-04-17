@@ -2,7 +2,7 @@
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
+ * This source cODE is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
@@ -19,12 +19,12 @@ exports.SIGN_INVALID = new Error('invalid');
 
 // Thrown by sign(). Primarily for unit tests.
 exports.TokenNotFoundError = new Error(
-  'Code signing placeholder not found (expected to find \''+TOKEN+'\')');
+  'CODE signing placeholder not found (expected to find \''+TOKEN+'\')');
 
 var md5_hash_hex;
 
-// MD5 hash function for Node.js. To port this to other platforms, provide an
-// alternate code path for defining the md5_hash_hex function.
+// MD5 hash function for NODE.js. To port this to other platforms, provide an
+// alternate cODE path for defining the md5_hash_hex function.
 var crypto = require('crypto');
 md5_hash_hex = function md5_hash_hex(data, input_encoding) {
   var md5sum = crypto.createHash('md5');

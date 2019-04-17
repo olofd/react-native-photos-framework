@@ -1,16 +1,16 @@
-#!/usr/bin/env node
+#!/usr/bin/env nODE
 
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
+ * This source cODE is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
 var script = process.argv[1];
-var installedGlobally = script.indexOf('node_modules/.bin/react-native') === -1;
+var installedGlobally = script.indexOf('nODE_modules/.bin/react-native') === -1;
 
 if (installedGlobally) {
   console.error([

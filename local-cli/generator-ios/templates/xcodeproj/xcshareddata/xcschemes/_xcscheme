@@ -17,7 +17,7 @@
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
                BuildableName = "<%= name %>.app"
                BlueprintName = "<%= name %>"
-               ReferencedContainer = "container:<%= name %>.xcodeproj">
+               ReferencedContainer = "container:<%= name %>.xcODEproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -31,14 +31,14 @@
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
                BuildableName = "<%= name %>Tests.xctest"
                BlueprintName = "<%= name %>Tests"
-               ReferencedContainer = "container:<%= name %>.xcodeproj">
+               ReferencedContainer = "container:<%= name %>.xcODEproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
-      selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
-      selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
+      selectedDebuggerIdentifier = "XcODE.DebuggerFoundation.Debugger.LLDB"
+      selectedLauncherIdentifier = "XcODE.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES"
       buildConfiguration = "Debug">
       <Testables>
@@ -49,7 +49,7 @@
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
                BuildableName = "<%= name %>Tests.xctest"
                BlueprintName = "<%= name %>Tests"
-               ReferencedContainer = "container:<%= name %>.xcodeproj">
+               ReferencedContainer = "container:<%= name %>.xcODEproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -59,13 +59,13 @@
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
             BuildableName = "<%= name %>.app"
             BlueprintName = "<%= name %>"
-            ReferencedContainer = "container:<%= name %>.xcodeproj">
+            ReferencedContainer = "container:<%= name %>.xcODEproj">
          </BuildableReference>
       </MacroExpansion>
    </TestAction>
    <LaunchAction
-      selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
-      selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
+      selectedDebuggerIdentifier = "XcODE.DebuggerFoundation.Debugger.LLDB"
+      selectedLauncherIdentifier = "XcODE.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
       useCustomWorkingDirectory = "NO"
       buildConfiguration = "Debug"
@@ -73,13 +73,13 @@
       debugDocumentVersioning = "YES"
       allowLocationSimulation = "YES">
       <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+         runnableDebuggingMODE = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
             BuildableName = "<%= name %>.app"
             BlueprintName = "<%= name %>"
-            ReferencedContainer = "container:<%= name %>.xcodeproj">
+            ReferencedContainer = "container:<%= name %>.xcODEproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -92,13 +92,13 @@
       buildConfiguration = "Release"
       debugDocumentVersioning = "YES">
       <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+         runnableDebuggingMODE = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
             BuildableName = "<%= name %>.app"
             BlueprintName = "<%= name %>"
-            ReferencedContainer = "container:<%= name %>.xcodeproj">
+            ReferencedContainer = "container:<%= name %>.xcODEproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

@@ -113,7 +113,7 @@ CGImageRef RNPFCreateCGImageFromUIImageScaled( UIImage* image, float scaleFactor
     }
 
     //CGContextSetInterpolationQuality( bmContext, kCGInterpolationLow );
-    CGContextSetBlendMode( bmContext, kCGBlendModeCopy );	// we just want to copy the data
+    CGContextSetBlendMODE( bmContext, kCGBlendMODECopy );	// we just want to copy the data
 
     switch(orientation)
     {

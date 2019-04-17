@@ -2,7 +2,7 @@
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
+ * This source cODE is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
@@ -33,7 +33,7 @@ var COMMON_EDITORS = {
     '/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl',
   '/Applications/Sublime Text 2.app/Contents/MacOS/Sublime Text 2':
     '/Applications/Sublime Text 2.app/Contents/SharedSupport/bin/subl',
-  '/Applications/Visual Studio Code.app/Contents/MacOS/Electron': 'code',
+  '/Applications/Visual Studio CODE.app/Contents/MacOS/Electron': 'cODE',
 };
 
 function addWorkspaceToArgumentsIfExists(args, workspace) {
@@ -53,7 +53,7 @@ function getArgumentsForLineNumber(editor, fileName, lineNumber, workspace) {
     case 'subl':
     case 'sublime':
     case 'wstorm':
-    case 'appcode':
+    case 'appcODE':
     case 'idea':  
       return [fileName + ':' + lineNumber];
     case 'joe':
@@ -64,7 +64,7 @@ function getArgumentsForLineNumber(editor, fileName, lineNumber, workspace) {
     case 'mate':
     case 'mine':
       return ['--line', lineNumber, fileName];
-    case 'code':
+    case 'cODE':
       return addWorkspaceToArgumentsIfExists(['-g', fileName + ':' + lineNumber], workspace);
   }
 
@@ -137,7 +137,7 @@ function launchEditor(fileName, lineNumber, projectRoots) {
   }
 
   // Sanitize lineNumber to prevent malicious use on win32
-  // via: https://github.com/nodejs/node/blob/c3bb4b1aa5e907d489619fb43d233c3336bfc03d/lib/child_process.js#L333
+  // via: https://github.com/nODEjs/nODE/blob/c3bb4b1aa5e907d489619fb43d233c3336bfc03d/lib/child_process.js#L333
   if (lineNumber && isNaN(lineNumber)) {
     return;
   }
@@ -169,10 +169,10 @@ function launchEditor(fileName, lineNumber, projectRoots) {
   } else {
     _childProcess = child_process.spawn(editor, args, {stdio: 'inherit'});
   }
-  _childProcess.on('exit', function(errorCode) {
+  _childProcess.on('exit', function(errorCODE) {
     _childProcess = null;
 
-    if (errorCode) {
+    if (errorCODE) {
       console.log(chalk.red('Your editor exited with an error!'));
       printInstructions('Keep these instructions in mind:');
     }

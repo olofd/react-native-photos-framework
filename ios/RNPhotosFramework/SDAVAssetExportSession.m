@@ -7,7 +7,7 @@
 // Copyright 2013 Olivier Poitrey. All rights servered.
 //
 // For the full copyright and license information, please view the LICENSE
-// file that was distributed with this source code.
+// file that was distributed with this source cODE.
 //
 
 
@@ -60,7 +60,7 @@
 
     if (!self.outputURL)
     {
-        _error = [NSError errorWithDomain:AVFoundationErrorDomain code:AVErrorExportFailed userInfo:@
+        _error = [NSError errorWithDomain:AVFoundationErrorDomain cODE:AVErrorExportFailed userInfo:@
         {
             NSLocalizedDescriptionKey: @"Output URL not set"
         }];
@@ -176,7 +176,7 @@
     __block BOOL videoCompleted = NO;
     __block BOOL audioCompleted = NO;
     __weak typeof(self) wself = self;
-    self.inputQueue = dispatch_queue_create("VideoEncoderInputQueue", DISPATCH_QUEUE_SERIAL);
+    self.inputQueue = dispatch_queue_create("VideoEncODErInputQueue", DISPATCH_QUEUE_SERIAL);
     if (videoTracks.count > 0) {
         NSLog(@"%ld", (long)[self.writer status]);
         if(self.writer.error) {
@@ -185,7 +185,7 @@
         
         [self.videoInput requestMediaDataWhenReadyOnQueue:self.inputQueue usingBlock:^
         {
-            if (![wself encodeReadySamplesFromOutput:wself.videoOutput toInput:wself.videoInput])
+            if (![wself encODEReadySamplesFromOutput:wself.videoOutput toInput:wself.videoInput])
             {
                 @synchronized(wself)
                 {
@@ -207,7 +207,7 @@
     } else {
         [self.audioInput requestMediaDataWhenReadyOnQueue:self.inputQueue usingBlock:^
          {
-             if (![wself encodeReadySamplesFromOutput:wself.audioOutput toInput:wself.audioInput])
+             if (![wself encODEReadySamplesFromOutput:wself.audioOutput toInput:wself.audioInput])
              {
                  @synchronized(wself)
                  {
@@ -222,7 +222,7 @@
     }
 }
 
-- (BOOL)encodeReadySamplesFromOutput:(AVAssetReaderOutput *)output toInput:(AVAssetWriterInput *)input
+- (BOOL)encODEReadySamplesFromOutput:(AVAssetReaderOutput *)output toInput:(AVAssetWriterInput *)input
 {
     while (input.isReadyForMoreMediaData)
     {

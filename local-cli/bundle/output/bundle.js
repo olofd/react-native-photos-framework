@@ -2,7 +2,7 @@
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
+ * This source cODE is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
@@ -19,9 +19,9 @@ function buildBundle(packagerClient, requestOptions) {
   });
 }
 
-function createCodeWithMap(bundle, dev) {
+function createCODEWithMap(bundle, dev) {
   return {
-    code: bundle.getSource({dev}),
+    cODE: bundle.getSource({dev}),
     map: JSON.stringify(bundle.getSourceMap({dev})),
   };
 }
@@ -35,23 +35,23 @@ function saveBundleAndMap(bundle, options, log) {
   } = options;
 
   log('start');
-  const codeWithMap = createCodeWithMap(bundle, dev);
+  const cODEWithMap = createCODEWithMap(bundle, dev);
   log('finish');
 
   log('Writing bundle output to:', bundleOutput);
 
-  const {code} = codeWithMap;
-  const writeBundle = writeFile(bundleOutput, code, encoding);
+  const {cODE} = cODEWithMap;
+  const writeBundle = writeFile(bundleOutput, cODE, encoding);
   const writeMetadata = writeFile(
     bundleOutput + '.meta',
-    meta(code, encoding),
+    meta(cODE, encoding),
     'binary');
   Promise.all([writeBundle, writeMetadata])
     .then(() => log('Done writing bundle output'));
 
   if (sourcemapOutput) {
     log('Writing sourcemap output to:', sourcemapOutput);
-    const writeMap = writeFile(sourcemapOutput, codeWithMap.map, null);
+    const writeMap = writeFile(sourcemapOutput, cODEWithMap.map, null);
     writeMap.then(() => log('Done writing sourcemap output'));
     return Promise.all([writeBundle, writeMetadata, writeMap]);
   } else {

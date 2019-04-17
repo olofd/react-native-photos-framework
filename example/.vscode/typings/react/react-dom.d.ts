@@ -7,8 +7,8 @@
 
 declare namespace __React {
     namespace __DOM {
-        function findDOMNode<E extends Element>(instance: ReactInstance): E;
-        function findDOMNode(instance: ReactInstance): Element;
+        function findDOMNODE<E extends Element>(instance: ReactInstance): E;
+        function findDOMNODE(instance: ReactInstance): Element;
 
         function render<P>(
             element: DOMElement<P>,
@@ -23,7 +23,7 @@ declare namespace __React {
             container: Element,
             callback?: (component: Component<P, S>) => any): Component<P, S>;
 
-        function unmountComponentAtNode(container: Element): boolean;
+        function unmountComponentAtNODE(container: Element): boolean;
 
         var version: string;
 

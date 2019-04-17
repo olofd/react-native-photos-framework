@@ -7,7 +7,7 @@
 
 declare namespace __React {
     namespace __Addons {
-        export function createFragment(obttct: { [key: string]: ReactNode }): ReactFragment;
+        export function createFragment(obttct: { [key: string]: ReactNODE }): ReactFragment;
     }
 }
 

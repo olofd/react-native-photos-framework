@@ -427,7 +427,7 @@ RCT_EXPORT_METHOD(saveAssetsToDisk:(NSDictionary *)params
 -(void) writeImageToFile:(PHSaveAssetFileRequest *)fileRequest andCompleteBLock:(assetFileSaveOperationBlock)completeBlock andProgressBlock:(fileDownloadProgressBlock)progressBlock {
     [self loadImageWithURLRequest:fileRequest.uri
                                              clipped:YES
-                                          resizeMode:RCTResizeModeStretch
+                                          resizeMODE:RCTResizeMODEStretch
                                     progressBlock:^(int64_t progress, int64_t total) {
                                            return progressBlock(progress, total);
                                        }
@@ -638,7 +638,7 @@ andProgressBlock:(fileDownloadProgressBlock)progressBlock {
                                                     size:CGSizeZero
                                                    scale:1
                                                  clipped:YES
-                                              resizeMode:RCTResizeModeStretch
+                                              resizeMODE:RCTResizeMODEStretch
                                            progressBlock:^(int64_t progress, int64_t total) {
                                                progressBlock(progress, total);
                                            }
@@ -873,14 +873,14 @@ RCT_EXPORT_METHOD(removeAssetsFromAlbum:(NSDictionary *)params
             if(prepareScale < 0.1) {
                 prepareScale = 2;
             }
-            [cacheManager startCachingImagesForAssets:[PHAssetWithCollectionIndex toAssetsArray:assets] targetSize:CGSizeApplyAffineTransform(prepareForSizeDisplay, CGAffineTransformMakeScale(prepareScale, prepareScale)) contentMode:PHImageContentModeAspectFill options:nil];
+            [cacheManager startCachingImagesForAssets:[PHAssetWithCollectionIndex toAssetsArray:assets] targetSize:CGSizeApplyAffineTransform(prepareForSizeDisplay, CGAffineTransformMakeScale(prepareScale, prepareScale)) contentMODE:PHImageContentMODEAspectFill options:nil];
         }
     }
 }
 
 -(RCTImageLoaderCancellationBlock) loadImageWithURLRequest:(NSURLRequest *)imageURLRequest
                  clipped:(BOOL)clipped
-              resizeMode:(RCTResizeMode)resizeMode
+              resizeMODE:(RCTResizeMODE)resizeMODE
            progressBlock:(RCTImageLoaderProgressBlock)progressBlock
         partialLoadBlock:(RCTImageLoaderPartialLoadBlock)partialLoadBlock
          completionBlock:(RCTImageLoaderCompletionBlock)completionBlock
@@ -905,7 +905,7 @@ RCT_EXPORT_METHOD(removeAssetsFromAlbum:(NSDictionary *)params
                                                 size:size
                                                scale:scale
                                              clipped:clipped
-                                          resizeMode:resizeMode
+                                          resizeMODE:resizeMODE
                                        progressBlock:progressBlock
                                     partialLoadBlock:partialLoadBlock
                                      completionBlock:completionBlock];
@@ -913,7 +913,7 @@ RCT_EXPORT_METHOD(removeAssetsFromAlbum:(NSDictionary *)params
 
 -(NSArray<NSURLQueryItem *> *)parseParamsToImageLoaderQueryOptions:(NSDictionary *)params {
     
-    NSArray *allowedQueryStringValues = [NSArray arrayWithObjects:@"deliveryMode", @"version", @"resizeMode", @"cropRect", @"contentMode", nil];
+    NSArray *allowedQueryStringValues = [NSArray arrayWithObjects:@"deliveryMODE", @"version", @"resizeMODE", @"cropRect", @"contentMODE", nil];
     NSMutableArray *queryItems = [NSMutableArray array];
     if(params != nil) {
         for (NSString *key in params) {

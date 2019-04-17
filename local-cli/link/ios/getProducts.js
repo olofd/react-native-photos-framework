@@ -1,5 +1,5 @@
 /**
- * Given xcodeproj it returns list of products ending with
+ * Given xcODEproj it returns list of products ending with
  * .a extension, so that we know what elements add to target
  * project static library
  */

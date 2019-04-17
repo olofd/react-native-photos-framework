@@ -40,7 +40,7 @@ class ImageItem extends Component {
         ref={(ref) => {
           this.player = ref
         }}
-        resizeMode='cover'
+        resizeMODE='cover'
         onPlaybackRateChange={() => { } }                             // Store reference
         rate={1.0}                     // 0 is paused, 1 is normal.
         volume={1.0}                   // 0 is muted, 1 is normal.

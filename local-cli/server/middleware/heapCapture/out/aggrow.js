@@ -2,7 +2,7 @@
  * Copyright (c) 2016-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
+ * This source cODE is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
@@ -49,16 +49,16 @@ return stackIdMap[id];
 function stackRegistry(interner){// eslint-disable-line no-unused-vars
 return{
 root:{id:0},
-nodeCount:1,
-insert:function insertNode(parent,label){
+nODECount:1,
+insert:function insertNODE(parent,label){
 var labelId=interner.intern(label);
-var node=parent[labelId];
-if(node===undefined){
-node={id:this.nodeCount};
-this.nodeCount++;
-parent[labelId]=node;
+var nODE=parent[labelId];
+if(nODE===undefined){
+nODE={id:this.nODECount};
+this.nODECount++;
+parent[labelId]=nODE;
 }
-return node;
+return nODE;
 },
 flatten:function flattenStacks(){
 var stackFrameCount=0;
@@ -76,7 +76,7 @@ return false;
 }
 countStacks(this.root,0);
 console.log('size needed to store stacks: '+(stackFrameCount*4).toString()+'B');
-var stackIdMap=new Array(this.nodeCount);
+var stackIdMap=new Array(this.nODECount);
 var stackArray=new Int32Array(stackFrameCount);
 var maxStackDepth=0;
 stackFrameCount=0;
@@ -135,7 +135,7 @@ var AGGREGATOR_ID_MAX=0xffff;
 var ACTIVE_AGGREGATOR_MASK=0xffff;
 var ACTIVE_AGGREGATOR_ASC_BIT=0x10000;
 
-// tree node state definitions
+// tree nODE state definitions
 var NODE_EXPANDED_BIT=0x0001;// this row is expanded
 var NODE_REAGGREGATE_BIT=0x0002;// children need aggregates
 var NODE_REORDER_BIT=0x0004;// children need to be sorted
@@ -172,7 +172,7 @@ return frameGetter(a,captureDepth)-frameGetter(b,captureDepth);
 return comparers;
 }
 
-function createTreeNode(parent,label,indices,expander){
+function createTreeNODE(parent,label,indices,expander){
 var indent=parent===null?0:(parent.state>>>NODE_INDENT_SHIFT)+1;
 var state=NODE_REPOSITION_BIT|
 NODE_REAGGREGATE_BIT|
@@ -180,9 +180,9 @@ NODE_REORDER_BIT|
 indent<<NODE_INDENT_SHIFT;
 return{
 parent:parent,// null if root
-children:null,// array of children nodes
+children:null,// array of children nODEs
 label:label,// string to show in UI
-indices:indices,// row indices under this node
+indices:indices,// row indices under this nODE
 aggregates:null,// result of aggregate on indices
 expander:expander,// index into state.activeExpanders
 top:0,// y position of top row (in rows)
@@ -207,7 +207,7 @@ activeExpanders:[],// index into field or stack expanders, hierarchy of tree
 aggregators:[],// all available aggregators, might not be used
 activeAggregators:[],// index into aggregators, to actually compute
 sorter:noSortOrder,// compare function that uses sortOrder to sort row.children
-root:createTreeNode(null,'<root>',indices,INVALID_ACTIVE_EXPANDER)};
+root:createTreeNODE(null,'<root>',indices,INVALID_ACTIVE_EXPANDER)};
 
 
 function evaluateAggregate(row){
@@ -306,7 +306,7 @@ var end=1;
 row.children=[];
 while(end<rowIndices.length){
 if(comparer(rowIndices[begin],rowIndices[end])!==0){
-row.children.push(createTreeNode(
+row.children.push(createTreeNODE(
 row,
 expander.name+': '+expander.formatter(rowIndices[begin]),
 rowIndices.subarray(begin,end),
@@ -315,7 +315,7 @@ begin=end;
 }
 end++;
 }
-row.children.push(createTreeNode(
+row.children.push(createTreeNODE(
 row,
 expander.name+': '+expander.formatter(rowIndices[begin]),
 rowIndices.subarray(begin,end),
@@ -346,7 +346,7 @@ break;
 begin++;
 }
 if(begin>0){
-row.children.push(createTreeNode(
+row.children.push(createTreeNODE(
 row,
 columnName+'<exclusive>',
 rowIndices.subarray(0,begin),
@@ -358,7 +358,7 @@ var end=begin+1;
 while(end<rowIndices.length){
 var endStack=stackGetter(rowIndices[end]);
 if(frameGetter(beginStack,depth)!==frameGetter(endStack,depth)){
-row.children.push(createTreeNode(
+row.children.push(createTreeNODE(
 row,
 columnName+strings.get(frameGetter(beginStack,depth)),
 rowIndices.subarray(begin,end),
@@ -368,7 +368,7 @@ beginStack=endStack;
 }
 end++;
 }
-row.children.push(createTreeNode(
+row.children.push(createTreeNODE(
 row,
 columnName+strings.get(frameGetter(beginStack,depth)),
 rowIndices.subarray(begin,end),
@@ -607,7 +607,7 @@ for(var _i14=0;_i14<row.children.length;_i14++){
 heightChange+=row.children[_i14].height;
 }
 updateHeight(row,heightChange);
-// if children only contains one node, then expand it as well
+// if children only contains one nODE, then expand it as well
 if(row.children.length===1&&this.canExpand(row.children[0])){
 this.expand(row.children[0]);
 }

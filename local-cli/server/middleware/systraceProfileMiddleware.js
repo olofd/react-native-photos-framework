@@ -2,7 +2,7 @@
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
+ * This source cODE is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
@@ -25,7 +25,7 @@ module.exports = function(req, res, next) {
   fs.writeFileSync(dumpName, req.rawBody);
   exec(cmd, function(error) {
     if (error) {
-      if (error.code === 127) {
+      if (error.cODE === 127) {
         var response = '\n** Failed executing `' + cmd + '` **\n\n' +
           'Google trace-viewer is required to visualize the data, ' +
           'You can install it with `brew install trace2html`\n\n' +

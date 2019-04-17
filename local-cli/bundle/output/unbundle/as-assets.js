@@ -2,7 +2,7 @@
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
+ * This source cODE is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
@@ -23,7 +23,7 @@ const MODULES_DIR = 'js-modules';
 
 /**
  * Saves all JS modules of an app as single files
- * The startup code (prelude, polyfills etc.) are written to the file
+ * The startup cODE (prelude, polyfills etc.) are written to the file
  * designated by the `bundleOuput` option.
  * All other modules go into a 'js-modules' folder that in the same parent
  * directory as the startup file.
@@ -38,7 +38,7 @@ function saveAsAssets(bundle, options, log) {
   log('start');
   const {startupModules, lazyModules} = bundle.getUnbundle();
   log('finish');
-  const startupCode = joinModules(startupModules);
+  const startupCODE = joinModules(startupModules);
 
   log('Writing bundle output to:', bundleOutput);
   const modulesDir = path.join(path.dirname(bundleOutput), MODULES_DIR);
@@ -46,7 +46,7 @@ function saveAsAssets(bundle, options, log) {
     createDir(modulesDir).then( // create the modules directory first
       () => Promise.all([
         writeModules(lazyModules, modulesDir, encoding),
-        writeFile(bundleOutput, startupCode, encoding),
+        writeFile(bundleOutput, startupCODE, encoding),
         writeMagicFlagFile(modulesDir),
       ])
     );
@@ -67,8 +67,8 @@ function createDir(dirName) {
 }
 
 function writeModuleFile(module, modulesDir, encoding) {
-  const {code, id} = module;
-  return writeFile(path.join(modulesDir, id + '.js'), code, encoding);
+  const {cODE, id} = module;
+  return writeFile(path.join(modulesDir, id + '.js'), cODE, encoding);
 }
 
 function writeModules(modules, modulesDir, encoding) {

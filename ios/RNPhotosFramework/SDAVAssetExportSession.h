@@ -7,7 +7,7 @@
 // Copyright 2013 Olivier Poitrey. All rights servered.
 //
 // For the full copyright and license information, please view the LICENSE
-// file that was distributed with this source code.
+// file that was distributed with this source cODE.
 //
 
 #import <Foundation/Foundation.h>
@@ -17,7 +17,7 @@
 
 
 /**
- * An `SDAVAssetExportSession` object transcodes the contents of an AVAsset source object to create an output
+ * An `SDAVAssetExportSession` object transcODEs the contents of an AVAsset source object to create an output
  * of the form described by specified video and audio settings. It implements most of the API of Apple provided
  * `AVAssetExportSession` but with the capability to provide you own video and audio settings instead of the
  * limited set of Apple provided presets.
@@ -81,7 +81,7 @@
 /**
  * The settings used for encoding the video track.
  *
- * A value of nil specifies that appended output should not be re-encoded.
+ * A value of nil specifies that appended output should not be re-encODEd.
  * The dictionary’s keys are from <AVFoundation/AVVideoSettings.h>.
  */
 @property (nonatomic, copy) NSDictionary *videoSettings;
@@ -89,7 +89,7 @@
 /**
  * The settings used for encoding the audio track.
  *
- * A value of nil specifies that appended output should not be re-encoded.
+ * A value of nil specifies that appended output should not be re-encODEd.
  * The dictionary’s keys are from <CoreVideo/CVPixelBuffer.h>.
  */
 @property (nonatomic, copy) NSDictionary *audioSettings;

@@ -2,7 +2,7 @@
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
+ * This source cODE is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.*
  */
@@ -11,7 +11,7 @@
 /**
  * Takes in a parsed simulator list and a desired name, and returns an object with the matching simulator.
  *
- * If the simulatorName argument is null, we'll go into default mode and return the currently booted simulator, or if
+ * If the simulatorName argument is null, we'll go into default mODE and return the currently booted simulator, or if
  * none is booted, it will be the first in the list.
  *
  * @param Object simulators a parsed list from `xcrun simctl list --json devices` command

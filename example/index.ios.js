@@ -12,7 +12,7 @@ export default class Example extends Component {
   constructor() {
     super();
     this.state = {
-      albumEditMode: false
+      albumEditMODE: false
     };
   }
 

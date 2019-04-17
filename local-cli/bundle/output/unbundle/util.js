@@ -2,7 +2,7 @@
  * Copyright (c) 2016-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
+ * This source cODE is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
@@ -13,7 +13,7 @@ const countLines =
   string => (string.match(newline) || []).length + 1; // fastest implementation
 
 function lineToLineSourceMap(source, filename) {
-  // The first line mapping in our package is the base64vlq code for zeros (A).
+  // The first line mapping in our package is the base64vlq cODE for zeros (A).
   const firstLine = 'AAAA;';
 
   // Most other lines in our mappings are all zeros (for module, column etc)
@@ -27,7 +27,7 @@ function lineToLineSourceMap(source, filename) {
   };
 }
 
-const wrapperEnd = wrappedCode => wrappedCode.indexOf('{') + 1;
+const wrapperEnd = wrappedCODE => wrappedCODE.indexOf('{') + 1;
 
 const Section = (line, column, map) => ({map, offset: {line, column}});
 
@@ -44,7 +44,7 @@ function combineSourceMaps({modules, withCustomOffsets, moduleGroups}) {
   }
 
   let line = 0;
-  modules.forEach(({code, id, map, name}) => {
+  modules.forEach(({cODE, id, map, name}) => {
     let column = 0;
     let hasOffset = false;
     let group;
@@ -61,31 +61,31 @@ function combineSourceMaps({modules, withCustomOffsets, moduleGroups}) {
         const otherModules = Array.from(group).map(
           moduleId => moduleGroups.modulesById.get(moduleId));
         otherModules.forEach(m => {
-          groupLines += countLines(m.code);
+          groupLines += countLines(m.cODE);
         });
         map = combineSourceMaps({
-          modules: [{code, id, map, name}].concat(otherModules),
+          modules: [{cODE, id, map, name}].concat(otherModules),
         });
       }
 
       hasOffset = id != null;
-      column = wrapperEnd(code);
+      column = wrapperEnd(cODE);
     }
 
-    sections.push(Section(line, column, map || lineToLineSourceMap(code, name)));
+    sections.push(Section(line, column, map || lineToLineSourceMap(cODE, name)));
     if (hasOffset) {
       offsets[id] = line;
       for (const moduleId of group || []) {
         offsets[moduleId] = line;
       }
     }
-    line += countLines(code) + groupLines;
+    line += countLines(cODE) + groupLines;
   });
 
   return sourceMap;
 }
 
-const joinModules = modules => modules.map(m => m.code).join('\n');
+const joinModules = modules => modules.map(m => m.cODE).join('\n');
 
 module.exports = {
   countLines,

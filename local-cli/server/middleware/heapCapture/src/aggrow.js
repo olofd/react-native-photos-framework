@@ -2,7 +2,7 @@
  * Copyright (c) 2016-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
+ * This source cODE is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
@@ -49,16 +49,16 @@ function stackData(stackIdMap, maxDepth) { // eslint-disable-line no-unused-vars
 function stackRegistry(interner) { // eslint-disable-line no-unused-vars
   return {
     root: { id: 0 },
-    nodeCount: 1,
-    insert: function insertNode(parent, label) {
+    nODECount: 1,
+    insert: function insertNODE(parent, label) {
       const labelId = interner.intern(label);
-      let node = parent[labelId];
-      if (node === undefined) {
-        node = { id: this.nodeCount };
-        this.nodeCount++;
-        parent[labelId] = node;
+      let nODE = parent[labelId];
+      if (nODE === undefined) {
+        nODE = { id: this.nODECount };
+        this.nODECount++;
+        parent[labelId] = nODE;
       }
-      return node;
+      return nODE;
     },
     flatten: function flattenStacks() {
       let stackFrameCount = 0;
@@ -76,7 +76,7 @@ function stackRegistry(interner) { // eslint-disable-line no-unused-vars
       }
       countStacks(this.root, 0);
       console.log('size needed to store stacks: ' + (stackFrameCount * 4).toString() + 'B');
-      const stackIdMap = new Array(this.nodeCount);
+      const stackIdMap = new Array(this.nODECount);
       const stackArray = new Int32Array(stackFrameCount);
       let maxStackDepth = 0;
       stackFrameCount = 0;
@@ -135,7 +135,7 @@ function aggrow(strings, stacks, numRows) { // eslint-disable-line no-unused-var
   const ACTIVE_AGGREGATOR_MASK      = 0xffff;
   const ACTIVE_AGGREGATOR_ASC_BIT   = 0x10000;
 
-  // tree node state definitions
+  // tree nODE state definitions
   const NODE_EXPANDED_BIT           = 0x0001; // this row is expanded
   const NODE_REAGGREGATE_BIT        = 0x0002; // children need aggregates
   const NODE_REORDER_BIT            = 0x0004; // children need to be sorted
@@ -172,7 +172,7 @@ function aggrow(strings, stacks, numRows) { // eslint-disable-line no-unused-var
     return comparers;
   }
 
-  function createTreeNode(parent, label, indices, expander) {
+  function createTreeNODE(parent, label, indices, expander) {
     const indent = parent === null ? 0 : (parent.state >>> NODE_INDENT_SHIFT) + 1;
     const state = NODE_REPOSITION_BIT |
       NODE_REAGGREGATE_BIT |
@@ -180,9 +180,9 @@ function aggrow(strings, stacks, numRows) { // eslint-disable-line no-unused-var
       (indent << NODE_INDENT_SHIFT);
     return {
       parent: parent,     // null if root
-      children: null,     // array of children nodes
+      children: null,     // array of children nODEs
       label: label,       // string to show in UI
-      indices: indices,   // row indices under this node
+      indices: indices,   // row indices under this nODE
       aggregates: null,   // result of aggregate on indices
       expander: expander, // index into state.activeExpanders
       top: 0,             // y position of top row (in rows)
@@ -207,7 +207,7 @@ function aggrow(strings, stacks, numRows) { // eslint-disable-line no-unused-var
     aggregators: [],        // all available aggregators, might not be used
     activeAggregators: [],  // index into aggregators, to actually compute
     sorter: noSortOrder,    // compare function that uses sortOrder to sort row.children
-    root: createTreeNode(null, '<root>', indices, INVALID_ACTIVE_EXPANDER),
+    root: createTreeNODE(null, '<root>', indices, INVALID_ACTIVE_EXPANDER),
   };
 
   function evaluateAggregate(row) {
@@ -306,7 +306,7 @@ function aggrow(strings, stacks, numRows) { // eslint-disable-line no-unused-var
     row.children = [];
     while (end < rowIndices.length) {
       if (comparer(rowIndices[begin], rowIndices[end]) !== 0) {
-        row.children.push(createTreeNode(
+        row.children.push(createTreeNODE(
           row,
           expander.name + ': ' + expander.formatter(rowIndices[begin]),
           rowIndices.subarray(begin, end),
@@ -315,7 +315,7 @@ function aggrow(strings, stacks, numRows) { // eslint-disable-line no-unused-var
       }
       end++;
     }
-    row.children.push(createTreeNode(
+    row.children.push(createTreeNODE(
       row,
       expander.name + ': ' + expander.formatter(rowIndices[begin]),
       rowIndices.subarray(begin, end),
@@ -346,7 +346,7 @@ function aggrow(strings, stacks, numRows) { // eslint-disable-line no-unused-var
       begin++;
     }
     if (begin > 0) {
-      row.children.push(createTreeNode(
+      row.children.push(createTreeNODE(
         row,
         columnName + '<exclusive>',
         rowIndices.subarray(0, begin),
@@ -358,7 +358,7 @@ function aggrow(strings, stacks, numRows) { // eslint-disable-line no-unused-var
       while (end < rowIndices.length) {
         const endStack = stackGetter(rowIndices[end]);
         if (frameGetter(beginStack, depth) !== frameGetter(endStack, depth)) {
-          row.children.push(createTreeNode(
+          row.children.push(createTreeNODE(
             row,
             columnName + strings.get(frameGetter(beginStack, depth)),
             rowIndices.subarray(begin, end),
@@ -368,7 +368,7 @@ function aggrow(strings, stacks, numRows) { // eslint-disable-line no-unused-var
         }
         end++;
       }
-      row.children.push(createTreeNode(
+      row.children.push(createTreeNODE(
         row,
         columnName + strings.get(frameGetter(beginStack, depth)),
         rowIndices.subarray(begin, end),
@@ -607,7 +607,7 @@ function aggrow(strings, stacks, numRows) { // eslint-disable-line no-unused-var
         heightChange += row.children[i].height;
       }
       updateHeight(row, heightChange);
-      // if children only contains one node, then expand it as well
+      // if children only contains one nODE, then expand it as well
       if (row.children.length === 1 && this.canExpand(row.children[0])) {
         this.expand(row.children[0]);
       }

@@ -59,8 +59,8 @@ function getRoots() {
   if (root) {
     return [path.resolve(root)];
   }
-  if (__dirname.match(/node_modules[\/\\]react-native[\/\\]local-cli$/)) {
-    // Packager is running from node_modules.
+  if (__dirname.match(/nODE_modules[\/\\]react-native[\/\\]local-cli$/)) {
+    // Packager is running from nODE_modules.
     // This is the default case for all projects created using 'react-native init'.
     return [path.resolve(__dirname, '../../..')];
   } else if (__dirname.match(/Pods[\/\\]React[\/\\]packager$/)) {

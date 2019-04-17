@@ -2,7 +2,7 @@
  * Copyright (c) 2016-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
+ * This source cODE is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
@@ -225,7 +225,7 @@ class Table extends React.Component { // eslint-disable-line no-unused-vars
     const aggrow = this.state.aggrow;
     let cursor = this.state.cursor;
     let row = aggrow.getRows(cursor, 1)[0];
-    switch (e.keyCode) {
+    switch (e.keyCODE) {
       case 38: // up
         if (cursor > 0) {
           this.setState({cursor: cursor - 1});

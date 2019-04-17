@@ -2,7 +2,7 @@
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
+ * This source cODE is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
@@ -31,7 +31,7 @@ function upgrade(args, config) {
         )
       );
     } else {
-      const installed = JSON.parse(fs.readFileSync('node_modules/react-native/package.json', 'utf8'));
+      const installed = JSON.parse(fs.readFileSync('nODE_modules/react-native/package.json', 'utf8'));
 
       if (semver.satisfies(installed.version, version)) {
         const v = version.replace(/^(~|\^|=)/, '').replace(/x/i, '0');
@@ -78,7 +78,7 @@ function upgrade(args, config) {
       } else {
         console.warn(
           chalk.yellow(
-            'react-native version in \'package.json\' doesn\'t match the installed version in \'node_modules\'.\n' +
+            'react-native version in \'package.json\' doesn\'t match the installed version in \'nODE_modules\'.\n' +
             'Try running \'npm install\' to fix the issue.'
           )
         );

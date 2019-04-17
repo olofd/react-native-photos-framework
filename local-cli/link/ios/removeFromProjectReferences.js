@@ -1,5 +1,5 @@
 /**
- * For each file (.xcodeproj), there's an entry in `projectReferences` created
+ * For each file (.xcODEproj), there's an entry in `projectReferences` created
  * that has two entries - `ProjectRef` - reference to a file.uuid and
  * `ProductGroup` - uuid of a Products group.
  *

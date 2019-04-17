@@ -28,17 +28,17 @@ const getOuterDirectory = (directories) =>
   });
 
 /**
- * Given an array of headers it returns search path so Xcode can resolve
+ * Given an array of headers it returns search path so XcODE can resolve
  * headers when referenced like below:
  * ```
- * #import "CodePush.h"
+ * #import "CODEPush.h"
  * ```
  * If all files are located in one directory (directories.length === 1),
  * we simply return a relative path to that location.
  *
  * Otherwise, we loop through them all to find the outer one that contains
  * all the headers inside. That location is then returned with /** appended at
- * the end so Xcode marks that location as `recursive` and will look inside
+ * the end so XcODE marks that location as `recursive` and will look inside
  * every folder of it to locate correct headers.
  */
 module.exports = function getHeaderSearchPath(sourceDir, headers) {

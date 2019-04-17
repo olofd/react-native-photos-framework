@@ -1,16 +1,16 @@
 language: objective-c
 
-osx_image: xcode8.2
+osx_image: xcODE8.2
 
 install:
   - nvm use 6.9.1
   - wget https://github.com/yarnpkg/yarn/releases/download/v0.18.1/yarn-0.18.1.js
-  - export yarn="node $(pwd)/yarn-0.18.1.js"
+  - export yarn="nODE $(pwd)/yarn-0.18.1.js"
   - $yarn install
   - cd example && $yarn install && cd ..
 
 script:
-  - if [[ "$TEST_TYPE" = objc-ios ]]; then set -o pipefail && xcodebuild test -verbose -project example/ios/Example.xcodeproj -scheme Example -destination 'id=E40727B3-41FB-4D6E-B4CB-BFA87109EB12' | xcpretty; fi
+  - if [[ "$TEST_TYPE" = objc-ios ]]; then set -o pipefail && xcODEbuild test -verbose -project example/ios/Example.xcODEproj -scheme Example -destination 'id=E40727B3-41FB-4D6E-B4CB-BFA87109EB12' | xcpretty; fi
   - if [[ "$TEST_TYPE" = js ]]; then npm test -- --maxWorkers=1; fi
 
 env:

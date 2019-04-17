@@ -1,6 +1,6 @@
 const fs = require('fs-extra');
 const path = require('path');
-const xcode = require('xcode');
+const xcODE = require('xcODE');
 const log = require('npmlog');
 const plistParser = require('plist');
 const groupFilesByType = require('../groupFilesByType');
@@ -13,7 +13,7 @@ const difference = require('lodash').difference;
  * fonts provided by application and from `Resources` group
  */
 module.exports = function unlinkAssetsIOS(files, projectConfig) {
-  const project = xcode.project(projectConfig.pbxprojPath).parseSync();
+  const project = xcODE.project(projectConfig.pbxprojPath).parseSync();
   const assets = groupFilesByType(files);
   const plist = getPlist(project, projectConfig.sourceDir);
 
@@ -27,7 +27,7 @@ module.exports = function unlinkAssetsIOS(files, projectConfig) {
   if (!project.pbxGroupByName('Resources')) {
     return log.error(
       'ERRGROUP',
-      `Group 'Resources' does not exist in your XCode project. There is nothing to unlink.`
+      `Group 'Resources' does not exist in your XCODE project. There is nothing to unlink.`
     );
   }
 

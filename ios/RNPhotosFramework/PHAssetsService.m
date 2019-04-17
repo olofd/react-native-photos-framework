@@ -293,15 +293,15 @@
 }
 
 
-+(void)deleteAssets:(PHFetchResult<PHAsset *> *)assetsToDelete andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error, NSArray<NSString *> * localIdentifiers))completeBlock {
-    __block NSMutableArray<NSString *> *deletedAssetsLocalIdentifers = [NSMutableArray arrayWithCapacity:assetsToDelete.count];
++(void)deleteAssets:(PHFetchResult<PHAsset *> *)assetsTODElete andCompleteBLock:(nullable void(^)(BOOL success, NSError *__nullable error, NSArray<NSString *> * localIdentifiers))completeBlock {
+    __block NSMutableArray<NSString *> *deletedAssetsLocalIdentifers = [NSMutableArray arrayWithCapacity:assetsTODElete.count];
     [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
-        for(int i = 0; i< assetsToDelete.count; i++) {
-            PHAsset *assetToDelete = [assetsToDelete objectAtIndex:i];
-            BOOL req = [assetToDelete canPerformEditOperation:PHAssetEditOperationDelete];
+        for(int i = 0; i< assetsTODElete.count; i++) {
+            PHAsset *assetTODElete = [assetsTODElete objectAtIndex:i];
+            BOOL req = [assetTODElete canPerformEditOperation:PHAssetEditOperationDelete];
             if (req) {
-                [deletedAssetsLocalIdentifers addObject:assetToDelete.localIdentifier];
-                [PHAssetChangeRequest deleteAssets:@[assetToDelete]];
+                [deletedAssetsLocalIdentifers addObject:assetTODElete.localIdentifier];
+                [PHAssetChangeRequest deleteAssets:@[assetTODElete]];
             }
         }
     } completionHandler:^(BOOL success, NSError *error) {
@@ -331,7 +331,7 @@
 
 +(void)updateAssetWithParams:(NSDictionary *)params completionBlock:(void(^)(BOOL success, NSError * _Nullable error, NSString * _Nullable localIdentifier))completionBlock andAsset:(PHAsset *)asset {
     if(!params || !asset) {
-        return completionBlock(NO, [NSError errorWithDomain:@"react-native-photos-framework" code:1 userInfo:@{@"info" : @"[updateAssetWithParams] params or asset was nil"}], asset.localIdentifier);
+        return completionBlock(NO, [NSError errorWithDomain:@"react-native-photos-framework" cODE:1 userInfo:@{@"info" : @"[updateAssetWithParams] params or asset was nil"}], asset.localIdentifier);
     }
     BOOL runUpdate = NO;
     BOOL updateHidden = NO;

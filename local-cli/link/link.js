@@ -2,7 +2,7 @@
  * Copyright (c) 2013-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
+ * This source cODE is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
@@ -105,21 +105,21 @@ const testLinkArt = () => {
   const iOSProject = {
     sourceDir: '/Users/olda/test2/ios',
     folder: '/Users/olda/test2',
-    pbxprojPath: '/Users/olda/test2/ios/test2.xcodeproj/project.pbxproj',
-    projectPath: '/Users/olda/test2/ios/test2.xcodeproj',
-    projectName: 'test2.xcodeproj',
+    pbxprojPath: '/Users/olda/test2/ios/test2.xcODEproj/project.pbxproj',
+    projectPath: '/Users/olda/test2/ios/test2.xcODEproj',
+    projectName: 'test2.xcODEproj',
     libraryFolder: 'Libraries',
     sharedLibraries: [],
     plist: []
   };
 
-  const startPath = '/Users/olda/test2/node_modules/react-native/Libraries/ART';
+  const startPath = '/Users/olda/test2/nODE_modules/react-native/Libraries/ART';
   const artProject = {
     sourceDir: startPath,
     folder: startPath,
-    pbxprojPath: startPath + '/ART.xcodeproj' + '/project.pbxproj',
-    projectPath: startPath + '/ART.xcodeproj',
-    projectName: 'ART.xcodeproj',
+    pbxprojPath: startPath + '/ART.xcODEproj' + '/project.pbxproj',
+    projectPath: startPath + '/ART.xcODEproj',
+    projectName: 'ART.xcODEproj',
     libraryFolder: 'Libraries',
     sharedLibraries: [],
     plist: []

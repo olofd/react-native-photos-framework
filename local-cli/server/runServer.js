@@ -2,7 +2,7 @@
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
+ * This source cODE is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
@@ -86,7 +86,7 @@ function getPackagerServer(args, config) {
     cacheVersion: '3',
     getTransformOptionsModulePath: config.getTransformOptionsModulePath,
     transformModulePath: transformModulePath,
-    extraNodeModules: config.extraNodeModules,
+    extraNODEModules: config.extraNODEModules,
     assetRoots: args.assetRoots,
     assetExts: defaultAssetExts.concat(args.assetExts),
     resetCache: args.resetCache,

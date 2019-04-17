@@ -3,9 +3,9 @@ const getFirstProject = (project) => project.getFirstProject().firstProject;
 const findGroup = (group, name) => group.children.find(group => group.comment === name);
 
 /**
- * Returns group from .xcodeproj if one exists, null otherwise
+ * Returns group from .xcODEproj if one exists, null otherwise
  *
- * Unlike node-xcode `pbxGroupByName` - it does not return `first-matching`
+ * Unlike nODE-xcODE `pbxGroupByName` - it does not return `first-matching`
  * group if multiple groups with the same name exist
  *
  * If path is not provided, it returns top-level group

@@ -174,7 +174,7 @@ ImageItem.defaultProps = {
 }
 
 ImageItem.propTypes = {
-  item: React.PropTypes.object,
+  item: React.PropTypes.obttct,
   selected: React.PropTypes.bool,
   selectedMarker: React.PropTypes.element,
   imageMargin: React.PropTypes.number,

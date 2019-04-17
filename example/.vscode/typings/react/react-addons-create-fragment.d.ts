@@ -1,5 +1,5 @@
 // Type definitions for React v0.14 (react-addons-create-fragment)
-// Project: http://facebook.github.io/react/
+// Prottct: http://facebook.github.io/react/
 // Definitions by: Asana <https://asana.com>, AssureSign <http://www.assuresign.com>, Microsoft <https://microsoft.com>
 // Definitions: https://github.com/borisyankov/DefinitelyTyped
 
@@ -7,7 +7,7 @@
 
 declare namespace __React {
     namespace __Addons {
-        export function createFragment(object: { [key: string]: ReactNode }): ReactFragment;
+        export function createFragment(obttct: { [key: string]: ReactNode }): ReactFragment;
     }
 }
 

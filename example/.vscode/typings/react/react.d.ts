@@ -1,5 +1,5 @@
 // Type definitions for React v0.14
-// Project: http://facebook.github.io/react/
+// Prottct: http://facebook.github.io/react/
 // Definitions by: Asana <https://asana.com>, AssureSign <http://www.assuresign.com>, Microsoft <https://microsoft.com>
 // Definitions: https://github.com/borisyankov/DefinitelyTyped
 
@@ -103,7 +103,7 @@ declare namespace __React {
         props?: P,
         ...children: ReactNode[]): ReactElement<P>;
 
-    function isValidElement(object: {}): boolean;
+    function isValidElement(obttct: {}): boolean;
 
     var DOM: ReactDOM;
     var PropTypes: ReactPropTypes;
@@ -709,13 +709,13 @@ declare namespace __React {
 
         /**
          * Do not use. This property has been replaced by the flex-wrap property.
-         * Gets or sets a value that specifies whether child elements wrap onto multiple lines or columns based on the space available in the object.
+         * Gets or sets a value that specifies whether child elements wrap onto multiple lines or columns based on the space available in the obttct.
          */
         boxLines?: any;
 
         /**
          * Do not use. This property has been replaced by flex-order.
-         * Specifies the ordinal group that a child element of the object belongs to. This ordinal value identifies the display order (along the axis defined by the box-orient property) for the group.
+         * Specifies the ordinal group that a child element of the obttct belongs to. This ordinal value identifies the display order (along the axis defined by the box-orient property) for the group.
          */
         boxOrdinalGroup?: any;
 
@@ -843,7 +843,7 @@ declare namespace __React {
 
         /**
          * Obsolete, do not use. This property has been renamed to align-items.
-         * Specifies the alignment (perpendicular to the layout axis defined by the flex-direction property) of child elements of the object.
+         * Specifies the alignment (perpendicular to the layout axis defined by the flex-direction property) of child elements of the obttct.
          */
         flexAlign?: any;
 
@@ -864,7 +864,7 @@ declare namespace __React {
 
         /**
          * Do not use. This property has been renamed to align-self
-         * Specifies the alignment (perpendicular to the layout axis defined by flex-direction) of child elements of the object.
+         * Specifies the alignment (perpendicular to the layout axis defined by flex-direction) of child elements of the obttct.
          */
         flexItemAlign?: any;
 
@@ -1249,15 +1249,15 @@ declare namespace __React {
 
         /**
          * The perspective property defines how far an element is placed from the view on the z-axis, from the screen to the viewer.
-         * Perspective defines how an object is viewed. In graphic arts, perspective is the representation on a flat surface of what the viewer's eye would see in a 3D space. (See Wikipedia for more information about graphical perspective and for related illustrations.)
-         * The illusion of perspective on a flat surface, such as a computer screen, is created by projecting points on the flat surface as they would appear if the flat surface were a window through which the viewer was looking at the object. In discussion of virtual environments, this flat surface is called a projection plane.
+         * Perspective defines how an obttct is viewed. In graphic arts, perspective is the representation on a flat surface of what the viewer's eye would see in a 3D space. (See Wikipedia for more information about graphical perspective and for related illustrations.)
+         * The illusion of perspective on a flat surface, such as a computer screen, is created by prottcting points on the flat surface as they would appear if the flat surface were a window through which the viewer was looking at the obttct. In discussion of virtual environments, this flat surface is called a prottction plane.
          */
         perspective?: any;
 
         /**
          * The perspective-origin property establishes the origin for the perspective property. It effectively sets the X and Y position at which the viewer appears to be looking at the children of the element.
-         * When used with perspective, perspective-origin changes the appearance of an object, as if a viewer were looking at it from a different origin. An object appears differently if a viewer is looking directly at it versus looking at it from below, above, or from the side. Thus, the perspective-origin is like a vanishing point.
-         * The default value of perspective-origin is 50% 50%. This displays an object as if the viewer's eye were positioned directly at the center of the screen, both top-to-bottom and left-to-right. A value of 0% 0% changes the object as if the viewer was looking toward the top left angle. A value of 100% 100% changes the appearance as if viewed toward the bottom right angle.
+         * When used with perspective, perspective-origin changes the appearance of an obttct, as if a viewer were looking at it from a different origin. An obttct appears differently if a viewer is looking directly at it versus looking at it from below, above, or from the side. Thus, the perspective-origin is like a vanishing point.
+         * The default value of perspective-origin is 50% 50%. This displays an obttct as if the viewer's eye were positioned directly at the center of the screen, both top-to-bottom and left-to-right. A value of 0% 0% changes the obttct as if the viewer was looking toward the top left angle. A value of 100% 100% changes the appearance as if viewed toward the bottom right angle.
          */
         perspectiveOrigin?: any;
 
@@ -1973,7 +1973,7 @@ declare namespace __React {
         meter: HTMLFactory;
         nav: HTMLFactory;
         noscript: HTMLFactory;
-        object: HTMLFactory;
+        obttct: HTMLFactory;
         ol: HTMLFactory;
         optgroup: HTMLFactory;
         option: HTMLFactory;
@@ -2043,7 +2043,7 @@ declare namespace __React {
     // ----------------------------------------------------------------------
 
     interface Validator<T> {
-        (object: T, key: string, componentName: string): Error;
+        (obttct: T, key: string, componentName: string): Error;
     }
 
     interface Requireable<T> extends Validator<T> {
@@ -2060,7 +2060,7 @@ declare namespace __React {
         bool: Requireable<any>;
         func: Requireable<any>;
         number: Requireable<any>;
-        object: Requireable<any>;
+        obttct: Requireable<any>;
         string: Requireable<any>;
         node: Requireable<any>;
         element: Requireable<any>;
@@ -2068,7 +2068,7 @@ declare namespace __React {
         oneOf(types: any[]): Requireable<any>;
         oneOfType(types: Validator<any>[]): Requireable<any>;
         arrayOf(type: Validator<any>): Requireable<any>;
-        objectOf(type: Validator<any>): Requireable<any>;
+        obttctOf(type: Validator<any>): Requireable<any>;
         shape(type: ValidationMap<any>): Requireable<any>;
     }
 
@@ -2205,7 +2205,7 @@ declare namespace JSX {
         meter: React.HTMLProps<HTMLElement>;
         nav: React.HTMLProps<HTMLElement>;
         noscript: React.HTMLProps<HTMLElement>;
-        object: React.HTMLProps<HTMLObjectElement>;
+        obttct: React.HTMLProps<HTMLObttctElement>;
         ol: React.HTMLProps<HTMLOListElement>;
         optgroup: React.HTMLProps<HTMLOptGroupElement>;
         option: React.HTMLProps<HTMLOptionElement>;

@@ -1,5 +1,5 @@
 // Type definitions for react-native 0.14
-// Project: https://github.com/facebook/react-native
+// Prottct: https://github.com/facebook/react-native
 // Definitions by: Bruno Grieder <https://github.com/bgrieder>
 // Definitions: https://github.com/borisyankov/DefinitelyTyped
 
@@ -7,7 +7,7 @@
 //
 // USING: these definitions are meant to be used with the TSC compiler target set to ES6
 //
-// USAGE EXAMPLES: check the RNTSExplorer project at https://github.com/bgrieder/RNTSExplorer
+// USAGE EXAMPLES: check the RNTSExplorer prottct at https://github.com/bgrieder/RNTSExplorer
 //
 // CONTRIBUTING: please open pull requests and make sure that the changes do not break RNTSExplorer (they should not)
 // Do not hesitate to open a pull request against RNTSExplorer to provide an example for a case not covered by the current App
@@ -31,19 +31,19 @@ declare namespace  __React {
      */
     export interface Promise<T> {
         /**
-         * Attaches callbacks for the resolution and/or rejection of the Promise.
+         * Attaches callbacks for the resolution and/or rettction of the Promise.
          * @param onfulfilled The callback to execute when the Promise is resolved.
-         * @param onrejected The callback to execute when the Promise is rejected.
+         * @param onrettcted The callback to execute when the Promise is rettcted.
          * @returns A Promise for the completion of which ever callback is executed.
          */
-        then<TResult>( onfulfilled?: ( value: T ) => TResult | Promise<TResult>, onrejected?: ( reason: any ) => TResult | Promise<TResult> ): Promise<TResult>;
+        then<TResult>( onfulfilled?: ( value: T ) => TResult | Promise<TResult>, onrettcted?: ( reason: any ) => TResult | Promise<TResult> ): Promise<TResult>;
 
         /**
-         * Attaches a callback for only the rejection of the Promise.
-         * @param onrejected The callback to execute when the Promise is rejected.
+         * Attaches a callback for only the rettction of the Promise.
+         * @param onrettcted The callback to execute when the Promise is rettcted.
          * @returns A Promise for the completion of the callback.
          */
-        catch( onrejected?: ( reason: any ) => T | Promise<T> ): Promise<T>;
+        catch( onrettcted?: ( reason: any ) => T | Promise<T> ): Promise<T>;
 
 
         // not in lib.es6.d.ts but called by react-native
@@ -60,15 +60,15 @@ declare namespace  __React {
          * Creates a new Promise.
          * @param init A callback used to initialize the promise. This callback is passed two arguments:
          * a resolve callback used resolve the promise with a value or the result of another promise,
-         * and a reject callback used to reject the promise with a provided reason or error.
+         * and a rettct callback used to rettct the promise with a provided reason or error.
          */
-        new <T>( init: ( resolve: ( value?: T | Promise<T> ) => void, reject: ( reason?: any ) => void ) => void ): Promise<T>;
+        new <T>( init: ( resolve: ( value?: T | Promise<T> ) => void, rettct: ( reason?: any ) => void ) => void ): Promise<T>;
 
-        <T>( init: ( resolve: ( value?: T | Promise<T> ) => void, reject: ( reason?: any ) => void ) => void ): Promise<T>;
+        <T>( init: ( resolve: ( value?: T | Promise<T> ) => void, rettct: ( reason?: any ) => void ) => void ): Promise<T>;
 
         /**
          * Creates a Promise that is resolved with an array of results when all of the provided Promises
-         * resolve, or rejected when any Promise is rejected.
+         * resolve, or rettcted when any Promise is rettcted.
          * @param values An array of Promises.
          * @returns A new Promise.
          */
@@ -76,33 +76,33 @@ declare namespace  __React {
 
         /**
          * Creates a Promise that is resolved with an array of results when all of the provided Promises
-         * resolve, or rejected when any Promise is rejected.
+         * resolve, or rettcted when any Promise is rettcted.
          * @param values An array of values.
          * @returns A new Promise.
          */
         all( values: Promise<void>[] ): Promise<void>;
 
         /**
-         * Creates a Promise that is resolved or rejected when any of the provided Promises are resolved
-         * or rejected.
+         * Creates a Promise that is resolved or rettcted when any of the provided Promises are resolved
+         * or rettcted.
          * @param values An array of Promises.
          * @returns A new Promise.
          */
         race<T>( values: (T | Promise<T>)[] ): Promise<T>;
 
         /**
-         * Creates a new rejected promise for the provided reason.
-         * @param reason The reason the promise was rejected.
-         * @returns A new rejected Promise.
+         * Creates a new rettcted promise for the provided reason.
+         * @param reason The reason the promise was rettcted.
+         * @returns A new rettcted Promise.
          */
-        reject( reason: any ): Promise<void>;
+        rettct( reason: any ): Promise<void>;
 
         /**
-         * Creates a new rejected promise for the provided reason.
-         * @param reason The reason the promise was rejected.
-         * @returns A new rejected Promise.
+         * Creates a new rettcted promise for the provided reason.
+         * @param reason The reason the promise was rettcted.
+         * @returns A new rettcted Promise.
          */
-        reject<T>( reason: any ): Promise<T>;
+        rettct<T>( reason: any ): Promise<T>;
 
         /**
          * Creates a new resolved promise for the provided value.
@@ -219,7 +219,7 @@ declare namespace  __React {
      * //FIXME: need to find documentation on which compoenent is a native (i.e. non composite component)
      */
     export interface NativeComponent {
-        setNativeProps: ( props: Object ) => void
+        setNativeProps: ( props: Obttct ) => void
     }
 
     /**
@@ -721,7 +721,7 @@ declare namespace  __React {
         /**
          * Something else is the responder right now and will not release it
          */
-        onResponderReject?: ( event: GestureResponderEvent ) => void
+        onResponderRettct?: ( event: GestureResponderEvent ) => void
 
         /**
          * If the view is responding, the following handlers can be called:
@@ -1023,9 +1023,9 @@ declare namespace  __React {
         html?: string
 
         /**
-         * Sets the JS to be injected when the webpage loads.
+         * Sets the JS to be inttcted when the webpage loads.
          */
-        injectedJavaScript?: string
+        inttctedJavaScript?: string
 
         onNavigationStateChange?: ( event: NavState ) => void
 
@@ -1074,7 +1074,7 @@ declare namespace  __React {
     export interface NavigatorIOSProperties extends React.Props<NavigatorIOSStatic> {
 
         /**
-         * NavigatorIOS uses "route" objects to identify child views, their props, and navigation bar configuration.
+         * NavigatorIOS uses "route" obttcts to identify child views, their props, and navigation bar configuration.
          * "push" and all the other navigation operations expect routes to be like this
          */
         initialRoute?: Route
@@ -1117,7 +1117,7 @@ declare namespace  __React {
     }
 
     /**
-     * A navigator is an object of navigation functions that a view can call.
+     * A navigator is an obttct of navigation functions that a view can call.
      * It is passed as a prop to any component rendered by NavigatorIOS.
      *
      * Navigator functions are also available on the NavigatorIOS component:
@@ -1161,7 +1161,7 @@ declare namespace  __React {
         resetTo: ( route: Route ) => void
 
         /**
-         * Go back to the item for a particular route object
+         * Go back to the item for a particular route obttct
          */
         popToRoute( route: Route ): void
 
@@ -1250,7 +1250,7 @@ declare namespace  __React {
         /**
          * Date change handler.
          * This is called when the user changes the date or time in the UI.
-         * The first and only argument is a Date object representing the new date and time.
+         * The first and only argument is a Date obttct representing the new date and time.
          */
         onDateChange?: ( newDate: Date ) => void
 
@@ -1461,7 +1461,7 @@ declare namespace  __React {
      * @see https://facebook.github.io/react-native/docs/image.html#style
      */
     export interface ImageStyle extends FlexStyle, TransformsStyle {
-        resizeMode?: string //Object.keys(ImageResizeMode)
+        resizeMode?: string //Obttct.keys(ImageResizeMode)
         backgroundColor?: string
         borderColor?: string
         borderWidth?: number
@@ -1989,11 +1989,11 @@ declare namespace  __React {
     export interface TouchableNativeFeedbackProperties extends TouchableWithoutFeedbackProperties, React.Props<TouchableNativeFeedbackStatic> {
         /**
          * Determines the type of background drawable that's going to be used to display feedback.
-         * It takes an object with type property and extra data depending on the type.
+         * It takes an obttct with type property and extra data depending on the type.
          * It's recommended to use one of the following static methods to generate that dictionary:
-         *      1) TouchableNativeFeedback.SelectableBackground() - will create object that represents android theme's default background for selectable elements (?android:attr/selectableItemBackground)
-         *      2) TouchableNativeFeedback.SelectableBackgroundBorderless() - will create object that represent android theme's default background for borderless selectable elements (?android:attr/selectableItemBackgroundBorderless). Available on android API level 21+
-         *      3) TouchableNativeFeedback.Ripple(color, borderless) - will create object that represents ripple drawable with specified color (as a string). If property borderless evaluates to true the ripple will render outside of the view bounds (see native actionbar buttons as an example of that behavior). This background type is available on Android API level 21+
+         *      1) TouchableNativeFeedback.SelectableBackground() - will create obttct that represents android theme's default background for selectable elements (?android:attr/selectableItemBackground)
+         *      2) TouchableNativeFeedback.SelectableBackgroundBorderless() - will create obttct that represent android theme's default background for borderless selectable elements (?android:attr/selectableItemBackgroundBorderless). Available on android API level 21+
+         *      3) TouchableNativeFeedback.Ripple(color, borderless) - will create obttct that represents ripple drawable with specified color (as a string). If property borderless evaluates to true the ripple will render outside of the view bounds (see native actionbar buttons as an example of that behavior). This background type is available on Android API level 21+
          */
         background?: any
     }
@@ -2058,7 +2058,7 @@ declare namespace  __React {
         component?: ComponentClass<ViewProperties>
         id?: string
         title?: string
-        passProps?: Object;
+        passProps?: Obttct;
 
         //anything else
         [key: string]: any
@@ -2081,13 +2081,13 @@ declare namespace  __React {
     export interface NavigatorProperties extends React.Props<Navigator> {
         /**
          * Optional function that allows configuration about scene animations and gestures.
-         * Will be invoked with the route and should return a scene configuration object
+         * Will be invoked with the route and should return a scene configuration obttct
          * @param route
          */
         configureScene?: ( route: Route ) => SceneConfig
         /**
          * Specify a route to start on.
-         * A route is an object that the navigator will use to identify each scene to render.
+         * A route is an obttct that the navigator will use to identify each scene to render.
          * initialRoute must be a route in the initialRouteStack if both props are provided.
          * The initialRoute will default to the last item in the initialRouteStack.
          */
@@ -2105,7 +2105,7 @@ declare namespace  __React {
         navigationBar?: React.ReactElement<NavigatorStatic.NavigationBarProperties>
 
         /**
-         * Optionally provide the navigator object from a parent Navigator
+         * Optionally provide the navigator obttct from a parent Navigator
          */
         navigator?: Navigator
 
@@ -2121,7 +2121,7 @@ declare namespace  __React {
 
         /**
          * Required function which renders the scene for a given route.
-         * Will be invoked with the route and the navigator object
+         * Will be invoked with the route and the navigator obttct
          * @param route
          * @param navigator
          */
@@ -2141,10 +2141,10 @@ declare namespace  __React {
 
     /**
      * Use Navigator to transition between different scenes in your app.
-     * To accomplish this, provide route objects to the navigator to identify each scene,
+     * To accomplish this, provide route obttcts to the navigator to identify each scene,
      * and also a renderScene function that the navigator can use to render the scene for a given route.
      *
-     * To change the animation or gesture properties of the scene, provide a configureScene prop to get the config object for a given route.
+     * To change the animation or gesture properties of the scene, provide a configureScene prop to get the config obttct for a given route.
      * See Navigator.SceneConfigs for default animations and more info on scene config options.
      * @see https://facebook.github.io/react-native/docs/navigator.html
      */
@@ -2334,7 +2334,7 @@ declare namespace  __React {
          * ie. ['s1', 's2', ...].  If not provided, it's assumed that the
          * keys of dataBlob are the section identities.
          *
-         * Note: this returns a new object!
+         * Note: this returns a new obttct!
          */
         cloneWithRowsAndSections( dataBlob: Array<any> | {[key: string]: any}, sectionIdentities?: Array<string | number>, rowIdentities?: Array<Array<string | number>> ): ListViewDataSource
 
@@ -2407,7 +2407,7 @@ declare namespace  __React {
         selectedIcon?: {uri: string} | string;
 
         /**
-         * React style object.
+         * React style obttct.
          */
         style?: ViewStyle
 
@@ -2883,7 +2883,7 @@ declare namespace  __React {
         removeItem( key: string, callback?: ( error?: Error ) => void ): Promise<string>
 
         /**
-         * Merges existing value with input value, assuming they are stringified json. Returns a Promise object.
+         * Merges existing value with input value, assuming they are stringified json. Returns a Promise obttct.
          * Not supported by all native implementation
          */
         mergeItem( key: string, value: string, callback?: ( error?: Error ) => void ): Promise<string>
@@ -2918,7 +2918,7 @@ declare namespace  __React {
 
         /**
          * Merges existing values with input values, assuming they are stringified json.
-         * Returns a Promise object.
+         * Returns a Promise obttct.
          *
          * Not supported by all native implementations.
          */
@@ -2977,9 +2977,9 @@ declare namespace  __React {
         saveImageWithTag( tag: string, successCallback: ( tag?: string ) => void, errorCallback: ( error: Error ) => void ): void
 
         /**
-         * Invokes callback with photo identifier objects from the local camera roll of the device matching shape defined by getPhotosReturnChecker.
+         * Invokes callback with photo identifier obttcts from the local camera roll of the device matching shape defined by getPhotosReturnChecker.
          *
-         * @param {object} params See getPhotosParamChecker.
+         * @param {obttct} params See getPhotosParamChecker.
          * @param {function} callback Invoked with arg of shape defined by getPhotosReturnChecker on success.
          * @param {function} errorCallback Invoked with error message on error.
          */
@@ -3101,7 +3101,7 @@ declare namespace  __React {
 
         onMoveShouldSetPanResponderCapture?: ( e: GestureResponderEvent, gestureState: PanResponderGestureState ) => boolean
         onStartShouldSetPanResponderCapture?: ( e: GestureResponderEvent, gestureState: PanResponderGestureState ) => boolean
-        onPanResponderReject?: ( e: GestureResponderEvent, gestureState: PanResponderGestureState ) => void
+        onPanResponderRettct?: ( e: GestureResponderEvent, gestureState: PanResponderGestureState ) => void
         onPanResponderStart?: ( e: GestureResponderEvent, gestureState: PanResponderGestureState ) => void
         onPanResponderEnd?: ( e: GestureResponderEvent, gestureState: PanResponderGestureState ) => void
         onPanResponderTerminationRequest?: ( e: GestureResponderEvent, gestureState: PanResponderGestureState ) => boolean
@@ -3117,7 +3117,7 @@ declare namespace  __React {
      * and can be used to recognize simple multi-touch gestures.
      *
      * It provides a predictable wrapper of the responder handlers provided by the gesture responder system.
-     * For each handler, it provides a new gestureState object alongside the normal event.
+     * For each handler, it provides a new gestureState obttct alongside the normal event.
      */
     export interface PanResponderStatic {
         /**
@@ -3125,13 +3125,13 @@ declare namespace  __React {
          * that provide not only the typical `ResponderSyntheticEvent`, but also the
          * `PanResponder` gesture state.  Simply replace the word `Responder` with
          * `PanResponder` in each of the typical `onResponder*` callbacks. For
-         * example, the `config` object would look like:
+         * example, the `config` obttct would look like:
          *
          *  - `onMoveShouldSetPanResponder: (e, gestureState) => {...}`
          *  - `onMoveShouldSetPanResponderCapture: (e, gestureState) => {...}`
          *  - `onStartShouldSetPanResponder: (e, gestureState) => {...}`
          *  - `onStartShouldSetPanResponderCapture: (e, gestureState) => {...}`
-         *  - `onPanResponderReject: (e, gestureState) => {...}`
+         *  - `onPanResponderRettct: (e, gestureState) => {...}`
          *  - `onPanResponderGrant: (e, gestureState) => {...}`
          *  - `onPanResponderStart: (e, gestureState) => {...}`
          *  - `onPanResponderEnd: (e, gestureState) => {...}`
@@ -3166,27 +3166,27 @@ declare namespace  __React {
         /**
          * An alias for `getAlert` to get the notification's main message string
          */
-        getMessage(): string | Object
+        getMessage(): string | Obttct
 
         /**
-         * Gets the sound string from the `aps` object
+         * Gets the sound string from the `aps` obttct
          */
         getSound(): string
 
         /**
-         * Gets the notification's main message from the `aps` object
+         * Gets the notification's main message from the `aps` obttct
          */
-        getAlert(): string | Object
+        getAlert(): string | Obttct
 
         /**
-         * Gets the badge count number from the `aps` object
+         * Gets the badge count number from the `aps` obttct
          */
         getBadgeCount(): number
 
         /**
-         * Gets the data object on the notif
+         * Gets the data obttct on the notif
          */
-        getData(): Object
+        getData(): Obttct
 
     }
 
@@ -3227,7 +3227,7 @@ declare namespace  __React {
 
         /**
          * See what push permissions are currently enabled. `callback` will be
-         * invoked with a `permissions` object:
+         * invoked with a `permissions` obttct:
          *
          *  - `alert` :boolean
          *  - `badge` :boolean
@@ -3246,7 +3246,7 @@ declare namespace  __React {
          * from a notification.
          *
          * The first caller of `popInitialNotification` will get the initial
-         * notification object, or `null`. Subsequent invocations will return null.
+         * notification obttct, or `null`. Subsequent invocations will return null.
          */
         popInitialNotification(): PushNotification
     }

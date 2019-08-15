@@ -9,7 +9,7 @@ const mime = require('mime');
 mime.define({
   'font/opentype': ['otf'],
   'font/truetype': ['ttf'],
-});
+}, true);
 
 /**
  * Given an array of files, it groups it by it's type.

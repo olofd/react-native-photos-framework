@@ -35,7 +35,7 @@
     "react-native-photos-framework.podspec"
   ],
   "scripts": {
-    "postinstall": "node install.js",
+    "postinstall": "",
     "test": "jest",
     "test-ios": "set -o pipefail && xcodebuild test -verbose -project example/ios/Example.xcodeproj -scheme Example -destination 'id=E40727B3-41FB-4D6E-B4CB-BFA87109EB12' | xcpretty",
     "update": "git add . && git commit -m \"Updated\" && npm version patch && git push --tags && git push origin master && npm publish",
